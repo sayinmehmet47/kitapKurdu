@@ -28,7 +28,9 @@ export const Search = () => {
         Promise.all(
           d.map((e) => {
             return fetch(
-              `https://cloud-api.yandex.net:443/v1/disk/public/resources/download?public_key=https://disk.yandex.ru/d/o9lNK0tpVCH7sQ&path=${e.path}`
+              encodeURI(
+                `https://cloud-api.yandex.net:443/v1/disk/public/resources/download?public_key=https://disk.yandex.ru/d/o9lNK0tpVCH7sQ&path=${e.path}`
+              )
             )
               .then((res) => res.json())
               .then((res) => {
