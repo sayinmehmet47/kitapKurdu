@@ -10,7 +10,11 @@ export const Table = ({ books }) => {
         Header: 'Name',
         id: 'name',
         accessor: (d) => d.file,
-        Cell: ({ row }) => <a href={row.original.file}>{row.original.name}</a>,
+        Cell: ({ row }) => (
+          <a href={row.original.file} target="_blank" rel="noopener noreferrer">
+            {row.original.name}
+          </a>
+        ),
       },
       {
         Header: 'Size',
