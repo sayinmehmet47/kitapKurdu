@@ -3,7 +3,6 @@ import { useTable, useSortBy, usePagination } from 'react-table';
 
 export const Table = ({ books }) => {
   const data = useMemo(() => [...books], [books]);
-  console.log(data);
   const columns = useMemo(
     () => [
       {

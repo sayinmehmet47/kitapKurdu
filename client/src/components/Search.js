@@ -29,7 +29,7 @@ export const Search = () => {
           d.map((e) => {
             return fetch(
               encodeURI(
-                `https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=https://disk.yandex.ru/d/o9lNK0tpVCH7sQ&path=${e.path}`
+                `https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=https://disk.yandex.com.tr/d/sLURXWsHH4gDmwQ&path=${e.path}`
               )
             )
               .then((res) => res.json())
