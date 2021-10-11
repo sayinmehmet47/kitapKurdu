@@ -7,11 +7,11 @@ axios.defaults.headers.common = {
 export const AddNewBook = () => {
   (async () => {
     const apiurl = 'https://cloud-api.yandex.net/v1/disk/public/resources';
-    const yandexlink = 'https://disk.yandex.com.tr/d/sLURXWsHH4gDmw';
+    const yandexlink = 'https://disk.yandex.ru/d/o9lNK0tpVCH7sQ';
     const params = {
       public_key: encodeURI(yandexlink),
-      path: '/',
-      limit: 3500,
+      path: '/Meritokrasi/Türkçe [ePub]/Derecelendirilmiş Kitaplar',
+      limit: 10,
     };
 
     try {
@@ -25,7 +25,7 @@ export const AddNewBook = () => {
           date: e.created,
         };
       });
-      console.log(kitaplar);
+      // console.log(kitaplar);
     } catch (e) {
       console.log(e);
     }
