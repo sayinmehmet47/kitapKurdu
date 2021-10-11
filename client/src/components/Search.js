@@ -5,7 +5,7 @@ import { GetDownloadLink } from './GetDownloadLink';
 import { Table } from './Table';
 import { Spinner } from 'reactstrap';
 import library from '../images/library.jpg';
-import bookPic from '../images/book.png';
+import bookPic from '../images/book-1.png';
 
 const axios = require('axios');
 
