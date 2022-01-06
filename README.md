@@ -8,4 +8,3 @@ My application includes 3200 books in epub format. You can make search based on 
  - [x] NodeJS
 
 
-https://kitap-kurdu.herokuapp.com/
