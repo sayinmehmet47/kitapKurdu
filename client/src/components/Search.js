@@ -4,7 +4,6 @@ import bytes2Size from './bytes2Size';
 import { GetDownloadLink } from './GetDownloadLink';
 import { Table } from './Table';
 import { Spinner } from 'reactstrap';
-import library from '../images/library.jpg';
 import bookPic from '../images/book-1.png';
 
 const axios = require('axios');
@@ -12,7 +11,7 @@ const axios = require('axios');
 export const Search = () => {
   const [search, setSearch] = useState('');
   const [books, setBooks] = useState('');
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const handleChangeInput = (e) => {
@@ -21,43 +20,59 @@ export const Search = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     e.target.reset();
-    setisLoading(true);
-    fetch(`/books/${search}`)
-      .then((res) => res.json())
+    setIsLoading(true);
+    axios
+      .get(`/books/${search}`)
+      .then((res) => res.data)
       .then((d) => {
-        Promise.all(
+        return Promise.all(
           d.map((e) => {
-            return fetch(
-              encodeURI(
-                `https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=https://disk.yandex.com.tr/d/sLURXWsHH4gDmw&path=${e.path}`
+            const path = e.path;
+            const url = e.url;
+            if (url) {
+              return {
+                name: e.name,
+                file: e.url,
+                date: new Date(e.date).toLocaleDateString(),
+                size: e.size,
+              };
+            } else {
+              return fetch(
+                encodeURI(
+                  `https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=https://disk.yandex.com.tr/d/sLURXWsHH4gDmw&path=${path}`
+                )
               )
-            )
-              .then((res) => res.json())
-              .then((res) => {
-                return {
-                  name: e.name,
-                  size: bytes2Size(e.size),
-                  date: new Date(e.date).toLocaleDateString(),
-                  file: res.href,
-                };
-              });
+                .then((res) => res.json())
+                .then((res) => {
+                  return {
+                    name: e.name,
+                    size: bytes2Size(e.size),
+                    date: new Date(e.date).toLocaleDateString(),
+                    file: res.href,
+                  };
+                });
+            }
           })
         ).then((data) => {
           setBooks(data);
           setIsLoaded(true);
-          setisLoading(false);
+          setIsLoading(false);
         });
       });
   };
 
   return (
     <>
-      <Form className="mx-5 text-center mt-5" onSubmit={handleSubmit}>
+      <Form
+        className="mx-5 text-center d-flex flex-column align-items-center"
+        onSubmit={handleSubmit}
+      >
         <h4 className="my-4">Search for Books</h4>
-        <FormGroup className="d-flex justify-content-center align-items-center mx-5">
+        <FormGroup className=" justify-content-center align-items-center mx-5 d-flex flex-column flex-md-row">
           <Input
             type="text"
-            style={{ maxWidth: '250px', marginRight: '10px' }}
+            className="mx-2 d-flex justify-content-center align-items-center my-2"
+            style={{ maxWidth: '450px', minWidth: '250px' }}
             name="text"
             inline="true"
             id="search"
@@ -67,12 +82,17 @@ export const Search = () => {
 
           {isLoading ? (
             <div>
-              <Button type="submit" color="dark" className="" block>
+              <Button
+                type="submit"
+                color="dark"
+                className="d-flex align-items-center"
+                block
+              >
                 <Spinner children="" size="sm" color="light" /> Submit
               </Button>
             </div>
           ) : (
-            <Button type="submit" color="dark" className="" block>
+            <Button type="submit" color="dark" className="px-5 my-2">
               Submit
             </Button>
           )}

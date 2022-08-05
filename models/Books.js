@@ -11,6 +11,12 @@ const schema = new mongoose.Schema(
     size: {
       type: Number,
     },
+    url: {
+      type: String,
+    },
+    date: {
+      type: Date,
+    },
   },
   { collection: 'ilkparti' }
 );

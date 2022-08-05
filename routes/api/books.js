@@ -28,8 +28,9 @@ router.get('/:name', (req, res) => {
 router.post('/addNewBook', (req, res) => {
   const ikinciParti = new Books({
     name: req.body.name,
-    file: req.body.file,
+    url: req.body.url,
     size: req.body.size,
+    date: new Date(),
   });
   ikinciParti.save((err, data) => {
     if (err) console.log(err);

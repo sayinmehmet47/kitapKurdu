@@ -2,14 +2,15 @@ import { Search } from './components/Search';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AddNewBook } from './components/AddNewBook';
 import { GetDownloadLink } from './components/GetDownloadLink';
+import Layout from './components/Layout';
 
 function App() {
   return (
-    <div className="App">
+    <Layout>
       <Search />
-      <AddNewBook />
+      {/* <AddNewBook /> */}
       <GetDownloadLink />
-    </div>
+    </Layout>
   );
 }
 

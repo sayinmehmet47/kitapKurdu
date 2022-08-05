@@ -1,0 +1,14 @@
+
+Hope you enjoy your new logo, here are the people that
+made your beautiful logo happen :)
+font name: DancingScript-Regular
+font link: https://fonts.google.com/specimen/Dancing+Script
+font author: Impallari Type
+font author site: www.impallari.com
+Slogan Font: LindenHill-webfont.ttf
+
+icon designer: Alfredo @ IconsAlfredo.us
+icon designer link: /AlfredoCreates
+        
+{"bg":"#EBCF76","icon":"#FEFEFE","font":"#FEFEFE","slogan":"#ffffff"}
+      

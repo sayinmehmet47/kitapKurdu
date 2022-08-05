@@ -11,21 +11,21 @@ export const AddNewBook = () => {
     const params = {
       public_key: encodeURI(yandexlink),
       path: '/Meritokrasi/Türkçe [ePub]/Derecelendirilmiş Kitaplar',
-      limit: 10,
+      limit: 3000,
     };
 
     try {
       const res = await axios.get(apiurl, { params });
 
-      const kitaplar = res.data._embedded.items.map((e) => {
-        return {
-          name: e.name,
-          path: e.path,
-          size: e.size,
-          date: e.created,
-        };
-      });
-      // console.log(kitaplar);
+      // const kitaplar = res.data._embedded.items.map((e) => {
+      //   return {
+      //     name: e.name,
+      //     path: e.path,
+      //     size: e.size,
+      //     date: e.created,
+      //   };
+      // });
+      console.log(res);
     } catch (e) {
       console.log(e);
     }
