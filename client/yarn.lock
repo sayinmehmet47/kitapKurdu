@@ -9447,11 +9447,6 @@
   "resolved" "https://registry.npmjs.org/url-template/-/url-template-2.0.8.tgz"
   "version" "2.0.8"
 
-"use-file-upload@^1.0.11":
-  "integrity" "sha512-Q8Rueyo1FC9zMdpFEBEVDTSFsstTf29TUnCsjo468buqbjpZREvvAZ+ELyABVf3HmNygvJKeOARp9Q80lo14kw=="
-  "resolved" "https://registry.npmjs.org/use-file-upload/-/use-file-upload-1.0.11.tgz"
-  "version" "1.0.11"
-
 "util-deprecate@^1.0.1", "util-deprecate@^1.0.2", "util-deprecate@~1.0.1":
   "integrity" "sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw=="
   "resolved" "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
