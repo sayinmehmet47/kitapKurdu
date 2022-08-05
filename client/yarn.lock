@@ -7809,21 +7809,6 @@
     "ansi-styles" "^5.0.0"
     "react-is" "^18.0.0"
 
-"primeflex@^3.0.1":
-  "integrity" "sha512-sGDJ4mh2fG19xa1yc4IPGSQ8MUMyu5nU+tYnl27AFuFHhX8XwEA7fWCtWyBbclclVhXtre+Kf9WobWPnfxWAEQ=="
-  "resolved" "https://registry.npmjs.org/primeflex/-/primeflex-3.2.1.tgz"
-  "version" "3.2.1"
-
-"primeicons@^4.1.0":
-  "integrity" "sha512-uEv2pSPk1zQCfaB2VgnUfnUxxlGryYi+5rbdxmZBBt5v9S/pscIQYS5YDLxsQZ7D9jn5c76+Tx5wX/2J1nK6sA=="
-  "resolved" "https://registry.npmjs.org/primeicons/-/primeicons-4.1.0.tgz"
-  "version" "4.1.0"
-
-"primereact@^6.6.0":
-  "integrity" "sha512-onoowjhlOz9Kcjna1DYEKWTGjKah4MjqZchm9E3BkcWjeXoCLv3F5QnIo8eVF9q+xymEK/6Oh7zHlfCJYyWwDw=="
-  "resolved" "https://registry.npmjs.org/primereact/-/primereact-6.6.0.tgz"
-  "version" "6.6.0"
-
 "process-nextick-args@~2.0.0":
   "integrity" "sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag=="
   "resolved" "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-2.0.1.tgz"
