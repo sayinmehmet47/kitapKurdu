@@ -51,7 +51,9 @@ Describe your project
 ## :sparkles: Features
 
 :heavy_check_mark: You can install more than 3000 books free with one click
+
 :heavy_check_mark: Books are in e-pub format
+
 :heavy_check_mark: Logged in user can add new books
 
 ## :rocket: Technologies
