@@ -46,7 +46,7 @@
 
 ## :dart: About
 
-Describe your project
+This project includes many Turkish books for free. I used yandex API to fetch the books from the driver. Feel free to download and read the books.
 
 ## :sparkles: Features
 
