@@ -7,10 +7,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { loginThunk } from '../redux/authSlice';
 import { mobile } from '../responsive';
+import User from '../components/User';
 
 const Container = styled.div`
   width: 100vw;
-  height: 91vh;
+  height: 100vh;
   background: linear-gradient(
       rgba(255, 255, 255, 0.5),
       rgba(255, 255, 255, 0.5)
@@ -69,6 +70,7 @@ const NavLink = styled(Link)`
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isLoggedIn } = useSelector((state) => state.authSlice);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -95,25 +97,29 @@ export default function Login() {
   return (
     <Layout>
       <Container>
-        <Wrapper>
-          <Title>SIGN IN</Title>
-          <Form onSubmit={handleSubmit}>
-            <Input
-              placeholder="username"
-              type="name"
-              name="username"
-              required
-            />
-            <Input
-              placeholder="password"
-              type="password"
-              name="password"
-              required
-            />
-            <Button type="submit">LOGIN</Button>
-            <NavLink to="/register">CREATE A NEW ACCOUNT</NavLink>
-          </Form>
-        </Wrapper>
+        {isLoggedIn ? (
+          <User />
+        ) : (
+          <Wrapper>
+            <Title>SIGN IN</Title>
+            <Form onSubmit={handleSubmit}>
+              <Input
+                placeholder="username"
+                type="name"
+                name="username"
+                required
+              />
+              <Input
+                placeholder="password"
+                type="password"
+                name="password"
+                required
+              />
+              <Button type="submit">LOGIN</Button>
+              <NavLink to="/register">CREATE A NEW ACCOUNT</NavLink>
+            </Form>
+          </Wrapper>
+        )}
       </Container>
       <ToastContainer />
     </Layout>
