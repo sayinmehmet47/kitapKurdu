@@ -1,6 +1,9 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
+import { loginThunk } from '../redux/authSlice';
 import { mobile } from '../responsive';
 
 const Container = styled.div`
@@ -62,12 +65,39 @@ const Link = styled.a`
 `;
 
 export default function Login() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isLogin = useSelector((state) => state.authSlice.isLoggedIn);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const { username, password } = Object.fromEntries(data.entries());
+
+    dispatch(loginThunk({ username, password })).then(
+      (res) => {
+        if (res.payload.status === 200) {
+          navigate('/');
+        } else {
+          console.log(res.payload.response.data.error);
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+
+  if (isLogin) {
+    navigate('/upload');
+  }
+
   return (
     <Layout>
       <Container>
         <Wrapper>
           <Title>SIGN IN</Title>
-          <Form>
+          <Form onSubmit={handleSubmit}>
             <Input
               placeholder="username"
               type="name"
