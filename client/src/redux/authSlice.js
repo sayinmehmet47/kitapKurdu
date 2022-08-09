@@ -6,7 +6,7 @@ export const loginThunk = createAsyncThunk(
   'authSlice/login',
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const res = await axios.post('http://localhost:3000/user/login', {
+      const res = await axios.post('/user/login', {
         username,
         password,
       });
@@ -42,7 +42,7 @@ export const registerThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post('http://localhost:3000/user/register', {
+      const res = await axios.post('/user/register', {
         username,
         email,
         password,
