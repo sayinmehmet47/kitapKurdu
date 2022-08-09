@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import { loginThunk } from '../redux/authSlice';
@@ -13,7 +13,7 @@ const Container = styled.div`
       rgba(255, 255, 255, 0.5),
       rgba(255, 255, 255, 0.5)
     ),
-    url('https://images.pexels.com/photos/8448135/pexels-photo-8448135.jpeg?cs=srgb&dl=pexels-ioana-motoc-8448135.jpg&fm=jpg')
+    url('https://cdn.pixabay.com/photo/2019/05/14/21/50/storytelling-4203628_1280.jpg')
       center;
   background-size: cover;
   display: flex;
@@ -57,7 +57,7 @@ const Button = styled.button`
   margin-bottom: 10px;
 `;
 
-const Link = styled.a`
+const NavLink = styled(Link)`
   margin: 5px 0px;
   font-size: 12px;
   text-decoration: underline;
@@ -111,8 +111,7 @@ export default function Login() {
               required
             />
             <Button type="submit">LOGIN</Button>
-            <Link>DO NOT YOU REMEMBER THE PASSWORD?</Link>
-            <Link>CREATE A NEW ACCOUNT</Link>
+            <NavLink to="/register">CREATE A NEW ACCOUNT</NavLink>
           </Form>
         </Wrapper>
       </Container>

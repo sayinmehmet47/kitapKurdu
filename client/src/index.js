@@ -6,6 +6,7 @@ import App from './App';
 import './App.css';
 import PrivateRoute from './components/privateRoute';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import UploadNewBook from './pages/UploadNewBook';
 import store from './redux/store';
 
@@ -17,6 +18,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
         <Route
           path="upload"
           element={
