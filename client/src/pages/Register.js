@@ -4,6 +4,8 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { registerThunk } from '../redux/authSlice';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Layout from '../components/Layout';
 
 const Container = styled.div`
@@ -64,7 +66,6 @@ const Button = styled.button`
 
 const Register = () => {
   const dispatch = useDispatch();
-  const isLoggedIn = useSelector((state) => state.authSlice.isLoggedIn);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -74,19 +75,31 @@ const Register = () => {
       data.entries()
     );
     if (passwordRepeat === password) {
-      dispatch(registerThunk({ username, password, email })).then(() => {
-        navigate('/upload');
-      });
+      dispatch(registerThunk({ username, password, email })).then(
+        (res) => {
+          if (res.payload.data) {
+            toast.success('Successfully registered');
+            setTimeout(() => {
+              navigate('/upload');
+            }, 1000);
+          } else {
+            toast.error(res.payload.response.data.msg);
+          }
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
     } else {
       alert('Passwords do not match');
     }
   };
-  if (isLoggedIn) {
-    navigate('/upload');
-  }
+
   return (
     <Layout>
       <Container>
+        <ToastContainer />
+
         <Wrapper>
           <Title>CREATE AN ACCOUNT</Title>
           <Form onSubmit={handleSubmit}>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import bytes2Size from './bytes2Size';
-import { GetDownloadLink } from './GetDownloadLink';
 import { Table } from './Table';
 import { Spinner } from 'reactstrap';
 import bookPic from '../images/book-1.png';
@@ -64,10 +63,9 @@ export const Search = () => {
   return (
     <>
       <Form
-        className="mx-5 text-center d-flex flex-column align-items-center"
+        className="mx-5 mt-5 pt-5 text-center d-flex flex-column align-items-center"
         onSubmit={handleSubmit}
       >
-        <h4 className="my-4">Search for Books</h4>
         <FormGroup className=" justify-content-center align-items-center mx-5 d-flex flex-column flex-md-row">
           <Input
             type="text"

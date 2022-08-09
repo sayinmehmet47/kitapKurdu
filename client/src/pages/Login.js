@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { loginThunk } from '../redux/authSlice';
 import { mobile } from '../responsive';
 
@@ -67,7 +69,6 @@ const NavLink = styled(Link)`
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isLogin = useSelector((state) => state.authSlice.isLoggedIn);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -76,10 +77,13 @@ export default function Login() {
 
     dispatch(loginThunk({ username, password })).then(
       (res) => {
-        if (res.payload.status === 200) {
-          navigate('/');
+        if (res.payload.token) {
+          toast.success('Login successful');
+          setTimeout(() => {
+            navigate('/upload');
+          }, 1000);
         } else {
-          console.log(res.payload.response.data.error);
+          toast.error(res.payload.response.data.error);
         }
       },
       (err) => {
@@ -87,10 +91,6 @@ export default function Login() {
       }
     );
   };
-
-  if (isLogin) {
-    navigate('/upload');
-  }
 
   return (
     <Layout>
@@ -115,6 +115,7 @@ export default function Login() {
           </Form>
         </Wrapper>
       </Container>
+      <ToastContainer />
     </Layout>
   );
 }

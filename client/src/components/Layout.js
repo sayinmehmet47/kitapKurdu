@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   color: black;
 `;
 const Main = styled.div`
-  margin: 50px 0px;
+  overflow: hidden;
 `;
 
 export default function Layout({ children }) {
