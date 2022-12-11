@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
 import { useTable, useSortBy, usePagination } from 'react-table';
 
-export const Table = ({ books }) => {
+export const Table = ({ books }: any) => {
   const data = useMemo(() => [...books], [books]);
   const columns = useMemo(
     () => [
       {
         Header: 'Name',
         id: 'name',
-        accessor: (d) => d.file,
-        Cell: ({ row }) => (
+        accessor: (d: any) => d.file,
+        Cell: ({ row }: any) => (
           <a href={row.original.file} target="_blank" rel="noopener noreferrer">
             {row.original.name}
           </a>
@@ -37,7 +37,7 @@ export const Table = ({ books }) => {
     page,
     canPreviousPage,
     canNextPage,
-  } = useTable({ columns, data }, useSortBy, usePagination);
+  } = useTable({ columns, data }, useSortBy, usePagination) as any;
   return (
     <div
       className="d-flex flex-column  mt-5 mx-5"
@@ -45,9 +45,9 @@ export const Table = ({ books }) => {
     >
       <table {...getTableProps()} style={{ borderRadius: '15px' }}>
         <thead>
-          {headerGroups.map((headerGroup) => (
+          {headerGroups.map((headerGroup: any) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
+              {headerGroup.headers.map((column: any) => (
                 <th
                   {...column.getHeaderProps(column.getSortByToggleProps())}
                   className="border"
@@ -66,12 +66,13 @@ export const Table = ({ books }) => {
             </tr>
           ))}
         </thead>
+        {/* @ts-ignore */}
         <tbody {...getTableBodyProps()}>
-          {page.map((row) => {
+          {page.map((row: any) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
+                {row.cells.map((cell: any) => {
                   return (
                     <td
                       {...cell.getCellProps()}

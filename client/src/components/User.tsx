@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutThunk } from '../redux/authSlice';
 
 export default function User() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
 
   const { username, isAdmin, email, createdAt } = useSelector(
-    (state) => state.authSlice.user.user
+    (state: any) => state.authSlice.user.user
   );
 
   const handleLogout = () => {

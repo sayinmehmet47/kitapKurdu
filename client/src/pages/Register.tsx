@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 import { mobile } from '../responsive';
 import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { registerThunk } from '../redux/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Layout from '../components/Layout';
+import React, { SyntheticEvent } from 'react';
 
 const Container = styled.div`
   width: 100vw;
@@ -65,18 +65,18 @@ const Button = styled.button`
 `;
 
 const Register = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    const data = new FormData(e.target);
+    const data = new FormData(e.target as HTMLFormElement);
     const { username, password, email, passwordRepeat } = Object.fromEntries(
       data.entries()
     );
     if (passwordRepeat === password) {
       dispatch(registerThunk({ username, password, email })).then(
-        (res) => {
+        (res: any) => {
           if (res.payload.data) {
             toast.success('Successfully registered');
             setTimeout(() => {
@@ -86,7 +86,7 @@ const Register = () => {
             toast.error(res.payload.response.data.msg);
           }
         },
-        (err) => {
+        (err: any) => {
           console.log(err);
         }
       );

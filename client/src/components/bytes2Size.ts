@@ -1,4 +1,4 @@
-export default function bytes2Size(byteVal) {
+export default function bytes2Size(byteVal: number) {
   var units = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   var counter = 0;
   var kb = 1024;

@@ -18,9 +18,13 @@ const Container = styled.div`
 `;
 
 export default function UploadNewBook() {
-  const handleResponse = (response) => {
+  const handleResponse = (response: any) => {
     console.log(response);
-    const addBook = async (response) => {
+    const addBook = async (response: {
+      original_filename: any;
+      bytes: any;
+      secure_url: any;
+    }) => {
       const book = {
         name: response.original_filename,
         size: response.bytes,
@@ -40,7 +44,7 @@ export default function UploadNewBook() {
       <Container>
         <Uploady
           isSuccessfulCall={(response) => {
-            handleResponse(JSON.parse(response.response));
+            return handleResponse(JSON.parse(response.response)) as any;
           }}
           destination={{
             url: `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,

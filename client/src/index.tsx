@@ -8,9 +8,12 @@ import PrivateRoute from './components/privateRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import UploadNewBook from './pages/UploadNewBook';
+
 import store from './redux/store';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
 
 root.render(
   <Provider store={store}>

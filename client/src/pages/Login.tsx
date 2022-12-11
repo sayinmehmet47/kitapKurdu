@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -68,17 +68,17 @@ const NavLink = styled(Link)`
 `;
 
 export default function Login() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
   const navigate = useNavigate();
-  const { isLoggedIn } = useSelector((state) => state.authSlice);
+  const { isLoggedIn } = useSelector((state: any) => state.authSlice);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    const data = new FormData(e.target);
+    const data = new FormData(e.target as HTMLFormElement);
     const { username, password } = Object.fromEntries(data.entries());
 
     dispatch(loginThunk({ username, password })).then(
-      (res) => {
+      (res: any) => {
         if (res.payload.token) {
           toast.success('Login successful');
           setTimeout(() => {
@@ -88,7 +88,7 @@ export default function Login() {
           toast.error(res.payload.response.data.error);
         }
       },
-      (err) => {
+      (err: any) => {
         console.log(err);
       }
     );

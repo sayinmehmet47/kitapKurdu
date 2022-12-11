@@ -4,7 +4,10 @@ import { setAuthorizationToken } from '../helpers/setAuthorizationToken';
 
 export const loginThunk = createAsyncThunk(
   'authSlice/login',
-  async ({ username, password }, { rejectWithValue }) => {
+  async (
+    { username, password }: { username: any; password: any },
+    { rejectWithValue }
+  ) => {
     try {
       const res = await axios.post(`/user/login`, {
         username,
@@ -38,7 +41,17 @@ export const logoutThunk = createAsyncThunk(
 export const registerThunk = createAsyncThunk(
   'authSlice/register',
   async (
-    { username, email, password, isAdmin = false },
+    {
+      username,
+      email,
+      password,
+      isAdmin = false,
+    }: {
+      username: any;
+      email: any;
+      password: any;
+      isAdmin?: any;
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -87,7 +100,7 @@ export const authSlice = createSlice({
         state.isLoggedIn = true;
         state.user = action.payload;
       })
-      .addCase(loginThunk.rejected, (state, action) => {
+      .addCase(loginThunk.rejected, (state: any, action) => {
         state.error = true;
         state.errorMessage = action.payload;
       })
@@ -95,7 +108,7 @@ export const authSlice = createSlice({
         state.isLoggedIn = false;
         state.user = {};
       })
-      .addCase(logoutThunk.rejected, (state, action) => {
+      .addCase(logoutThunk.rejected, (state: any, action) => {
         state.error = true;
         state.errorMessage = action.payload;
       })

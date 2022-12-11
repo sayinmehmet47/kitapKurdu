@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ReactComponent as BookLogo } from '../images/books-logo/vector/default-monochrome-white.svg';
 import { BiUser } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 const Wrapper = styled.nav`
@@ -55,7 +54,7 @@ export default function Navbar() {
     <Wrapper>
       <Link to="/">
         <Left>
-          <BookLogo height={60} width={60} />
+          <img src="logo-white.svg" alt="fd" height={60} width={60} />
         </Left>
       </Link>
       <Right>

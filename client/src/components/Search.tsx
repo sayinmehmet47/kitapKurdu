@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, FormGroup, Input } from 'reactstrap';
+import React, { useState } from 'react';
+import { Button, Form, FormGroup, Input, Spinner } from 'reactstrap';
 import bytes2Size from './bytes2Size';
 import { Table } from './Table';
-import { Spinner } from 'reactstrap';
-import bookPic from '../images/book-1.png';
 
 const axios = require('axios');
 
@@ -13,19 +11,19 @@ export const Search = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const handleChangeInput = (e) => {
+  const handleChangeInput = (e: any) => {
     setSearch(e.target.value);
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     e.target.reset();
     setIsLoading(true);
     axios
       .get(`/books/${search}`)
-      .then((res) => res.data)
-      .then((d) => {
+      .then((res: any) => res.data)
+      .then((d: any) => {
         return Promise.all(
-          d.map((e) => {
+          d.map((e: any) => {
             const path = e.path;
             const url = e.url;
             if (url) {
@@ -52,7 +50,7 @@ export const Search = () => {
                 });
             }
           })
-        ).then((data) => {
+        ).then((data: any) => {
           setBooks(data);
           setIsLoaded(true);
           setIsLoading(false);
@@ -100,7 +98,7 @@ export const Search = () => {
         <Table books={books} />
       ) : (
         <div style={{ textAlign: 'center', marginTop: '80px' }}>
-          <img width="60%" src={bookPic} alt="fd" />
+          <img width="60%" src="book.png" alt="fd" />
         </div>
       )}
     </>

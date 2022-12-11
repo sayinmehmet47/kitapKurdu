@@ -14,7 +14,7 @@ const Main = styled.div`
   overflow: hidden;
 `;
 
-export default function Layout({ children }) {
+export default function Layout({ children }: any) {
   return (
     <Wrapper>
       <Navbar />
