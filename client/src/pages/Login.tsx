@@ -69,7 +69,6 @@ const NavLink = styled(Link)`
 
 export default function Login() {
   const dispatch = useDispatch<any>();
-  const navigate = useNavigate();
   const { isLoggedIn } = useSelector((state: any) => state.authSlice);
 
   const handleSubmit = (e: SyntheticEvent) => {
@@ -81,9 +80,6 @@ export default function Login() {
       (res: any) => {
         if (res.payload.token) {
           toast.success('Login successful');
-          setTimeout(() => {
-            navigate('/upload');
-          }, 1000);
         } else {
           toast.error(res.payload.response.data.error);
         }

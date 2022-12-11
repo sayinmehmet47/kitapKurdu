@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { models } = require('mongoose');
 const User = require('../../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
+const auth = require('../../middleware/auth');
+
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -37,7 +38,6 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-  console.log('fdf');
   const { username, email, password, isAdmin } = req.body;
   const errors = validationResult(req);
 
@@ -85,4 +85,17 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.get('/auth', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    const token = await req.header('Authorization').split(' ')[1];
+    res.json({
+      user: user,
+      token: token,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+});
 module.exports = router;

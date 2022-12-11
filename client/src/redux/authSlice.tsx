@@ -13,11 +13,9 @@ export const loginThunk = createAsyncThunk(
         username,
         password,
       });
-      if (res.data.status) {
-        const { token } = res.data;
-        localStorage.setItem('jwtToken', token);
-        setAuthorizationToken(token);
-      }
+      const { token } = res.data;
+      localStorage.setItem('jwtToken', token);
+      setAuthorizationToken(token);
       return res.data;
     } catch (err) {
       return rejectWithValue(err);
@@ -32,6 +30,22 @@ export const logoutThunk = createAsyncThunk(
       localStorage.removeItem('jwtToken');
       setAuthorizationToken(false);
       return { status: true };
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const loadUserThunk = createAsyncThunk(
+  'authSlice/loadUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      if (localStorage.jwtToken) {
+        setAuthorizationToken(localStorage.jwtToken);
+      }
+      const res = await axios.get(`/user/auth`);
+
+      return res.data;
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -89,6 +103,14 @@ export const authSlice = createSlice({
       state.isLoggedIn = false;
       state.user = {};
     },
+
+    loadUser: (state, action) => {
+      state.isLoggedIn = true;
+      state.user = {
+        token: action.payload.token,
+        user: action.payload.user,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -115,10 +137,14 @@ export const authSlice = createSlice({
       .addCase(logoutThunk.pending, (state, action) => {
         state.error = false;
         state.errorMessage = '';
+      })
+      .addCase(loadUserThunk.fulfilled, (state, action) => {
+        state.isLoggedIn = true;
+        state.user = action.payload;
       });
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, loadUser } = authSlice.actions;
 
 export default authSlice.reducer;

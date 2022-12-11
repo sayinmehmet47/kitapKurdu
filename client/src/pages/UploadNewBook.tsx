@@ -1,8 +1,10 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import Uploady from '@rpldy/uploady';
+import Uploady, { useItemProgressListener } from '@rpldy/uploady';
 import UploadButton from '@rpldy/upload-button';
 import { ToastContainer, toast } from 'react-toastify';
+import { BsFillCloudUploadFill } from 'react-icons/bs';
+import { Line } from 'rc-progress';
 
 import Layout from '../components/Layout';
 import styled from 'styled-components';
@@ -20,7 +22,6 @@ const Container = styled.div`
 
 export default function UploadNewBook() {
   const handleResponse = (response: any) => {
-    console.log(response);
     const addBook = async (response: {
       original_filename: any;
       bytes: any;
@@ -31,20 +32,17 @@ export default function UploadNewBook() {
         size: response.bytes,
         url: response.secure_url,
       };
-      axios
-        .post('books/addNewBook', book)
-        .then((response) =>
-          toast.success('Book added successfully', {
-            position: 'top-center',
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          })
-        )
-        .catch((error) => console.log(error));
+      try {
+        async function addNewBook() {
+          axios.post('books/addNewBook', book).then((res) => {
+            toast.success(res.data.name + ' has been uploaded!');
+          });
+        }
+
+        addNewBook();
+      } catch (error) {
+        toast.error(error.message + ' Please try again.');
+      }
     };
 
     addBook(response);
@@ -64,9 +62,15 @@ export default function UploadNewBook() {
             },
           }}
         >
-          <UploadButton>Upload to Cloudinary</UploadButton>
+          <div>
+            <UploadButton>
+              <BsFillCloudUploadFill size={30} />
+            </UploadButton>
+            <span className="ms-4">UPLOAD A BOOK</span>
+          </div>
         </Uploady>
       </Container>
+      <ToastContainer />
     </Layout>
   );
 }

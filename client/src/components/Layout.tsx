@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import Footer from './Footer';
+import { loadUserThunk } from '../redux/authSlice';
 import Navbar from './Navbar';
 
 const Wrapper = styled.div`
@@ -15,6 +16,10 @@ const Main = styled.div`
 `;
 
 export default function Layout({ children }: any) {
+  const dispatch = useDispatch<any>();
+  useEffect(() => {
+    dispatch(loadUserThunk());
+  }, [dispatch]);
   return (
     <Wrapper>
       <Navbar />
