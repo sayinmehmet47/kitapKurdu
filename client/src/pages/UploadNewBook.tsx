@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import Uploady from '@rpldy/uploady';
 import UploadButton from '@rpldy/upload-button';
+import { ToastContainer, toast } from 'react-toastify';
 
 import Layout from '../components/Layout';
 import styled from 'styled-components';
@@ -32,7 +33,17 @@ export default function UploadNewBook() {
       };
       axios
         .post('books/addNewBook', book)
-        .then((response) => console.log(response))
+        .then((response) =>
+          toast.success('Book added successfully', {
+            position: 'top-center',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          })
+        )
         .catch((error) => console.log(error));
     };
 
