@@ -35,6 +35,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/react-table": "^7.7.12",
+    "@types/styled-components": "^5.1.26",
     "nodemon": "^2.0.12",
     "react-app-rewired": "^2.2.1",
     "simple-copy": "^2.2.1"
