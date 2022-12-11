@@ -61,7 +61,7 @@ This project includes many Turkish books for free. I used yandex API to fetch th
 The following tools were used in this project:
 
 - [x] ReactJS
-- [x] Bootsrap-5
+- [x] Bootsrap 5
 - [x] MongoDB
 - [x] NodeJS
 
