@@ -19,7 +19,7 @@ export default function Layout({ children }: any) {
     <Wrapper>
       <Navbar />
       <Main>{children}</Main>
-      <Footer />
+      {/* <Footer /> */}
     </Wrapper>
   );
 }
