@@ -6,11 +6,11 @@ on:
       - dev
 jobs:
   test:
+    environment: ENVIRONMENTS
     env:
       MONGO_URI: ${{ secrets.MONGO_URI }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       PORT: ${{ secrets.PORT }}
-    environment: testing
     runs-on: ubuntu-latest
     steps:
       - name: Get Code
@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run server
-        run: npm run dev & npx wait-on --timeout 5000 http://127.0.0.1:$PORT
+        run: npm run dev & npx wait-on --timeout 20000 http://127.0.0.1:$PORT
       - name: Install playwright browsers
         run: npx playwright install --with-deps
       - name: Run tests
