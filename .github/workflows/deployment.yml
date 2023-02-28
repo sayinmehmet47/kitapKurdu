@@ -20,8 +20,10 @@ jobs:
         with:
           path: ~/.npm
           key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+      - name: Install client dependencies
+        run: npm run client-install
       - name: Install dependencies
-        run: yarn install
+        run: npm install
       - name: Run server
         run: yarn run dev & npx wait-on --timeout 20000 http://127.0.0.1:$PORT
       - name: Install playwright browsers
