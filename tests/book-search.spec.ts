@@ -10,6 +10,6 @@ test.only('should show the books that searched', async ({ request, page }) => {
   await submitButton.click();
   const tableRow = await page.getByTestId('table-row').nth(0);
   await expect(tableRow).toHaveText(
-    'George Orwell - Aslan ve Unicorn.epub102.0 KB9/22/2021'
+    'George Orwell - Aspidistra.epub858.0 KB9/22/2021'
   );
 });
