@@ -24,12 +24,6 @@ jobs:
         run: npm run client-install
       - name: Install dependencies
         run: npm install
-      - name: Check port availability
-        run: |
-              while lsof -Pi :${{ secrets.PORT }} -sTCP:LISTEN -t; do
-              echo "Port ${{ secrets.PORT }} is already in use, waiting..."
-              sleep 1
-              done   
       - name: Run server
         run: npm run dev & npx wait-on  http://127.0.0.1:${{secrets.PORT}}
       - name: Install playwright browsers
