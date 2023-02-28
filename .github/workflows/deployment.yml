@@ -1,50 +1,50 @@
-# name: Deployment
-# on:
-#   push:
-#     branches:
-#       - main
-#       - dev
-# jobs:
-#   test:
-#     environment: ENVIRONMENTS
-#     env:
-#       MONGO_URI: ${{ secrets.MONGO_URI }}
-#       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-#       PORT: ${{ secrets.PORT }}
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Get Code
-#         uses: actions/checkout@v3
-#       - name: Cache dependencies
-#         uses: actions/cache@v3
-#         with:
-#           path: ~/.npm
-#           key: npm-deps-${{ hashFiles('**/package-lock.json') }}
-#       - name: Install client dependencies
-#         run: npm run client-install
-#       - name: Install dependencies
-#         run: npm install
-#       - name: Run server
-#         run: npm run dev & npx wait-on --timeout 20000 http://127.0.0.1:$PORT
-#       - name: Install playwright browsers
-#         run: npx playwright install --with-deps
-#       - name: Run tests
-#         run: npx playwright test
-#   deploy:
-#    runs-on: ubuntu-latest
-#    needs: test
-#    steps: 
-#       - name: Get code
-#         uses: actions/checkout@v3
-#       - name: Install NodeJs
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: 18
-#       - name: Install Dependencies
-#         run: npm ci
+name: Deployment
+on:
+  push:
+    branches:
+      - main
+      - dev
+jobs:
+  test:
+    environment: ENVIRONMENTS
+    env:
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      PORT: ${{ secrets.PORT }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+      - name: Install client dependencies
+        run: npm run client-install
+      - name: Install dependencies
+        run: npm install
+      - name: Run server
+        run: npm run dev & npx wait-on --timeout 20000 http://127.0.0.1:$PORT
+      - name: Install playwright browsers
+        run: npx playwright install --with-deps
+      - name: Run tests
+        run: npx playwright test
+  deploy:
+   runs-on: ubuntu-latest
+   needs: test
+   steps: 
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install Dependencies
+        run: npm ci
 
-#       - name: Build Project
-#         run: npm run build
-#       - name: Deploy
-#         run: | 
-#             echo "MONGO_URI: $MONGO_URI"
+      - name: Build Project
+        run: npm run build
+      - name: Deploy
+        run: | 
+            echo "MONGO_URI: $MONGO_URI"
