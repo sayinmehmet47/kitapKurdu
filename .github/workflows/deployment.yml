@@ -6,26 +6,12 @@ on:
       - dev
 jobs:
   test:
-    environment: ENVIRONMENTS
-    env:
-      MONGO_URI: ${{ secrets.MONGO_URI }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      PORT: ${{ secrets.PORT }}
     runs-on: ubuntu-latest
     steps:
-      - name: Get Code
-        uses: actions/checkout@v3
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-deps-${{ hashFiles('**/package-lock.json') }}
-      - name: Install client dependencies
-        run: npm run client-install
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
       - name: Install dependencies
-        run: npm install
-      - name: Run server
-        run: npm run dev & npx wait-on http://127.0.0.1:$PORT
+        run: npm ci
       - name: Install playwright browsers
         run: npx playwright install --with-deps
       - name: Run tests
