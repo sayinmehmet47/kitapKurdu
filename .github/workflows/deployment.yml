@@ -26,7 +26,7 @@ jobs:
         run: npm install
       - name: Run server
         run: |
-            kill $(lsof -t -i:${{secrets.PORT}}) || true
+            lsof -ti :${{secrets.PORT}} | xargs kill
             npm run dev & npx wait-on http://127.0.0.1:${{secrets.PORT}}
       - name: Install playwright browsers
         run: npx playwright install --with-deps
