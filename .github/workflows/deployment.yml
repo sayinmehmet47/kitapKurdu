@@ -7,9 +7,9 @@ on:
 jobs:
   test:
     env:
-      MONGO_URI: mongodb+srv://sayinmehmet47:Mardin.1992,@cluster0.ywv3z.mongodb.net/kitaplar?retryWrites=true&w=majority
-      JWT_SECRET: fsafdafdasfdk
-      PORT: 3000
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      PORT: ${{ secrets.PORT }}
     environment: testing
     runs-on: ubuntu-latest
     steps:
@@ -44,4 +44,5 @@ jobs:
       - name: Build Project
         run: npm run build
       - name: Deploy
-        run: echo "Deploying ..."
+        run: | 
+            echo "MONGO_URI: $MONGO_URI"
