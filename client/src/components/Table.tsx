@@ -71,7 +71,7 @@ export const Table = ({ books }: any) => {
           {page.map((row: any) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
+              <tr {...row.getRowProps()} data-testid="table-row">
                 {row.cells.map((cell: any) => {
                   return (
                     <td

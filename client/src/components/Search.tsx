@@ -74,6 +74,7 @@ export const Search = () => {
             id="search"
             placeholder="Example:George Orwell"
             onChange={handleChangeInput}
+            data-testid="search-input"
           />
 
           {isLoading ? (

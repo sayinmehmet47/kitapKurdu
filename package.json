@@ -1,15 +1,14 @@
 {
-  "name": "shorturl",
+  "name": "kitapkurdu",
   "version": "0.0.3",
-  "description": "API project for freeCodeCamp",
+  "description": "Book searching engine",
   "main": "server.js",
   "scripts": {
     "client-install": "npm install --prefix client",
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
     "@types/jest": "^29.2.4",
@@ -34,6 +33,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.31.1",
     "@types/react-table": "^7.7.12",
     "@types/styled-components": "^5.1.26",
     "nodemon": "^2.0.12",
