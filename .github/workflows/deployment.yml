@@ -25,15 +25,25 @@ jobs:
       - name: Install client dependencies
         run: npm run client-install
       - name: Run server
-        run: npm run dev
+        run: npm run dev & npx wait-on http://127.0.0.1:$PORT
       - name: Install playwright browsers
         run: npx playwright install --with-deps
       - name: Run tests
         run: npx playwright test
   deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Output information
-        run: |        
-          echo "..."
+   runs-on: ubuntu-latest
+   needs: test
+   steps: 
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+      - name: Deploy
+        run: echo "Deploying ..."
