@@ -1,8 +1,16 @@
+import axios from 'axios';
 import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { useTable, useSortBy, usePagination } from 'react-table';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 export const Table = ({ books }: any) => {
   const data = useMemo(() => [...books], [books]);
+  const { user: USERINFO } = useSelector((state: any) => state.authSlice);
+
+  const isAdmin = USERINFO.user.isAdmin;
+
   const columns = useMemo(
     () => [
       {
@@ -22,6 +30,26 @@ export const Table = ({ books }: any) => {
       {
         Header: 'Date',
         accessor: 'date',
+      },
+      isAdmin && {
+        Header: 'Delete',
+        id: 'delete',
+        Cell: ({ row }: any) => (
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              axios
+                .post('/books/deleteBook', {
+                  id: row.original.id,
+                })
+                .then((res) => {
+                  toast.success('Book deleted successfully');
+                });
+            }}
+          >
+            Delete
+          </button>
+        ),
       },
     ],
     []

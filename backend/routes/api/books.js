@@ -38,16 +38,13 @@ router.post('/addNewBook', (req, res) => {
   });
 });
 
-// router.delete('/:id', (req, res) => {
-//   const id = req.params.id;
-
-//   Item.findByIdAndDelete(id, (err, data) => {
-//     if (err) {
-//       res.json(err);
-//     } else {
-//       res.json(data);
-//     }
-//   });
-// });
+router.post('/deleteBook', (req, res) => {
+  const id = req.body.id;
+  console.log(id);
+  Books.findByIdAndDelete(id, (err, data) => {
+    if (err) console.log(err);
+    res.json(data);
+  });
+});
 
 module.exports = router;

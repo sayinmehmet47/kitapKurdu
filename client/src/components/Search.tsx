@@ -26,12 +26,14 @@ export const Search = () => {
           d.map((e: any) => {
             const path = e.path;
             const url = e.url;
+            const { _id: id } = e;
             if (url) {
               return {
                 name: e.name,
                 file: e.url,
                 date: new Date(e.date).toLocaleDateString(),
                 size: e.size,
+                id,
               };
             } else {
               return fetch(
@@ -46,6 +48,7 @@ export const Search = () => {
                     size: bytes2Size(e.size),
                     date: new Date(e.date).toLocaleDateString(),
                     file: res.href,
+                    id: e.id || e._id,
                   };
                 });
             }
