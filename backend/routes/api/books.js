@@ -37,8 +37,9 @@ router.get('/allBooks', async (req, res) => {
 });
 
 router.get('/search', (req, res) => {
+  console.log(req.query.name);
   Books.find(
-    { name: { $regex: req.body.name, $options: 'i' } },
+    { name: { $regex: req.query.name, $options: 'i' } },
     function (err, Books) {
       if (err) return done(err);
 

@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
 
 export const Table = ({ books }: any) => {
+  // const data = useMemo(() => [...books], [books]);
   const [data, setData] = React.useState([...books]);
   const { user: USERINFO, isLoggedIn } = useSelector(
     (state: any) => state.authSlice
