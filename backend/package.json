@@ -4,9 +4,7 @@
   "description": "Book searching engine",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "server": "nodemon server.js",
-    "client": "npm start --prefix client"
+    "start": "node server.js"
   },
   "dependencies": {
     "@types/jest": "^29.2.4",
