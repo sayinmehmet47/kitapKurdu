@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import { useState } from 'react';
 import { Button, Form, FormGroup, Input, Spinner } from 'reactstrap';
 import bytes2Size from './bytes2Size';
 import { Table } from './Table';
-
-const axios = require('axios');
 
 export const Search = () => {
   const [search, setSearch] = useState('');
@@ -19,7 +18,11 @@ export const Search = () => {
     e.target.reset();
     setIsLoading(true);
     axios
-      .get(`https://kitapkurdu.onrender.com/books/${search}`)
+      .get(`https://kitapkurdu.onrender.com/books/search`, {
+        params: {
+          name: search,
+        },
+      })
       .then((res: any) => res.data)
       .then((d: any) => {
         return Promise.all(
