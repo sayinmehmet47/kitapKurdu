@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useTable, useSortBy, usePagination } from 'react-table';
 import 'react-toastify/dist/ReactToastify.css';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 
 export const Table = ({ books }: any) => {
   const data = useMemo(() => [...books], [books]);
@@ -39,7 +39,7 @@ export const Table = ({ books }: any) => {
             className="btn btn-danger"
             onClick={() => {
               axios
-                .post('/books/deleteBook', {
+                .post('https://kitapkurdu.onrender.com/books/deleteBook', {
                   id: row.original.id,
                 })
                 .then((res) => {
@@ -71,6 +71,7 @@ export const Table = ({ books }: any) => {
       className="d-flex flex-column  mt-5 mx-5"
       style={{ marginBottom: '40px' }}
     >
+      <ToastContainer />
       <table {...getTableProps()} style={{ borderRadius: '15px' }}>
         <thead>
           {headerGroups.map((headerGroup: any) => (
