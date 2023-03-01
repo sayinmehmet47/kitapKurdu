@@ -1,13 +1,19 @@
 import axios from 'axios';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useTable, useSortBy, usePagination } from 'react-table';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
 
-export const Table = ({ books }: any) => {
-  // const data = useMemo(() => [...books], [books]);
-  const [data, setData] = React.useState([...books]);
+export const Table = ({ books, setPage }: any) => {
+  const [data, setData] = React.useState(books.results);
+
+  useEffect(() => {
+    setData(books.results);
+  }, [books]);
+
+  const { next, previous } = books;
+
   const { user: USERINFO, isLoggedIn } = useSelector(
     (state: any) => state.authSlice
   );
@@ -79,12 +85,8 @@ export const Table = ({ books }: any) => {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    nextPage,
-    previousPage,
     prepareRow,
     page,
-    canPreviousPage,
-    canNextPage,
     setHiddenColumns,
   } = useTable(
     {
@@ -151,15 +153,15 @@ export const Table = ({ books }: any) => {
       <div className="mt-2 d-flex justify-content-center">
         <button
           className="btn btn-outline-dark btn-sm"
-          onClick={() => previousPage()}
-          disabled={!canPreviousPage}
+          onClick={() => setPage(previous.page)}
+          disabled={!previous}
         >
           ⬅ Previous
         </button>
         <button
           className="btn btn-outline-dark btn-sm"
-          onClick={() => nextPage()}
-          disabled={!canNextPage}
+          onClick={() => setPage(next.page)}
+          disabled={!next}
         >
           NextPage ➡
         </button>
