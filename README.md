@@ -75,11 +75,17 @@ Before starting :checkered_flag:, you need to have [Git](https://git-scm.com) an
 # Clone this project
 $ git clone https://github.com/sayinmehmet47/kitapKurdu.git
 
-$ npm install
 
 $ cd client
+$ npm install
+$ npm run start
+
+// in another terminal
+
+$ cd backend
 
 $ npm install
+$ npm run start
 
 #create a env file and attach your mongodb url
 
