@@ -7,15 +7,20 @@ import { toast, ToastContainer } from 'react-toastify';
 
 export const Table = ({ books }: any) => {
   const data = useMemo(() => [...books], [books]);
-  const { user: USERINFO } = useSelector((state: any) => state.authSlice);
+  const { user: USERINFO, isLoggedIn } = useSelector(
+    (state: any) => state.authSlice
+  );
 
-  const isAdmin = USERINFO.user.isAdmin;
+  const isAdmin = isLoggedIn && USERINFO.user?.isAdmin;
+
+  console.log(isLoggedIn);
 
   const columns = useMemo(
     () => [
       {
         Header: 'Name',
         id: 'name',
+        show: true,
         accessor: (d: any) => d.file,
         Cell: ({ row }: any) => (
           <a href={row.original.file} target="_blank" rel="noopener noreferrer">
@@ -31,9 +36,11 @@ export const Table = ({ books }: any) => {
         Header: 'Date',
         accessor: 'date',
       },
-      isAdmin && {
+      {
         Header: 'Delete',
+        accessor: 'Delete',
         id: 'delete',
+        show: isAdmin,
         Cell: ({ row }: any) => (
           <button
             className="btn btn-danger"
@@ -55,6 +62,12 @@ export const Table = ({ books }: any) => {
     []
   );
 
+  React.useEffect(() => {
+    setHiddenColumns(
+      columns.filter((column) => !column.show).map((column) => column.id)
+    );
+  }, [columns]);
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -65,7 +78,15 @@ export const Table = ({ books }: any) => {
     page,
     canPreviousPage,
     canNextPage,
-  } = useTable({ columns, data }, useSortBy, usePagination) as any;
+    setHiddenColumns,
+  } = useTable(
+    {
+      columns,
+      data,
+    },
+    useSortBy,
+    usePagination
+  ) as any;
   return (
     <div
       className="d-flex flex-column  mt-5 mx-5"

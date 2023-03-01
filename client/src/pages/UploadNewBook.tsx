@@ -34,9 +34,11 @@ export default function UploadNewBook() {
       };
       try {
         async function addNewBook() {
-          axios.post('books/addNewBook', book).then((res) => {
-            toast.success(res.data.name + ' has been uploaded!');
-          });
+          axios
+            .post('https://kitapkurdu.onrender.com/books/addNewBook', book)
+            .then((res) => {
+              toast.success(res.data.name + ' has been uploaded!');
+            });
         }
 
         addNewBook();

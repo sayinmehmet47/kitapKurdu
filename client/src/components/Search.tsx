@@ -88,7 +88,8 @@ export const Search = () => {
                 className="d-flex align-items-center"
                 block
               >
-                <Spinner children="" size="sm" color="light" /> Submit
+                <Spinner children="" className="me-2" size="sm" color="light" />{' '}
+                Submit
               </Button>
             </div>
           ) : (
