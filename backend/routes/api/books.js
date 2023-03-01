@@ -2,24 +2,72 @@ const express = require('express');
 const router = express.Router();
 const Books = require('../../models/Books');
 
-router.get('/', async (req, res) => {
+router.get('/allBooks', async (req, res) => {
   Books.find({}, function (err, Books) {
     if (err) return done(err);
 
     if (Books) {
-      res.json(Books);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+
+      const results = {};
+
+      if (endIndex < Books.length) {
+        results.next = {
+          page: page + 1,
+          limit: limit,
+        };
+      }
+      results.total = Books.length;
+
+      if (startIndex > 0) {
+        results.previous = {
+          page: page - 1,
+          limit: limit,
+        };
+      }
+
+      results.results = Books.slice(startIndex, endIndex);
+      res.json(results);
     }
   });
 });
 
-router.get('/:name', (req, res) => {
+router.get('/search', (req, res) => {
   Books.find(
-    { name: { $regex: req.params.name, $options: 'i' } },
+    { name: { $regex: req.body.name, $options: 'i' } },
     function (err, Books) {
       if (err) return done(err);
 
       if (Books) {
-        res.json(Books);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        const results = {};
+
+        if (endIndex < Books.length) {
+          results.next = {
+            page: page + 1,
+            limit: limit,
+          };
+        }
+        results.total = Books.length;
+
+        if (startIndex > 0) {
+          results.previous = {
+            page: page - 1,
+            limit: limit,
+          };
+        }
+
+        results.results = Books.slice(startIndex, endIndex);
+        res.json(results);
       }
     }
   );
