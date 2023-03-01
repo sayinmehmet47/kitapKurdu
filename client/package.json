@@ -52,6 +52,7 @@
   "devDependencies": {
     "@playwright/test": "^1.31.1",
     "@types/node": "^18.14.2",
-    "@types/react-table": "^7.7.14"
+    "@types/react-table": "^7.7.14",
+    "@types/styled-components": "^5.1.26"
   }
 }
