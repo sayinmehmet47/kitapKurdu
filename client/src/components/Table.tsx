@@ -6,14 +6,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
 
 export const Table = ({ books }: any) => {
-  const data = useMemo(() => [...books], [books]);
+  const [data, setData] = React.useState([...books]);
   const { user: USERINFO, isLoggedIn } = useSelector(
     (state: any) => state.authSlice
   );
 
   const isAdmin = isLoggedIn && USERINFO.user?.isAdmin;
-
-  console.log(isLoggedIn);
 
   const columns = useMemo(
     () => [
@@ -50,7 +48,15 @@ export const Table = ({ books }: any) => {
                   id: row.original.id,
                 })
                 .then((res) => {
-                  toast.success('Book deleted successfully');
+                  if (res.data) {
+                    res.data && toast.success('Book deleted successfully');
+                    setData(data.filter((e: any) => e.id !== row.original.id));
+                  } else {
+                    toast.error('Something went wrong');
+                  }
+                })
+                .catch((err) => {
+                  toast.error('Something went wrong');
                 });
             }}
           >
