@@ -14,7 +14,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["node"]
   },
-  "include": ["src/components", "src/custom.d.ts"]
+  "include": [
+    "src/components",
+    "src/custom.d.ts",
+    "src/**/*.ts",
+    "test/**/*.spec.ts"
+  ]
 }

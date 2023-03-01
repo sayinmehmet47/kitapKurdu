@@ -19,7 +19,7 @@ export const Search = () => {
     e.target.reset();
     setIsLoading(true);
     axios
-      .get(`/books/${search}`)
+      .get(`https://kitapkurdu.onrender.com/books/${search}`)
       .then((res: any) => res.data)
       .then((d: any) => {
         return Promise.all(

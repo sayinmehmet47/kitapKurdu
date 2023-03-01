@@ -9,10 +9,13 @@ export const loginThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post(`/user/login`, {
-        username,
-        password,
-      });
+      const res = await axios.post(
+        `https://kitapkurdu.onrender.com/user/login`,
+        {
+          username,
+          password,
+        }
+      );
       const { token } = res.data;
       localStorage.setItem('jwtToken', token);
       setAuthorizationToken(token);
@@ -43,7 +46,7 @@ export const loadUserThunk = createAsyncThunk(
       if (localStorage.jwtToken) {
         setAuthorizationToken(localStorage.jwtToken);
       }
-      const res = await axios.get(`/user/auth`);
+      const res = await axios.get(`https://kitapkurdu.onrender.com/user/auth`);
 
       return res.data;
     } catch (err) {
@@ -69,12 +72,15 @@ export const registerThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post(`/user/register`, {
-        username,
-        email,
-        password,
-        isAdmin,
-      });
+      const res = await axios.post(
+        `https://kitapkurdu.onrender.com/user/register`,
+        {
+          username,
+          email,
+          password,
+          isAdmin,
+        }
+      );
       if (res.data.status) {
         const { token } = res.data;
         localStorage.setItem('jwtToken', token);

@@ -49,5 +49,9 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://127.0.0.1:5000/"
+  "devDependencies": {
+    "@playwright/test": "^1.31.1",
+    "@types/node": "^18.14.2",
+    "@types/react-table": "^7.7.14"
+  }
 }

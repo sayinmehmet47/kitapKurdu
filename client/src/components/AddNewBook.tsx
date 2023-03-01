@@ -16,16 +16,6 @@ export const AddNewBook = () => {
 
     try {
       const res = await axios.get(apiurl, { params });
-
-      // const kitaplar = res.data._embedded.items.map((e) => {
-      //   return {
-      //     name: e.name,
-      //     path: e.path,
-      //     size: e.size,
-      //     date: e.created,
-      //   };
-      // });
-      console.log(res);
     } catch (e) {
       console.log(e);
     }
