@@ -28,7 +28,7 @@ jobs:
       #   run: npm run dev & npx wait-on --timeout 20000 http://127.0.0.1:$PORT
       - name: npm install, build, and test
         run: |
-           npm ci
+           npm install
            npm run build --if-present
            npm run dev & npx wait-on http://localhost:3000
       - name: Install playwright browsers
