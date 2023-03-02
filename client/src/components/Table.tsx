@@ -1,11 +1,21 @@
 import axios from 'axios';
 import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useTable, useSortBy, usePagination } from 'react-table';
+import { useTable, useSortBy, usePagination, Column } from 'react-table';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
+import { Book, BooksData } from '../helpers/hooks/useFetchBooks';
 
-export const Table = ({ books, setPage }: any) => {
+type TableTypes = {
+  books: BooksData;
+  setPage: (page: number) => void;
+};
+
+type ColumnWithShow<T extends Record<string, unknown>> = Column<T> & {
+  show?: boolean;
+};
+
+export const Table = ({ books, setPage }: TableTypes) => {
   const [data, setData] = React.useState(books.results);
 
   useEffect(() => {
@@ -21,12 +31,12 @@ export const Table = ({ books, setPage }: any) => {
   const isAdmin = isLoggedIn && USERINFO.user?.isAdmin;
 
   const columns = useMemo(
-    () => [
+    (): readonly ColumnWithShow<Book>[] => [
       {
         Header: 'Name',
         id: 'name',
         show: true,
-        accessor: (d: any) => d.file,
+        accessor: (d: Book) => d.file,
         Cell: ({ row }: any) => (
           <a href={row.original.file} target="_blank" rel="noopener noreferrer">
             {row.original.name}
@@ -43,7 +53,6 @@ export const Table = ({ books, setPage }: any) => {
       },
       {
         Header: 'Delete',
-        accessor: 'Delete',
         id: 'delete',
         show: isAdmin,
         Cell: ({ row }: any) => (

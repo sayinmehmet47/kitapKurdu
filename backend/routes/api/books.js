@@ -47,13 +47,8 @@ router.get('/search', async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const startIndex = (page - 1) * limit;
 
-  const collation = {
-    locale: 'tr',
-    strength: 2, // set the strength to 2 for case-insensitive and diacritic-insensitive comparison
-  };
-
   const [count, results] = await Promise.all([
-    Books.countDocuments(query),
+    Books.countDocuments(query, { collation: { locale: 'tr', strength: 2 } }),
     Books.find(query)
       .select('name path size date') // only return name and author fields
       .skip(startIndex)

@@ -1,86 +1,22 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import useFetchBooks from '../helpers/hooks/useFetchBooks';
+import { useState } from 'react';
 import { Button, Form, FormGroup, Input, Spinner } from 'reactstrap';
-import bytes2Size from './bytes2Size';
 import { Table } from './Table';
 
 export const Search = () => {
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
-  const [books, setBooks] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+
   const [page, setPage] = useState(1);
 
   const handleChangeInput = (e: any) => {
     setSearch(e.target.value);
   };
 
-  useEffect(() => {
-    if (!query) return;
-    try {
-      const fetchBooks = async () => {
-        await axios
-          .get(
-            `https://kitapkurdu.onrender.com/books/search?name=${query}&page=${page}`
-          )
-          .then((res: any) => res.data)
-          .then((d: any) => {
-            return Promise.all(
-              d.results.map((e: any) => {
-                const path = e.path;
-                const url = e.url;
-                const { _id: id } = e;
-                if (url) {
-                  return {
-                    name: e.name,
-                    file: e.url,
-                    date: new Date(e.date).toLocaleDateString(),
-                    size: e.size,
-                    id,
-                  };
-                } else {
-                  return fetch(
-                    encodeURI(
-                      `https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=https://disk.yandex.com.tr/d/sLURXWsHH4gDmw&path=${path}`
-                    )
-                  )
-                    .then((res) => res.json())
-                    .then((res) => {
-                      return {
-                        name: e.name,
-                        size: bytes2Size(e.size),
-                        date: new Date(e.date).toLocaleDateString(),
-                        file: res.href,
-                        id: e.id || e._id,
-                      };
-                    });
-                }
-              })
-            )
-              .then((data: any) => {
-                setBooks({
-                  results: data,
-                  total: d.total,
-                  next: d.next,
-                  previous: d.previous,
-                });
-                setIsLoaded(true);
-                setIsLoading(false);
-              })
-              .catch((err) => {
-                console.log(err);
-              })
-              .finally(() => {
-                setIsLoading(false);
-              });
-          });
-      };
-      fetchBooks();
-    } catch (error) {
-      console.log(error);
-    }
-  }, [query, page]);
+  const { books, isLoading, isLoaded, setIsLoading } = useFetchBooks(
+    query,
+    page
+  );
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
