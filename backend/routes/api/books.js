@@ -105,6 +105,9 @@ router.post('/deleteBook', (req, res) => {
     if (err) console.log(err);
     res.json(data);
   });
+
+  // invalidate the cache
+  cache.flushAll();
 });
 
 module.exports = router;
