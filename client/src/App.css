@@ -25,6 +25,8 @@ a:hover {
     background-color: rgb(147, 5, 5);
     cursor: pointer; 
     color: aliceblue;
+    border-radius: 4px;
+  
 }
 
 

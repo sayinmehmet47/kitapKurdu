@@ -13,14 +13,13 @@ export const Search = () => {
     setSearch(e.target.value);
   };
 
-  const { books, isLoading, isLoaded, setIsLoading, refresh } = useFetchBooks(
+  const { books, isLoading, setIsLoading, refresh } = useFetchBooks(
     query,
     page
   );
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    e.target.reset();
     setIsLoading(true);
     setQuery(search);
   };
@@ -43,7 +42,6 @@ export const Search = () => {
             onChange={handleChangeInput}
             data-testid="search-input"
           />
-
           {isLoading ? (
             <div>
               <Button
@@ -52,6 +50,12 @@ export const Search = () => {
                 className="d-flex align-items-center"
                 block
               >
+                <Spinner
+                  color="light"
+                  size="sm"
+                  className="me-2"
+                  data-testid="spinner"
+                />
                 Submit
               </Button>
             </div>

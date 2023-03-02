@@ -40,7 +40,6 @@ router.get('/allBooks', async (req, res) => {
 
 router.get('/search', async (req, res) => {
   const cacheKey = JSON.stringify(req.query); // use the query as the cache key
-
   const cachedResult = cache.get(cacheKey);
   if (cachedResult) {
     console.log('Serving from cache');
@@ -59,7 +58,7 @@ router.get('/search', async (req, res) => {
   const [count, results] = await Promise.all([
     Books.countDocuments(query, { collation: { locale: 'tr', strength: 2 } }),
     Books.find(query)
-      .select('name path size date') // only return name and author fields
+      .select('name path size date url') // only return name and author fields
       .skip(startIndex)
       .limit(limit)
       .lean(), // return plain JS objects instead of Mongoose documents
