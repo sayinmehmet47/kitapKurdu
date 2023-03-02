@@ -22,6 +22,7 @@ export const Search = () => {
     e.preventDefault();
     setIsLoading(true);
     setQuery(search);
+    setPage(1);
     // if the search value the same as before then refresh the page
     if (search === query) {
       refresh();
