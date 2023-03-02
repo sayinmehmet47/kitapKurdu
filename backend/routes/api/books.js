@@ -36,41 +36,50 @@ router.get('/allBooks', async (req, res) => {
   });
 });
 
-router.get('/search', (req, res) => {
-  Books.find(
-    { name: { $regex: req.query.name, $options: 'i' } },
-    function (err, Books) {
-      if (err) return done(err);
+router.get('/search', async (req, res) => {
+  const query = {
+    name: {
+      $regex: req.query.name,
+      $options: 'i',
+    },
+  };
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const startIndex = (page - 1) * limit;
 
-      if (Books) {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+  const collation = {
+    locale: 'tr',
+    strength: 2, // set the strength to 2 for case-insensitive and diacritic-insensitive comparison
+  };
 
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
+  const [count, results] = await Promise.all([
+    Books.countDocuments(query),
+    Books.find(query)
+      .select('name path size date') // only return name and author fields
+      .skip(startIndex)
+      .limit(limit)
+      .lean(), // return plain JS objects instead of Mongoose documents
+  ]);
 
-        const results = {};
+  const endIndex = Math.min(startIndex + limit, count);
 
-        if (endIndex < Books.length) {
-          results.next = {
-            page: page + 1,
-            limit: limit,
-          };
-        }
-        results.total = Books.length;
+  const pagination = {};
+  if (endIndex < count) {
+    pagination.next = {
+      page: page + 1,
+      limit: limit,
+    };
+  }
+  pagination.total = count;
+  if (startIndex > 0) {
+    pagination.previous = {
+      page: page - 1,
+      limit: limit,
+    };
+  }
+  pagination.results = results;
 
-        if (startIndex > 0) {
-          results.previous = {
-            page: page - 1,
-            limit: limit,
-          };
-        }
-
-        results.results = Books.slice(startIndex, endIndex);
-        res.json(results);
-      }
-    }
-  );
+  res.json(pagination);
 });
 
 router.post('/addNewBook', (req, res) => {
