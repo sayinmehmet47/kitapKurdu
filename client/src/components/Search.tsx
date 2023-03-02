@@ -13,7 +13,7 @@ export const Search = () => {
     setSearch(e.target.value);
   };
 
-  const { books, isLoading, isLoaded, setIsLoading } = useFetchBooks(
+  const { books, isLoading, isLoaded, setIsLoading, refresh } = useFetchBooks(
     query,
     page
   );
@@ -52,7 +52,6 @@ export const Search = () => {
                 className="d-flex align-items-center"
                 block
               >
-                <Spinner children="" className="me-2" size="sm" color="light" />{' '}
                 Submit
               </Button>
             </div>
@@ -63,15 +62,17 @@ export const Search = () => {
           )}
         </FormGroup>
       </Form>
-      {isLoading && (
-        <Spinner children="" className="me-2" size="sm" color="light" />
-      )}
-      {isLoaded ? (
-        <Table books={books} setPage={setPage} />
-      ) : (
+      {books.results.length < 1 ? (
         <div style={{ textAlign: 'center', marginTop: '80px' }}>
           <img width="60%" src="book.png" alt="fd" />
         </div>
+      ) : (
+        <Table
+          books={books}
+          setPage={setPage}
+          refresh={refresh}
+          isLoading={isLoading}
+        />
       )}
     </>
   );

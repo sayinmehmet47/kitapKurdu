@@ -26,6 +26,7 @@ export type UseFetchBooksResult = {
   isLoading: boolean;
   isLoaded: boolean;
   setIsLoading: (loading: boolean) => void;
+  refresh: () => void;
 };
 
 const useFetchBooks = (query: string, page: number): UseFetchBooksResult => {
@@ -41,6 +42,11 @@ const useFetchBooks = (query: string, page: number): UseFetchBooksResult => {
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [refreshVar, setRefreshVar] = useState(false);
+
+  const refresh = () => {
+    setRefreshVar((v) => !v);
+  };
 
   useEffect(() => {
     if (!query) return;
@@ -99,9 +105,9 @@ const useFetchBooks = (query: string, page: number): UseFetchBooksResult => {
     };
 
     fetchBooks();
-  }, [query, page]);
+  }, [query, page, refreshVar]);
 
-  return { books, isLoading, isLoaded, setIsLoading };
+  return { books, isLoading, isLoaded, setIsLoading, refresh };
 };
 
 export default useFetchBooks;

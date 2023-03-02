@@ -21,6 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.8.1",
     "mongoose": "^6.5.1",
+    "node-cache": "^5.1.2",
     "node-url-shortener": "^2.0.3",
     "rc-progress": "^3.4.1",
     "simple-short": "^1.0.7",

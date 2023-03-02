@@ -21,6 +21,12 @@ a:hover {
     color: darkblue;
 }
 
+.delete-icon:hover{
+    background-color: rgb(147, 5, 5);
+    cursor: pointer; 
+    color: aliceblue;
+}
+
 
 @keyframes ui-progress-spinner-color {
 

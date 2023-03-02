@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const NodeCache = require('node-cache');
+const cache = new NodeCache();
 const Books = require('../../models/Books');
 
 router.get('/allBooks', async (req, res) => {
@@ -37,6 +39,13 @@ router.get('/allBooks', async (req, res) => {
 });
 
 router.get('/search', async (req, res) => {
+  const cacheKey = JSON.stringify(req.query); // use the query as the cache key
+
+  const cachedResult = cache.get(cacheKey);
+  if (cachedResult) {
+    console.log('Serving from cache');
+    return res.json(cachedResult);
+  }
   const query = {
     name: {
       $regex: req.query.name,
@@ -73,7 +82,7 @@ router.get('/search', async (req, res) => {
     };
   }
   pagination.results = results;
-
+  cache.set(cacheKey, pagination); // store the result in the cache
   res.json(pagination);
 });
 

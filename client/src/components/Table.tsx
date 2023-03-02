@@ -2,20 +2,22 @@ import axios from 'axios';
 import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useTable, useSortBy, usePagination, Column } from 'react-table';
-import 'react-toastify/dist/ReactToastify.css';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
+import { AiOutlineDelete } from 'react-icons/ai';
 import { Book, BooksData } from '../helpers/hooks/useFetchBooks';
 
 type TableTypes = {
   books: BooksData;
   setPage: (page: number) => void;
+  refresh: () => void;
+  isLoading: boolean;
 };
 
 type ColumnWithShow<T extends Record<string, unknown>> = Column<T> & {
   show?: boolean;
 };
 
-export const Table = ({ books, setPage }: TableTypes) => {
+export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
   const [data, setData] = React.useState(books.results);
 
   useEffect(() => {
@@ -29,6 +31,24 @@ export const Table = ({ books, setPage }: TableTypes) => {
   );
 
   const isAdmin = isLoggedIn && USERINFO.user?.isAdmin;
+
+  const handleDelete = (row: any) => {
+    axios
+      .post('https://kitapkurdu.onrender.com/books/deleteBook', {
+        id: row.original.id,
+      })
+      .then((res) => {
+        if (res.data) {
+          res.data && toast.success('Book deleted successfully');
+          refresh();
+        } else {
+          toast.error('Something went wrong');
+        }
+      })
+      .catch((err) => {
+        toast.error('Something went wrong');
+      });
+  };
 
   const columns = useMemo(
     (): readonly ColumnWithShow<Book>[] => [
@@ -56,28 +76,9 @@ export const Table = ({ books, setPage }: TableTypes) => {
         id: 'delete',
         show: isAdmin,
         Cell: ({ row }: any) => (
-          <button
-            className="btn btn-danger"
-            onClick={() => {
-              axios
-                .post('https://kitapkurdu.onrender.com/books/deleteBook', {
-                  id: row.original.id,
-                })
-                .then((res) => {
-                  if (res.data) {
-                    res.data && toast.success('Book deleted successfully');
-                    setData(data.filter((e: any) => e.id !== row.original.id));
-                  } else {
-                    toast.error('Something went wrong');
-                  }
-                })
-                .catch((err) => {
-                  toast.error('Something went wrong');
-                });
-            }}
-          >
-            Delete
-          </button>
+          <div className="text-center delete-icon flex justify-content-center me-1">
+            <AiOutlineDelete onClick={() => handleDelete(row)} />
+          </div>
         ),
       },
     ],
@@ -105,12 +106,25 @@ export const Table = ({ books, setPage }: TableTypes) => {
     useSortBy,
     usePagination
   ) as any;
+
+  if (isLoading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: '60vh' }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="d-flex flex-column  mt-5 mx-5"
       style={{ marginBottom: '40px' }}
     >
-      <ToastContainer />
       <table {...getTableProps()} style={{ borderRadius: '15px' }}>
         <thead>
           {headerGroups.map((headerGroup: any) => (
@@ -134,7 +148,6 @@ export const Table = ({ books, setPage }: TableTypes) => {
             </tr>
           ))}
         </thead>
-        {/* @ts-ignore */}
         <tbody {...getTableBodyProps()}>
           {page.map((row: any) => {
             prepareRow(row);
