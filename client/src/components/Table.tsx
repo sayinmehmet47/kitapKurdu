@@ -72,6 +72,11 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
         accessor: 'date',
       },
       {
+        Header: 'Uploaded By',
+        accessor: 'uploader',
+        Cell: ({ row }: any) => <div>{row.original.uploader.username}</div>,
+      },
+      {
         Header: 'Delete',
         id: 'delete',
         show: isAdmin,

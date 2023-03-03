@@ -14,12 +14,32 @@ export default function User() {
   };
 
   return (
-    <div>
-      <h1>{username}</h1>
-      <p>{isAdmin ? 'Admin' : 'User'}</p>
-      <p>{email}</p>
-      <p>{new Date(createdAt).toISOString()}</p>
-      <button onClick={handleLogout}>Logout</button>
+    <div className="d-flex justify-content-center align-items-center">
+      <div className="card shadow-lg rounded-lg p-4">
+        <div className="card-body">
+          <div className="mb-2">
+            <h5 className="font-weight-bold mb-0">Role:</h5>
+            <p className="mb-0">{isAdmin ? 'Admin' : 'User'}</p>
+          </div>
+          <div className="mb-2">
+            <h5 className="font-weight-bold mb-0">Username:</h5>
+            <p className="mb-0">{username}</p>
+          </div>
+          <div className="mb-2">
+            <h5 className="font-weight-bold mb-0">Email:</h5>
+            <p className="mb-0">{email}</p>
+          </div>
+          <div className="mb-2">
+            <h5 className="font-weight-bold mb-0">Date:</h5>
+            <p className="mb-0">{new Date(createdAt).toISOString()}</p>
+          </div>
+        </div>
+        <div className="card-footer text-center">
+          <button className="btn btn-danger" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

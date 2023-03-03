@@ -47,7 +47,6 @@ export const loadUserThunk = createAsyncThunk(
         setAuthorizationToken(localStorage.jwtToken);
       }
       const res = await axios.get(`https://kitapkurdu.onrender.com/user/auth`);
-
       return res.data;
     } catch (err) {
       return rejectWithValue(err);
@@ -99,6 +98,7 @@ export const authSlice = createSlice({
     isLoggedIn: false,
     error: false,
     errorMessage: '',
+    isLoading: false,
     user: {},
   },
   reducers: {
@@ -123,30 +123,42 @@ export const authSlice = createSlice({
       .addCase(loginThunk.pending, (state, action) => {
         state.error = false;
         state.errorMessage = '';
+        state.isLoading = true;
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.user = action.payload;
+        state.isLoading = false;
       })
       .addCase(loginThunk.rejected, (state: any, action) => {
         state.error = true;
         state.errorMessage = action.payload;
+        state.isLoading = false;
       })
       .addCase(logoutThunk.fulfilled, (state, action) => {
         state.isLoggedIn = false;
+        state.isLoading = false;
         state.user = {};
       })
       .addCase(logoutThunk.rejected, (state: any, action) => {
         state.error = true;
+        state.isLoading = false;
         state.errorMessage = action.payload;
       })
       .addCase(logoutThunk.pending, (state, action) => {
         state.error = false;
+        state.isLoading = true;
         state.errorMessage = '';
+      })
+      .addCase(loadUserThunk.pending, (state, action) => {
+        state.error = false;
+        state.errorMessage = '';
+        state.isLoading = true;
       })
       .addCase(loadUserThunk.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.user = action.payload;
+        state.isLoading = false;
       });
   },
 });

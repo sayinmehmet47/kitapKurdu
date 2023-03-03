@@ -59,7 +59,9 @@ router.get('/search', async (req, res) => {
   const [count, results] = await Promise.all([
     Books.countDocuments(query, { collation: { locale: 'tr', strength: 2 } }),
     Books.find(query)
-      .select('name path size date url') // only return name and author fields
+      .select('name path size date url uploader')
+      // populate the uploader field with all user details
+      .populate('uploader', 'username email')
       .skip(startIndex)
       .limit(limit)
       .lean(), // return plain JS objects instead of Mongoose documents
@@ -92,6 +94,7 @@ router.post('/addNewBook', (req, res) => {
     url: req.body.url,
     size: req.body.size,
     date: new Date(),
+    uploader: req.body.uploader,
   });
   ikinciParti.save((err, data) => {
     if (err) console.log(err);
@@ -113,17 +116,17 @@ router.post('/deleteBook', (req, res) => {
   cache.flushAll();
 });
 
-// router.post('/updateBook', (req, res) => {
-//   User.findOne({ username: 'mehmesayin' })
-//     .then((user) => {
-//       return Books.updateMany({}, { $set: { uploader: user._id } });
-//     })
-//     .then((result) => {
-//       console.log(`Updated ${result.nModified} documents`);
-//     })
-//     .catch((error) => {
-//       console.error(error);
-//     });
-// });
+router.post('/updateBook', (req, res) => {
+  User.findOne({ username: 'mehmesayin' })
+    .then((user) => {
+      return Books.updateMany({}, { $set: { uploader: user._id } });
+    })
+    .then((result) => {
+      console.log(`Updated ${result.nModified} documents`);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
 
 module.exports = router;

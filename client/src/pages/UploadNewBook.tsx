@@ -1,12 +1,12 @@
 import React from 'react';
 import axios from 'axios';
-
 import { toast } from 'react-toastify';
 import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from 'react-dropzone-uploader';
 
 import Layout from '../components/Layout';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 const CLOUD_NAME = 'dsequsn4l',
   UPLOAD_PRESET = 'uploads';
@@ -20,6 +20,10 @@ const Container = styled.div`
 `;
 
 export default function UploadNewBook() {
+  const { _id: userId } = useSelector(
+    (state: any) => state.authSlice.user.user
+  );
+
   const addBook = async (response: {
     original_filename: string;
     bytes: string;
@@ -29,6 +33,7 @@ export default function UploadNewBook() {
       name: response.original_filename,
       size: response.bytes,
       url: response.secure_url,
+      uploader: userId,
     };
     try {
       async function addNewBook() {

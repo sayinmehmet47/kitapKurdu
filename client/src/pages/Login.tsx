@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -69,7 +69,9 @@ const NavLink = styled(Link)`
 
 export default function Login() {
   const dispatch = useDispatch<any>();
-  const { isLoggedIn } = useSelector((state: any) => state.authSlice);
+  const { isLoggedIn, isLoading } = useSelector(
+    (state: any) => state.authSlice
+  );
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -92,31 +94,42 @@ export default function Login() {
 
   return (
     <Layout>
-      <Container>
-        {isLoggedIn ? (
-          <User />
-        ) : (
-          <Wrapper>
-            <Title>SIGN IN</Title>
-            <Form onSubmit={handleSubmit}>
-              <Input
-                placeholder="username"
-                type="name"
-                name="username"
-                required
-              />
-              <Input
-                placeholder="password"
-                type="password"
-                name="password"
-                required
-              />
-              <Button type="submit">LOGIN</Button>
-              <NavLink to="/register">CREATE A NEW ACCOUNT</NavLink>
-            </Form>
-          </Wrapper>
-        )}
-      </Container>
+      {!isLoading ? (
+        <Container>
+          {isLoggedIn ? (
+            <User />
+          ) : (
+            <Wrapper>
+              <Title>SIGN IN</Title>
+              <Form onSubmit={handleSubmit}>
+                <Input
+                  placeholder="username"
+                  type="name"
+                  name="username"
+                  required
+                />
+                <Input
+                  placeholder="password"
+                  type="password"
+                  name="password"
+                  required
+                />
+                <Button type="submit">LOGIN</Button>
+                <NavLink to="/register">CREATE A NEW ACCOUNT</NavLink>
+              </Form>
+            </Wrapper>
+          )}
+        </Container>
+      ) : (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: '60vh' }}
+        >
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
       <ToastContainer />
     </Layout>
   );

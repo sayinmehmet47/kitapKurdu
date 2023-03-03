@@ -8,6 +8,11 @@ export type Book = {
   date: string;
   size: string;
   id: string;
+  uploader: {
+    username: string;
+    _id: string;
+    email: string;
+  };
 };
 
 export type BooksData = {
@@ -63,6 +68,7 @@ const useFetchBooks = (query: string, page: number): UseFetchBooksResult => {
             const path = book.path;
             const url = book.url;
             const id = book._id || book.id;
+            const uploader = book.uploader;
 
             if (url) {
               return {
@@ -70,6 +76,7 @@ const useFetchBooks = (query: string, page: number): UseFetchBooksResult => {
                 file: book.url,
                 date: new Date(book.date).toLocaleDateString(),
                 size: book.size,
+                uploader,
                 id,
               };
             } else {
@@ -84,6 +91,7 @@ const useFetchBooks = (query: string, page: number): UseFetchBooksResult => {
                 size: bytes2Size(book.size),
                 date: new Date(book.date).toLocaleDateString(),
                 file: href,
+                uploader,
                 id,
               };
             }
