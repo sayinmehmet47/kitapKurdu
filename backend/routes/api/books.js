@@ -99,6 +99,8 @@ router.post('/addNewBook', (req, res) => {
   });
 });
 
+router.post('/uploadBooks', (req, res) => {});
+
 router.post('/deleteBook', (req, res) => {
   const id = req.body.id;
   console.log(id);
@@ -111,17 +113,17 @@ router.post('/deleteBook', (req, res) => {
   cache.flushAll();
 });
 
-router.post('/updateBook', (req, res) => {
-  User.findOne({ username: 'mehmesayin' })
-    .then((user) => {
-      return Books.updateMany({}, { $set: { uploader: user._id } });
-    })
-    .then((result) => {
-      console.log(`Updated ${result.nModified} documents`);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-});
+// router.post('/updateBook', (req, res) => {
+//   User.findOne({ username: 'mehmesayin' })
+//     .then((user) => {
+//       return Books.updateMany({}, { $set: { uploader: user._id } });
+//     })
+//     .then((result) => {
+//       console.log(`Updated ${result.nModified} documents`);
+//     })
+//     .catch((error) => {
+//       console.error(error);
+//     });
+// });
 
 module.exports = router;

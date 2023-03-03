@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { loadUserThunk } from '../redux/authSlice';
 import Navbar from './Navbar';
@@ -22,6 +23,7 @@ export default function Layout({ children }: any) {
   }, [dispatch]);
   return (
     <Wrapper>
+      <ToastContainer />
       <Navbar />
       <Main>{children}</Main>
       {/* <Footer /> */}

@@ -100,13 +100,13 @@ router.get('/auth', auth, async (req, res) => {
   }
 });
 
-router.post('/updateUser', auth, async (req, res) => {
-  Books.find({}).then((books) => {
-    User.findOne({ username: 'mehmesayin' }).then((user) => {
-      user.booksUploaded = books;
-      user.save();
-    });
-  });
-});
+// router.post('/updateUser', auth, async (req, res) => {
+//   Books.find({}).then((books) => {
+//     User.findOne({ username: 'mehmesayin' }).then((user) => {
+//       user.booksUploaded = books;
+//       user.save();
+//     });
+//   });
+// });
 
 module.exports = router;
