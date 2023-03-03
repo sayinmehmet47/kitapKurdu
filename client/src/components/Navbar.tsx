@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { mobile } from '../responsive';
 import { BiUser } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 const Wrapper = styled.nav`
@@ -49,6 +50,20 @@ const User = styled.div`
   justify-content: center;
 `;
 
+const RecentlyAdded = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin: 0px 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  &:hover {
+    color: #d7a4a4;
+  }
+  ${mobile({ whiteSpace: 'normal' })}
+`;
+
 export default function Navbar() {
   return (
     <Wrapper>
@@ -57,6 +72,11 @@ export default function Navbar() {
           <img src="logo-white.svg" alt="fd" height={60} width={60} />
         </Left>
       </Link>
+      <Left>
+        <Link to="/recently-added">
+          <RecentlyAdded>Recently Added</RecentlyAdded>
+        </Link>
+      </Left>
       <Right>
         <Link to="/upload">
           <AddNewBook>Upload Book</AddNewBook>

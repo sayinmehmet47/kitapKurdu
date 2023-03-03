@@ -29,11 +29,14 @@ export default function UploadNewBook() {
     bytes: string;
     secure_url: string;
   }) => {
+    console.log(response.secure_url.replace('upload', 'upload/w_200'));
     const book = {
       name: response.original_filename,
       size: response.bytes,
       url: response.secure_url,
       uploader: userId,
+      // you can generate a thumbnail image of the first page of the PDF or EPUB file using Cloudinary's image manipulation and transformation capabilities
+      // thumbnail: response.secure_url.replace('upload', 'upload/w_200'),
     };
     try {
       async function addNewBook() {

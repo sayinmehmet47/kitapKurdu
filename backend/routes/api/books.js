@@ -102,11 +102,19 @@ router.post('/addNewBook', (req, res) => {
   });
 });
 
-router.post('/uploadBooks', (req, res) => {});
+// get 7 recently added books, and add picture url according to the book name from public images
+router.get('/recently-added', (req, res) => {
+  Books.find({})
+    .sort({ date: -1 })
+    .limit(7)
+    .exec((err, data) => {
+      if (err) console.log(err);
+      res.json(data);
+    });
+});
 
 router.post('/deleteBook', (req, res) => {
   const id = req.body.id;
-  console.log(id);
   Books.findByIdAndDelete(id, (err, data) => {
     if (err) console.log(err);
     res.json(data);

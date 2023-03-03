@@ -6,6 +6,7 @@ import App from './App';
 import './App.css';
 import PrivateRoute from './components/privateRoute';
 import Login from './pages/Login';
+import RecentlyAdded from './pages/RecentlyAdded';
 import Register from './pages/Register';
 import UploadNewBook from './pages/UploadNewBook';
 
@@ -22,6 +23,7 @@ root.render(
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/recently-added" element={<RecentlyAdded />} />
         <Route
           path="upload"
           element={
