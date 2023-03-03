@@ -1,11 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Button,
   Card,
   CardBody,
-  CardGroup,
+  CardFooter,
   CardImg,
-  CardSubtitle,
   CardText,
   CardTitle,
   Row,
@@ -33,16 +33,13 @@ const RecentlyAdded = (props: Props) => {
   return (
     <Layout>
       <Container>
-        <Row lg={4} md={2} sm={1} className="d-flex justify-content-center">
+        <Row lg={4} md={2} sm={2} className="d-flex justify-content-center">
           {recentlyAddedBooks.map((book) => (
-            <Card className="m-2">
+            <Card className="m-2" key={book.id}>
               <div className="w-50 d-flex justify-center mx-auto mt-3">
                 <CardImg
                   alt="Card image cap"
-                  src={
-                    //change book.url .jpg to .png
-                    book.url?.replace('pdf', 'jpg')
-                  }
+                  src={book.file?.replace('pdf', 'jpg')}
                   top
                 />
               </div>
@@ -50,6 +47,13 @@ const RecentlyAdded = (props: Props) => {
                 <CardTitle tag="h5">{book.name}</CardTitle>
                 <CardText>{book.size}</CardText>
               </CardBody>
+              <CardFooter>
+                <Button color="primary">
+                  <Link to={book.file} className="text-white">
+                    Download
+                  </Link>
+                </Button>
+              </CardFooter>
             </Card>
           ))}
         </Row>
