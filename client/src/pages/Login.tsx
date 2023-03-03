@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from 'react';
+import React, { SyntheticEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -92,44 +92,45 @@ export default function Login() {
     );
   };
 
+  console.log('isLoggedIn: ', isLoggedIn);
+  console.log('isLoading: ', isLoading);
+
   return (
     <Layout>
-      {!isLoading ? (
-        <Container>
-          {isLoggedIn ? (
-            <User />
-          ) : (
-            <Wrapper>
-              <Title>SIGN IN</Title>
-              <Form onSubmit={handleSubmit}>
-                <Input
-                  placeholder="username"
-                  type="name"
-                  name="username"
-                  required
-                />
-                <Input
-                  placeholder="password"
-                  type="password"
-                  name="password"
-                  required
-                />
-                <Button type="submit">LOGIN</Button>
-                <NavLink to="/register">CREATE A NEW ACCOUNT</NavLink>
-              </Form>
-            </Wrapper>
-          )}
-        </Container>
-      ) : (
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ height: '60vh' }}
-        >
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+      <Container>
+        {isLoggedIn ? (
+          <User />
+        ) : !isLoading ? (
+          <Wrapper>
+            <Title>SIGN IN</Title>
+            <Form onSubmit={handleSubmit}>
+              <Input
+                placeholder="username"
+                type="name"
+                name="username"
+                required
+              />
+              <Input
+                placeholder="password"
+                type="password"
+                name="password"
+                required
+              />
+              <Button type="submit">LOGIN</Button>
+              <NavLink to="/register">CREATE A NEW ACCOUNT</NavLink>
+            </Form>
+          </Wrapper>
+        ) : (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: '60vh' }}
+          >
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Container>
       <ToastContainer />
     </Layout>
   );

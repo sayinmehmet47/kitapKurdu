@@ -155,6 +155,11 @@ export const authSlice = createSlice({
         state.errorMessage = '';
         state.isLoading = true;
       })
+      .addCase(loadUserThunk.rejected, (state: any, action) => {
+        state.error = true;
+        state.errorMessage = action.payload;
+        state.isLoading = false;
+      })
       .addCase(loadUserThunk.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.user = action.payload;
