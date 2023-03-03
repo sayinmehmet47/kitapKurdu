@@ -5,6 +5,7 @@ import { useTable, useSortBy, usePagination, Column } from 'react-table';
 import { toast } from 'react-toastify';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { Book, BooksData } from '../helpers/hooks/useFetchBooks';
+import Loading from './Loading';
 
 type TableTypes = {
   books: BooksData;
@@ -117,16 +118,7 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
   ) as any;
 
   if (isLoading) {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: '60vh' }}
-      >
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

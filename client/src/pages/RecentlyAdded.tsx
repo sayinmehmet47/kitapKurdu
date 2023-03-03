@@ -10,6 +10,7 @@ import {
   CardTitle,
   Row,
 } from 'reactstrap';
+import Loading from '../components/Loading';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import useFetchRecentlyAddedBooks from '../helpers/hooks/useFetchRecentlyAddedBooks';
@@ -27,13 +28,13 @@ const RecentlyAdded = (props: Props) => {
   const { recentlyAddedBooks, loading } = useFetchRecentlyAddedBooks();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (
     <Layout>
       <Container>
-        <Row lg={4} md={2} sm={2} className="d-flex justify-content-center">
+        <Row lg={5} md={3} sm={3} className="d-flex justify-content-center">
           {recentlyAddedBooks.map((book) => (
             <Card className="m-2" key={book.id}>
               <div className="w-50 d-flex justify-center mx-auto mt-3">

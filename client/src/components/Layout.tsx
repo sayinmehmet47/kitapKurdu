@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { loadUserThunk } from '../redux/authSlice';
-import Navbar from './Navbar';
+import NavbarComponent from './Navbar';
 
 const Wrapper = styled.div`
   display: flex;
@@ -24,7 +24,7 @@ export default function Layout({ children }: any) {
   return (
     <Wrapper>
       <ToastContainer />
-      <Navbar />
+      <NavbarComponent />
       <Main>{children}</Main>
       {/* <Footer /> */}
     </Wrapper>

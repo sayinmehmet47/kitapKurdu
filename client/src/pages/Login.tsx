@@ -92,9 +92,6 @@ export default function Login() {
     );
   };
 
-  console.log('isLoggedIn: ', isLoggedIn);
-  console.log('isLoading: ', isLoading);
-
   return (
     <Layout>
       <Container>
