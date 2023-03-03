@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../../models/User');
+const Books = require('../../models/Books');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
@@ -98,4 +99,14 @@ router.get('/auth', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+router.post('/updateUser', auth, async (req, res) => {
+  Books.find({}).then((books) => {
+    User.findOne({ username: 'mehmesayin' }).then((user) => {
+      user.booksUploaded = books;
+      user.save();
+    });
+  });
+});
+
 module.exports = router;

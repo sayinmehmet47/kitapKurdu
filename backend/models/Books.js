@@ -17,6 +17,10 @@ const schema = new mongoose.Schema(
     date: {
       type: Date,
     },
+    uploader: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   { collection: 'ilkparti' }
 );

@@ -27,6 +27,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    booksUploaded: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Book',
+      },
+    ],
   },
   {
     timestamps: true,

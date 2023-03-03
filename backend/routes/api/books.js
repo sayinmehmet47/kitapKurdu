@@ -3,6 +3,7 @@ const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
 const Books = require('../../models/Books');
+const User = require('../../models/User');
 
 router.get('/allBooks', async (req, res) => {
   Books.find({}, function (err, Books) {
@@ -108,6 +109,19 @@ router.post('/deleteBook', (req, res) => {
 
   // invalidate the cache
   cache.flushAll();
+});
+
+router.post('/updateBook', (req, res) => {
+  User.findOne({ username: 'mehmesayin' })
+    .then((user) => {
+      return Books.updateMany({}, { $set: { uploader: user._id } });
+    })
+    .then((result) => {
+      console.log(`Updated ${result.nModified} documents`);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 });
 
 module.exports = router;
