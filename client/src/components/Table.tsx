@@ -74,7 +74,11 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
       {
         Header: 'Uploaded By',
         accessor: 'uploader',
-        Cell: ({ row }: any) => <div>{row.original.uploader.username}</div>,
+        Cell: ({ row }: any) => (
+          <div className="text-success ms-5">
+            {row.original.uploader.username}
+          </div>
+        ),
       },
       {
         Header: 'Delete',
