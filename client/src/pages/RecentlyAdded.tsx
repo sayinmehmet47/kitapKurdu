@@ -48,9 +48,6 @@ const RecentlyAdded = (props: Props) => {
               </div>
               <CardBody>
                 <CardTitle tag="h5">{book.name}</CardTitle>
-                <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  {book.name}
-                </CardSubtitle>
                 <CardText>{book.size}</CardText>
               </CardBody>
             </Card>
