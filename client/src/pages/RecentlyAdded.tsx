@@ -39,7 +39,7 @@ const RecentlyAdded = (props: Props) => {
                 alt="Card image cap"
                 src={
                   //change book.url .jpg to .png
-                  book.url?.replace('png', 'jpg')
+                  book.url?.replace('pdf', 'jpg')
                 }
                 top
                 width="100%"
