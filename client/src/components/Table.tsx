@@ -131,7 +131,7 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
 
   return (
     <div
-      className="d-flex flex-column  mt-5 mx-5"
+      className="d-flex flex-column  mt-5 mx-5 overflow-auto"
       style={{ marginBottom: '40px' }}
     >
       <table {...getTableProps()} style={{ borderRadius: '15px' }}>
