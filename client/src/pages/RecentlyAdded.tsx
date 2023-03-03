@@ -8,6 +8,7 @@ import {
   CardSubtitle,
   CardText,
   CardTitle,
+  Row,
 } from 'reactstrap';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
@@ -32,29 +33,29 @@ const RecentlyAdded = (props: Props) => {
   return (
     <Layout>
       <Container>
-        <CardGroup>
+        <Row lg={4} md={2} sm={1} className="d-flex justify-content-center">
           {recentlyAddedBooks.map((book) => (
-            <Card>
-              <CardImg
-                alt="Card image cap"
-                src={
-                  //change book.url .jpg to .png
-                  book.url?.replace('pdf', 'jpg')
-                }
-                top
-                width="100%"
-              />
+            <Card className="m-2">
+              <div className="w-50 d-flex justify-center mx-auto mt-3">
+                <CardImg
+                  alt="Card image cap"
+                  src={
+                    //change book.url .jpg to .png
+                    book.url?.replace('pdf', 'jpg')
+                  }
+                  top
+                />
+              </div>
               <CardBody>
                 <CardTitle tag="h5">{book.name}</CardTitle>
                 <CardSubtitle className="mb-2 text-muted" tag="h6">
                   {book.name}
                 </CardSubtitle>
                 <CardText>{book.size}</CardText>
-                <Button>Button</Button>
               </CardBody>
             </Card>
           ))}
-        </CardGroup>
+        </Row>
       </Container>
     </Layout>
   );
