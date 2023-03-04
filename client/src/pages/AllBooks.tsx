@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Pagination } from '@material-ui/lab';
 import {
   Button,
   Card,
@@ -14,7 +15,6 @@ import Loading from '../components/Loading';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import useFetchAllBooks from '../helpers/hooks/useFetchAllBooks';
-import { Pagination } from '@material-ui/lab';
 
 const Container = styled.div`
   margin-top: 55px;
