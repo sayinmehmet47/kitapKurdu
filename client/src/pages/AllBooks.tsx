@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pagination } from '@material-ui/lab';
+import Pagination from '@mui/material/Pagination';
 import {
   Button,
   Card,
