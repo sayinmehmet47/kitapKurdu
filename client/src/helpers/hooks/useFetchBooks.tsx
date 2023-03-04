@@ -83,7 +83,7 @@ const useFetchBooks = (query: string, page: number): UseFetchBooksResult => {
             } else {
               const res = await axiosInstance.get(
                 encodeURI(
-                  `https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=https://disk.yandex.com.tr/d/sLURXWsHH4gDmw&path=${path}`
+                  `https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=https://disk.yandex.com/d/hk9TStTYehUD9Q&path=${path}`
                 )
               );
               const { href } = await res.data;
