@@ -106,7 +106,7 @@ router.post('/addNewBook', (req, res) => {
 router.get('/recently-added', (req, res) => {
   Books.find({})
     .sort({ date: -1 })
-    .limit(15)
+    .limit(50)
     .exec((err, data) => {
       if (err) console.log(err);
       res.json(data);

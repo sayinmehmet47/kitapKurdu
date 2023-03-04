@@ -68,6 +68,7 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
         Header: 'Size',
         accessor: 'size', // accessor is the "key" in the data
       },
+
       {
         Header: 'Date',
         accessor: 'date',
@@ -123,7 +124,7 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
 
   return (
     <div
-      className="d-flex flex-column  mt-5 mx-5 overflow-auto"
+      className="d-flex flex-column  mt-5 mx-5 overflow-scroll"
       style={{ marginBottom: '40px' }}
     >
       <table {...getTableProps()} style={{ borderRadius: '15px' }}>
