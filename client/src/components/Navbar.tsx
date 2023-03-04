@@ -37,6 +37,11 @@ export default function NavbarComponent(args: any) {
                   Upload Book
                 </Link>
               </NavItem>
+              <NavItem className="px-md-4">
+                <Link to="/all-books" className="text-white nav-link">
+                  All Books
+                </Link>
+              </NavItem>
             </div>
           </Nav>
           <NavbarText className="me-3">

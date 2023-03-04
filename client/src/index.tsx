@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 import './App.css';
 import PrivateRoute from './components/privateRoute';
+import AllBooks from './pages/AllBooks';
 import Login from './pages/Login';
 import RecentlyAdded from './pages/RecentlyAdded';
 import Register from './pages/Register';
@@ -24,6 +25,8 @@ root.render(
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/recently-added" element={<RecentlyAdded />} />
+        <Route path="/all-books" element={<AllBooks />} />
+
         <Route
           path="upload"
           element={

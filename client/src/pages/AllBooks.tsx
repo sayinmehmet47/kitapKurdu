@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Button,
@@ -13,7 +13,8 @@ import {
 import Loading from '../components/Loading';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
-import useFetchRecentlyAddedBooks from '../helpers/hooks/useFetchRecentlyAddedBooks';
+import useFetchAllBooks from '../helpers/hooks/useFetchAllBooks';
+import { Pagination } from '@material-ui/lab';
 
 const Container = styled.div`
   margin-top: 55px;
@@ -22,10 +23,14 @@ const Container = styled.div`
   align-items: center;
 `;
 
-type Props = {};
+const AllBooks = () => {
+  const [page, setPage] = useState(1);
+  const { allBooks, total, loading } = useFetchAllBooks(page);
 
-const RecentlyAdded = (props: Props) => {
-  const { recentlyAddedBooks, loading } = useFetchRecentlyAddedBooks();
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    console.log(value);
+    setPage(value);
+  };
 
   if (loading) {
     return <Loading />;
@@ -34,16 +39,18 @@ const RecentlyAdded = (props: Props) => {
   return (
     <Layout>
       <Container>
-        <Row lg={5} md={3} sm={3} className="d-flex justify-content-center">
-          {recentlyAddedBooks.map((book) => (
+        <Row lg={6} md={4} sm={3} className="d-flex justify-content-center">
+          {allBooks.map((book) => (
             <Card className="m-2" key={book.id}>
               <div className="w-50 d-flex justify-center mx-auto mt-3">
                 <CardImg
                   alt="Card image cap"
                   src={
-                    book.file.includes('pdf')
+                    book.file?.includes('pdf')
                       ? book.file?.replace('pdf', 'jpg')
-                      : 'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                      : book.file?.includes('epub')
+                      ? 'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                      : 'https://images.pexels.com/photos/7829649/pexels-photo-7829649.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
                   }
                   top
                 />
@@ -63,8 +70,16 @@ const RecentlyAdded = (props: Props) => {
           ))}
         </Row>
       </Container>
+      <div className="d-flex justify-content-center mt-4 mb-4">
+        <Pagination
+          count={Math.ceil(total / 10)}
+          color="primary"
+          page={page}
+          onChange={handleChange}
+        />
+      </div>
     </Layout>
   );
 };
 
-export default RecentlyAdded;
+export default AllBooks;
