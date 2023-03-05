@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import { ToastContainer, toast } from 'react-toastify';
+import { useSignIn } from 'react-auth-kit';
 import 'react-toastify/dist/ReactToastify.css';
 import { loginThunk } from '../redux/authSlice';
 import { mobile } from '../responsive';
@@ -69,6 +70,7 @@ const NavLink = styled(Link)`
 
 export default function Login() {
   const dispatch = useDispatch<any>();
+  const signIn = useSignIn();
   const { isLoggedIn, isLoading } = useSelector(
     (state: any) => state.authSlice
   );
@@ -78,18 +80,25 @@ export default function Login() {
     const data = new FormData(e.target as HTMLFormElement);
     const { username, password } = Object.fromEntries(data.entries());
 
-    dispatch(loginThunk({ username, password })).then(
-      (res: any) => {
-        if (res.payload.token) {
-          toast.success('Login successful');
-        } else {
-          toast.error(res.payload.response.data.error);
-        }
-      },
-      (err: any) => {
-        console.log(err);
-      }
-    );
+    // This is the old way of doing it:
+    // dispatch(loginThunk({ username, password })).then(
+    //   (res: any) => {
+    //     if (res.payload.token) {
+    //       toast.success('Login successful');
+    //     } else {
+    //       toast.error(res.payload.response.data.error);
+    //     }
+    //   },
+    //   (err: any) => {
+    //     console.log(err);
+    //   }
+    // );
+
+    // This is the new way of doing it:
+    try {
+      const res = dispatch(loginThunk({ username, password }));
+      console.log(res);
+    } catch (error) {}
   };
 
   return (

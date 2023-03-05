@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { AuthProvider } from 'react-auth-kit';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 import './App.css';
@@ -19,24 +20,31 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <Provider store={store}>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/recently-added" element={<RecentlyAdded />} />
-        <Route path="/all-books" element={<AllBooks />} />
+    <AuthProvider
+      authType={'cookie'}
+      authName={'_auth'}
+      cookieDomain={window.location.hostname}
+      cookieSecure={false}
+    >
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/recently-added" element={<RecentlyAdded />} />
+          <Route path="/all-books" element={<AllBooks />} />
 
-        <Route
-          path="upload"
-          element={
-            <PrivateRoute>
-              <UploadNewBook />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+          <Route
+            path="upload"
+            element={
+              <PrivateRoute>
+                <UploadNewBook />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   </Provider>
 );
 
