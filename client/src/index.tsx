@@ -13,6 +13,7 @@ import Register from './pages/Register';
 import UploadNewBook from './pages/UploadNewBook';
 
 import store from './redux/store';
+import ShelfSpace from './pages/ShelfSpace';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -39,6 +40,14 @@ root.render(
             element={
               <PrivateRoute>
                 <UploadNewBook />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="shelf-space"
+            element={
+              <PrivateRoute>
+                <ShelfSpace />
               </PrivateRoute>
             }
           />

@@ -42,6 +42,11 @@ export default function NavbarComponent(args: any) {
                   All Books
                 </Link>
               </NavItem>
+              <NavItem className="px-md-4">
+                <Link to="/shelf-space" className="text-white nav-link">
+                  Shelf Space
+                </Link>
+              </NavItem>
             </div>
           </Nav>
           <NavbarText className="me-3">
