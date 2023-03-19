@@ -33,6 +33,12 @@ const userSchema = new Schema(
         ref: 'Book',
       },
     ],
+    messages: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Messages',
+      },
+    ],
   },
   {
     timestamps: true,

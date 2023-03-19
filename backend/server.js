@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const books = require('./routes/api/books');
 const user = require('./routes/api/user');
+const messages = require('./routes/api/messages');
 
 app.use(express.json());
 
@@ -21,6 +22,7 @@ app.use(cors(corsOptions));
 
 app.use('/books', books);
 app.use('/user', user);
+app.use('/messages', messages);
 
 if (process.env.NODE_ENV === 'production') {
   // Set static folder
