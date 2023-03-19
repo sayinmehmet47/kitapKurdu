@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const NodeCache = require('node-cache');
+const auth = require('../../middleware/auth');
 const cache = new NodeCache();
 const Books = require('../../models/Books');
 const User = require('../../models/User');
@@ -113,10 +114,17 @@ router.get('/recently-added', (req, res) => {
     });
 });
 
-router.post('/deleteBook', (req, res) => {
+router.post('/deleteBook', auth, (req, res) => {
   const id = req.body.id;
+
+  if (!req.user.isAdmin) {
+    return res.status(401).json({ msg: 'Not authorized to delete book' });
+  }
   Books.findByIdAndDelete(id, (err, data) => {
     if (err) console.log(err);
+    if (!data) {
+      return res.status(404).json({ msg: 'Book not found' });
+    }
     res.json(data);
   });
 
