@@ -16,4 +16,4 @@ const schema = new mongoose.Schema(
   { collection: 'messages' }
 );
 
-module.exports = Messages = mongoose.model('messages', schema);
+module.exports = Messages = mongoose.model('Messages', schema);
