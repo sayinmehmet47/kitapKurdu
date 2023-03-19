@@ -9,13 +9,11 @@ const axiosInstance = axios.create({
   adapter: cache.adapter,
 });
 
-
 // add token to request headers
 
 const token = localStorage.getItem('jwtToken');
 
 if (token) {
-
   axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
 

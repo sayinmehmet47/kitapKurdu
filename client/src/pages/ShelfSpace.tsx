@@ -6,9 +6,9 @@ import { useSelector } from 'react-redux';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import Layout from '../components/Layout';
 import Loading from '../components/Loading';
-import axiosInstance from '../helpers/axiosInstance';
 import useFetchAllMessages from '../helpers/hooks/useFetchAllMessages';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 export default function ShelfSpace() {
   const { _id: userId, isAdmin } = useSelector(
@@ -25,7 +25,7 @@ export default function ShelfSpace() {
     e.preventDefault();
     const sendMessage = async () => {
       try {
-        await axiosInstance.post(
+        await axios.post(
           'https://kitapkurdu.onrender.com/messages/userMessages',
           {
             text,
@@ -37,6 +37,7 @@ export default function ShelfSpace() {
       }
     };
     sendMessage();
+    toast.success('Message sent');
     refresh();
   };
 
@@ -52,13 +53,13 @@ export default function ShelfSpace() {
                 style={{ cursor: 'pointer' }}
                 onClick={async () => {
                   try {
-                    await axiosInstance.delete(
+                    await axios.delete(
                       `https://kitapkurdu.onrender.com/messages/userMessages/${message._id}`
                     );
+                    refresh();
                   } catch (error) {
                     console.log(error);
                   }
-                  refresh();
                   toast.success('Message deleted');
                 }}
               />
