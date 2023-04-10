@@ -9,10 +9,10 @@ import PrivateRoute from './components/privateRoute';
 import AllBooks from './pages/AllBooks';
 import Login from './pages/Login';
 import RecentlyAdded from './pages/RecentlyAdded';
+import { store } from './redux/store';
 import Register from './pages/Register';
 import UploadNewBook from './pages/UploadNewBook';
 
-import store from './redux/store';
 import ShelfSpace from './pages/ShelfSpace';
 
 const root = ReactDOM.createRoot(
