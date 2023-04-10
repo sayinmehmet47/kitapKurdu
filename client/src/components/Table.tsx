@@ -58,11 +58,14 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
         id: 'name',
         show: true,
         accessor: (d: Book) => d.file,
-        Cell: ({ row }: any) => (
-          <a href={row.original.file} target="_blank" rel="noopener noreferrer">
-            {row.original.name}
-          </a>
-        ),
+        Cell: ({ row }: any) => {
+          console.log(row);
+          return (
+            <a href={row.original.file} download="renamed.pdf">
+              {row.original.name}
+            </a>
+          );
+        },
       },
       {
         Header: 'Size',

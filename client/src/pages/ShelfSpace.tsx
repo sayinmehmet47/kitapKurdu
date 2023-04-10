@@ -32,13 +32,13 @@ export default function ShelfSpace() {
             sender: userId,
           }
         );
+        refresh();
       } catch (error) {
         console.log(error);
       }
     };
     sendMessage();
     toast.success('Message sent');
-    refresh();
   };
 
   return (
