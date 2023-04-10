@@ -59,7 +59,6 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
         show: true,
         accessor: (d: Book) => d.file,
         Cell: ({ row }: any) => {
-          console.log(row);
           return (
             <a href={row.original.file} download="renamed.pdf">
               {row.original.name}
