@@ -28,7 +28,6 @@ const AllBooks = () => {
   const { allBooks, total, loading } = useFetchAllBooks(page);
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    console.log(value);
     setPage(value);
   };
 
@@ -74,6 +73,7 @@ const AllBooks = () => {
         <Pagination
           count={Math.ceil(total / 10)}
           color="primary"
+          boundaryCount={2}
           page={page}
           onChange={handleChange}
         />

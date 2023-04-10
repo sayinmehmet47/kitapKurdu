@@ -9,6 +9,7 @@ const useFetchAllBooks = (page: number) => {
 
   useEffect(() => {
     const fetchAllBooks = async () => {
+      setLoading(true);
       try {
         const { data } = await axiosInstance.get(
           'https://kitapkurdu.onrender.com/books/allBooks',
@@ -37,7 +38,6 @@ const useFetchAllBooks = (page: number) => {
             id,
           };
         });
-
         setAllBooks(processedResults);
       } catch (error) {
         console.log(error);
