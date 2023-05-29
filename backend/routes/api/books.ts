@@ -1,43 +1,75 @@
-const express = require('express');
+import { Error } from 'mongoose';
+import { Books } from './../../models/Books';
+import express, { Request, Response } from 'express';
+import { User } from '../../models/User';
+import { auth } from '../../middleware/auth';
 const router = express.Router();
 const NodeCache = require('node-cache');
-const auth = require('../../middleware/auth');
 const cache = new NodeCache();
-const Books = require('../../models/Books');
-const User = require('../../models/User');
 
 router.get('/allBooks', async (req, res) => {
-  Books.find({}, function (err, Books) {
-    if (err) return done(err);
+  Books.find(
+    {},
+    (
+      err: Error,
+      Books: {
+        name: string;
+        path: string;
+        size: number;
+        date: Date;
+        url: string;
+        uploader: string;
+      }[]
+    ) => {
+      if (err) throw new Error(err.message);
 
-    if (Books) {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
+      if (Books) {
+        const page = parseInt(String(req.query.page)) || 1;
+        const limit = parseInt(String(req.query.limit)) || 10;
 
-      const startIndex = (page - 1) * limit;
-      const endIndex = page * limit;
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
 
-      const results = {};
+        const results: {
+          next?: {
+            page: number;
+            limit: number;
+          };
+          total?: number;
+          previous?: {
+            page: number;
+            limit: number;
+          };
+          results?: {
+            name: string;
+            path: string;
+            size: number;
+            date: Date;
+            url: string;
+            uploader: string;
+          }[];
+        } = {};
 
-      if (endIndex < Books.length) {
-        results.next = {
-          page: page + 1,
-          limit: limit,
-        };
+        if (endIndex < Books.length) {
+          results.next = {
+            page: page + 1,
+            limit: limit,
+          };
+        }
+        results.total = Books.length;
+
+        if (startIndex > 0) {
+          results.previous = {
+            page: page - 1,
+            limit: limit,
+          };
+        }
+
+        results.results = Books.slice(startIndex, endIndex);
+        res.json(results);
       }
-      results.total = Books.length;
-
-      if (startIndex > 0) {
-        results.previous = {
-          page: page - 1,
-          limit: limit,
-        };
-      }
-
-      results.results = Books.slice(startIndex, endIndex);
-      res.json(results);
     }
-  });
+  );
 });
 
 router.get('/search', async (req, res) => {
@@ -53,15 +85,14 @@ router.get('/search', async (req, res) => {
       $options: 'i',
     },
   };
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(String(req.query.page)) || 1;
+  const limit = parseInt(String(req.query.limit)) || 10;
   const startIndex = (page - 1) * limit;
 
   const [count, results] = await Promise.all([
     Books.countDocuments(query, { collation: { locale: 'tr', strength: 2 } }),
     Books.find(query)
       .select('name path size date url uploader')
-      // populate the uploader field with all user details
       .populate('uploader', 'username email')
       .skip(startIndex)
       .limit(limit)
@@ -70,7 +101,18 @@ router.get('/search', async (req, res) => {
 
   const endIndex = Math.min(startIndex + limit, count);
 
-  const pagination = {};
+  const pagination: {
+    next?: {
+      page: number;
+      limit: number;
+    };
+    total?: number;
+    previous?: {
+      page: number;
+      limit: number;
+    };
+    results?: any;
+  } = {};
   if (endIndex < count) {
     pagination.next = {
       page: page + 1,
@@ -103,7 +145,6 @@ router.post('/addNewBook', (req, res) => {
   });
 });
 
-// get 7 recently added books, and add picture url according to the book name from public images
 router.get('/recently-added', (req, res) => {
   Books.find({})
     .sort({ date: -1 })
@@ -114,13 +155,10 @@ router.get('/recently-added', (req, res) => {
     });
 });
 
-router.post('/deleteBook', auth, (req, res) => {
+router.post('/deleteBook', auth, (req: any, res: any) => {
   const id = req.body.id;
 
-  if (!req.user.isAdmin) {
-    return res.status(401).json({ msg: 'Not authorized to delete book' });
-  }
-  Books.findByIdAndDelete(id, (err, data) => {
+  Books.findByIdAndDelete(id, (err: any, data: any) => {
     if (err) console.log(err);
     if (!data) {
       return res.status(404).json({ msg: 'Book not found' });
@@ -128,17 +166,16 @@ router.post('/deleteBook', auth, (req, res) => {
     res.json(data);
   });
 
-  // invalidate the cache
   cache.flushAll();
 });
 
 router.post('/updateBook', (req, res) => {
   User.findOne({ username: 'mehmesayin' })
     .then((user) => {
-      return Books.updateMany({}, { $set: { uploader: user._id } });
+      return Books.updateMany({}, { $set: { uploader: user?._id } });
     })
     .then((result) => {
-      console.log(`Updated ${result.nModified} documents`);
+      res.json(result);
     })
     .catch((error) => {
       console.error(error);

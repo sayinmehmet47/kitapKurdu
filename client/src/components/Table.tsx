@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { Book, BooksData } from '../helpers/hooks/useFetchBooks';
 import Loading from './Loading';
+import { useDeleteBookMutation } from '../redux/services/book.api';
 
 type TableTypes = {
   books: BooksData;
@@ -20,6 +21,7 @@ type ColumnWithShow<T extends Record<string, unknown>> = Column<T> & {
 
 export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
   const [data, setData] = React.useState(books.results);
+  const [deleteBook] = useDeleteBookMutation();
 
   useEffect(() => {
     setData(books.results);
@@ -32,24 +34,6 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
   );
 
   const isAdmin = isLoggedIn && USERINFO.user?.isAdmin;
-
-  const handleDelete = (row: any) => {
-    axios
-      .post('https://kitapkurdu.onrender.com/books/deleteBook', {
-        id: row.original.id,
-      })
-      .then((res) => {
-        if (res.data) {
-          res.data && toast.success('Book deleted successfully');
-          refresh();
-        } else {
-          toast.error('Something went wrong');
-        }
-      })
-      .catch((err) => {
-        toast.error('Something went wrong');
-      });
-  };
 
   const columns = useMemo(
     (): readonly ColumnWithShow<Book>[] => [
@@ -90,7 +74,16 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
         show: isAdmin,
         Cell: ({ row }: any) => (
           <div className="text-center delete-icon flex justify-content-center me-1">
-            <AiOutlineDelete onClick={() => handleDelete(row)} />
+            <AiOutlineDelete
+              onClick={() =>
+                deleteBook(row.original.id)
+                  .unwrap()
+                  .then(() => {
+                    toast.success('Book deleted successfully');
+                    refresh();
+                  })
+              }
+            />
           </div>
         ),
       },

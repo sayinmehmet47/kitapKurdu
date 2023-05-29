@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { setAuthorizationToken } from '../helpers/setAuthorizationToken';
+import { apiBaseUrl } from './common.api';
 
 export const loginThunk = createAsyncThunk(
   'authSlice/login',
@@ -9,13 +10,10 @@ export const loginThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post(
-        `https://kitapkurdu.onrender.com/user/login`,
-        {
-          username,
-          password,
-        }
-      );
+      const res = await axios.post(`${apiBaseUrl}/user/login`, {
+        username,
+        password,
+      });
       const { token } = res.data;
       localStorage.setItem('jwtToken', token);
       setAuthorizationToken(token);
@@ -46,7 +44,7 @@ export const loadUserThunk = createAsyncThunk(
       if (localStorage.jwtToken) {
         setAuthorizationToken(localStorage.jwtToken);
       }
-      const res = await axios.get(`https://kitapkurdu.onrender.com/user/auth`);
+      const res = await axios.get(`${apiBaseUrl}/user/auth`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err);
@@ -71,15 +69,12 @@ export const registerThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post(
-        `https://kitapkurdu.onrender.com/user/register`,
-        {
-          username,
-          email,
-          password,
-          isAdmin,
-        }
-      );
+      const res = await axios.post(`${apiBaseUrl}/user/register`, {
+        username,
+        email,
+        password,
+        isAdmin,
+      });
       if (res.data.status) {
         const { token } = res.data;
         localStorage.setItem('jwtToken', token);

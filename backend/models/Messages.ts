@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const schema = new mongoose.Schema(
   {
@@ -16,4 +16,4 @@ const schema = new mongoose.Schema(
   { collection: 'messages' }
 );
 
-module.exports = Messages = mongoose.model('Messages', schema);
+export const Messages = mongoose.model('Messages', schema);

@@ -1,6 +1,7 @@
-const express = require('express');
-const auth = require('../../middleware/auth');
-const Messages = require('../../models/Messages');
+import express from 'express';
+import { auth } from '../../middleware/auth';
+import { Messages } from '../../models/Messages';
+
 const router = express.Router();
 
 router.get('/userMessages', auth, async (req, res) => {
@@ -23,7 +24,7 @@ router.post('/userMessages', auth, async (req, res) => {
 router.delete('/userMessages/:id', auth, async (req, res) => {
   const id = req.params.id;
 
-  if (!req.user.isAdmin) {
+  if (!req.body.user.isAdmin) {
     return res.status(401).json({ msg: 'Not authorized to delete message' });
   }
 
@@ -32,13 +33,24 @@ router.delete('/userMessages/:id', auth, async (req, res) => {
     return;
   }
 
-  Messages.findByIdAndDelete(id, (err, data) => {
-    if (err) console.log(err);
-    if (!data) {
-      return res.status(404).json({ msg: 'Message not found' });
+  Messages.findByIdAndDelete(
+    id,
+    (
+      err: Error,
+      data: {
+        _id: string;
+        text: string;
+        date: Date;
+        sender: string;
+      }
+    ) => {
+      if (err) console.log(err);
+      if (!data) {
+        return res.status(404).json({ msg: 'Message not found' });
+      }
+      res.json(data);
     }
-    res.json(data);
-  });
+  );
 });
 
 module.exports = router;

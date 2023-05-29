@@ -4,7 +4,7 @@
   "description": "Book searching engine",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.ts"
   },
   "dependencies": {
     "@types/jest": "^29.2.4",
@@ -33,10 +33,14 @@
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.31.1",
-    "@types/react-table": "^7.7.12",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/styled-components": "^5.1.26",
+    "@types/validator": "^13.7.17",
     "nodemon": "^2.0.12",
     "react-app-rewired": "^2.2.1",
-    "simple-copy": "^2.2.1"
+    "simple-copy": "^2.2.1",
+    "ts-node": "^10.9.1"
   }
 }

@@ -1,11 +1,10 @@
-const express = require('express');
+import express, { Request } from 'express';
+import jwt from 'jsonwebtoken';
+import { validationResult } from 'express-validator';
+import { User } from '../../models/User';
+import bcrypt from 'bcrypt';
+import { auth } from '../../middleware/auth';
 const router = express.Router();
-const User = require('../../models/User');
-const Books = require('../../models/Books');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const { validationResult } = require('express-validator');
-const auth = require('../../middleware/auth');
 
 router.post('/login', async (req, res) => {
   try {
@@ -16,8 +15,8 @@ router.post('/login', async (req, res) => {
     if (!isMatch) throw Error('Incorrect password');
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      process.env.JWT_SECRET || '',
+      { expiresIn: '4h' }
     );
 
     res.status(200).json({
@@ -31,7 +30,7 @@ router.post('/login', async (req, res) => {
         updatedAt: user.updatedAt,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(400).json({
       error: error.message,
     });
@@ -70,7 +69,7 @@ router.post('/register', async (req, res) => {
 
     const token = jwt.sign(
       { id: savedUser._id, isAdmin: savedUser.isAdmin },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || '',
       { expiresIn: '4h' }
     );
     res.status(200).json({
@@ -81,20 +80,21 @@ router.post('/register', async (req, res) => {
         email: savedUser.email,
       },
     });
-  } catch (e) {
+  } catch (e: any) {
     res.status(400).json({ msg: e.message });
   }
 });
 
-router.get('/auth', auth, async (req, res) => {
+router.get('/auth', auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     const token = await req.header('Authorization').split(' ')[1];
+
     res.json({
       user: user,
       token: token,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error.message);
     res.status(500).send('Server Error');
   }

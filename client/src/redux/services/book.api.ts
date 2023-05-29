@@ -12,6 +12,15 @@ export const bookApi = commonApi.injectEndpoints({
       }),
       providesTags: (result) => [{ type: 'Book', id: 'List' }],
     }),
+    deleteBook: build.mutation<BookModel, { id: string }>({
+      query: (id) => ({
+        url: `/books/deleteBook`,
+        method: 'POST',
+        body: { id },
+      }),
+      invalidatesTags: ['Book'],
+    }),
+
     // createExample: build.mutation<
     //   BookModel,
     //   { example: Partial<BookModel> & { limit?: number } }
@@ -59,6 +68,7 @@ export const bookApi = commonApi.injectEndpoints({
 
 export const {
   useFetchAllBooksQuery,
+  useDeleteBookMutation,
   // useCreateExampleMutation,
   // useUpdateExampleMutation,
   // useDeleteExampleMutation,

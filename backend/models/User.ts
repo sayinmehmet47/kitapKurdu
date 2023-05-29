@@ -1,6 +1,4 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
@@ -14,9 +12,11 @@ const userSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      validate: {
-        validator: validator.isEmail,
-        message: '{VALUE} is not a valid email',
+      validator: {
+        validator: function (v: string) {
+          return /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(v);
+        },
+        message: (props: any) => `${props.value} is not a valid email!`,
       },
     },
     password: {
@@ -45,4 +45,4 @@ const userSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model('User', userSchema);
+export const User = mongoose.model('User', userSchema);
