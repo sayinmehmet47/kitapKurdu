@@ -9,7 +9,7 @@ import { auth } from '../../middleware/auth';
 import { Error } from 'mongoose';
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
@@ -40,7 +40,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: Request, res: Response) => {
   const { username, email, password, isAdmin } = req.body;
   const errors = validationResult(req);
 

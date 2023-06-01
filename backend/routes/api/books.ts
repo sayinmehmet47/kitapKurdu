@@ -7,7 +7,7 @@ const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
 
-router.get('/allBooks', async (req, res) => {
+router.get('/allBooks', async (req: Request, res: Response) => {
   Books.find(
     {},
     (
@@ -72,7 +72,7 @@ router.get('/allBooks', async (req, res) => {
   );
 });
 
-router.get('/searchBooks', async (req, res) => {
+router.get('/searchBooks', async (req: Request, res: Response) => {
   const cacheKey = JSON.stringify(req.query); // use the query as the cache key
   const cachedResult = cache.get(cacheKey);
   if (cachedResult) {
@@ -132,7 +132,7 @@ router.get('/searchBooks', async (req, res) => {
   res.json(pagination);
 });
 
-router.post('/addNewBook', (req, res) => {
+router.post('/addNewBook', (req: Request, res) => {
   const ikinciParti = new Books({
     name: req.body.name,
     url: req.body.url,
@@ -146,7 +146,7 @@ router.post('/addNewBook', (req, res) => {
   });
 });
 
-router.get('/recently-added', (req, res) => {
+router.get('/recently-added', (req: Request, res: Response) => {
   Books.find({})
     .sort({ date: -1 })
     .limit(50)
@@ -172,7 +172,7 @@ router.post('/deleteBook', auth, (req: Request, res: Response) => {
   cache.flushAll();
 });
 
-router.post('/updateBook', (req, res) => {
+router.post('/updateBook', (req: Request, res: Response) => {
   User.findOne({ username: 'mehmesayin' })
     .then((user) => {
       return Books.updateMany({}, { $set: { uploader: user?._id } });

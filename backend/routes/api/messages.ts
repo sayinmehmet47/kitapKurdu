@@ -1,10 +1,10 @@
-import express from 'express';
+import express, { Response, Request } from 'express';
 import { auth } from '../../middleware/auth';
 import { Messages } from '../../models/Messages';
 
 const router = express.Router();
 
-router.get('/userMessages', auth, async (req, res) => {
+router.get('/userMessages', auth, async (req: Request, res: Response) => {
   const userMessages = await Messages.find({}).populate(
     'sender',
     'username email _id isAdmin createdAt updatedAt messages'
@@ -12,7 +12,7 @@ router.get('/userMessages', auth, async (req, res) => {
   res.json(userMessages);
 });
 
-router.post('/userMessages', auth, async (req, res) => {
+router.post('/userMessages', auth, async (req: Request, res: Response) => {
   const { text, sender } = req.body;
 
   const userMessages = new Messages({
@@ -24,7 +24,7 @@ router.post('/userMessages', auth, async (req, res) => {
   res.json({ status: 'Message Sent' });
 });
 
-router.delete('/deleteMessage', auth, async (req, res) => {
+router.delete('/deleteMessage', auth, async (req: Request, res: Response) => {
   const { id } = req.body.id;
   if (!req.body.user.isAdmin) {
     return res.status(401).json({ msg: 'Not authorized to delete message' });
