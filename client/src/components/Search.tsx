@@ -1,33 +1,33 @@
-import useFetchBooks from '../helpers/hooks/useFetchBooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Form, FormGroup, Input, Spinner } from 'reactstrap';
 import { Table } from './Table';
+import { useLazySearchBooksQuery } from '../redux/services/book.api';
 
 export const Search = () => {
+  const [searchBook, { data: books, isLoading, isError }] =
+    useLazySearchBooksQuery();
   const [search, setSearch] = useState('');
-  const [query, setQuery] = useState('');
-
   const [page, setPage] = useState(1);
 
-  const handleChangeInput = (e: any) => {
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
-  const { books, isLoading, setIsLoading, refresh } = useFetchBooks(
-    query,
-    page
-  );
+  useEffect(() => {
+    if (!search) return;
+    searchBook({ name: search, page });
+  }, [page, searchBook]);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>
+  ) => {
     e.preventDefault();
-    setIsLoading(true);
-    setQuery(search);
-    setPage(1);
-    // if the search value the same as before then refresh the page
-    if (search === query) {
-      refresh();
-    }
+    searchBook({ name: search, page });
   };
+
+  if (isError) {
+    return <div>Something went wrong</div>;
+  }
 
   return (
     <>
@@ -35,7 +35,7 @@ export const Search = () => {
         className="mx-5 mt-5 pt-5 text-center d-flex flex-column align-items-center"
         onSubmit={handleSubmit}
       >
-        <FormGroup className=" justify-content-center align-items-center mx-5 d-flex flex-column flex-md-row">
+        <FormGroup className="justify-content-center align-items-center mx-5 d-flex flex-column flex-md-row">
           <Input
             type="text"
             className="mx-2 d-flex justify-content-center align-items-center my-2"
@@ -71,18 +71,7 @@ export const Search = () => {
           )}
         </FormGroup>
       </Form>
-      {books.results.length < 1 ? (
-        <div style={{ textAlign: 'center', marginTop: '80px' }}>
-          <img width="60%" src="book.png" alt="fd" />
-        </div>
-      ) : (
-        <Table
-          books={books}
-          setPage={setPage}
-          refresh={refresh}
-          isLoading={isLoading}
-        />
-      )}
+      {books && <Table books={books} setPage={setPage} isLoading={isLoading} />}
     </>
   );
 };

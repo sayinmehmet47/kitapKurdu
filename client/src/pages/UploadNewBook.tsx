@@ -1,5 +1,3 @@
-import React from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from 'react-dropzone-uploader';
@@ -7,6 +5,7 @@ import Dropzone from 'react-dropzone-uploader';
 import Layout from '../components/Layout';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import { useAddNewBookMutation } from '../redux/services/book.api';
 
 const CLOUD_NAME = 'dsequsn4l',
   UPLOAD_PRESET = 'uploads';
@@ -20,6 +19,8 @@ const Container = styled.div`
 `;
 
 export default function UploadNewBook() {
+  const [addNewBook] = useAddNewBookMutation();
+
   const { _id: userId } = useSelector(
     (state: any) => state.authSlice.user.user
   );
@@ -36,16 +37,9 @@ export default function UploadNewBook() {
       uploader: userId,
     };
     try {
-      async function addNewBook() {
-        axios
-          .post('https://kitapkurdu.onrender.com/books/addNewBook', book)
-          .then((res) => {
-            toast.success(res.data.name + ' has been uploaded!');
-          });
-      }
-
-      addNewBook();
-    } catch (error) {
+      await addNewBook(book);
+      toast.success(book.name + ' has been uploaded!');
+    } catch (error: any) {
       toast.error(error.message + ' Please try again.');
     }
   };
@@ -55,7 +49,7 @@ export default function UploadNewBook() {
       <Container>
         <Dropzone
           getUploadParams={() => ({
-            url: `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload?upload_preset=${UPLOAD_PRESET}`,
+            url: process.env.REACT_APP_CLOUDINARY_URL as string,
           })}
           onChangeStatus={({ xhr }, status) => {
             if (status === 'done') {

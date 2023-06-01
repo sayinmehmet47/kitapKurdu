@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { setAuthorizationToken } from '../helpers/setAuthorizationToken';
+import { apiBaseUrl } from './common.api';
 
 export const loginThunk = createAsyncThunk(
   'authSlice/login',
@@ -9,19 +10,20 @@ export const loginThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post(
-        `https://kitapkurdu.onrender.com/user/login`,
-        {
-          username,
-          password,
-        }
-      );
+      const res = await axios.post(`${apiBaseUrl}/user/login`, {
+        username,
+        password,
+      });
       const { token } = res.data;
       localStorage.setItem('jwtToken', token);
       setAuthorizationToken(token);
       return res.data;
-    } catch (err) {
-      return rejectWithValue(err);
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response) {
+        return rejectWithValue(err.response.data.errorMessage);
+      }
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -33,8 +35,12 @@ export const logoutThunk = createAsyncThunk(
       localStorage.removeItem('jwtToken');
       setAuthorizationToken(false);
       return { status: true };
-    } catch (err) {
-      return rejectWithValue(err);
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response) {
+        return rejectWithValue(err.response.data.errorMessage);
+      }
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -46,10 +52,14 @@ export const loadUserThunk = createAsyncThunk(
       if (localStorage.jwtToken) {
         setAuthorizationToken(localStorage.jwtToken);
       }
-      const res = await axios.get(`https://kitapkurdu.onrender.com/user/auth`);
+      const res = await axios.get(`${apiBaseUrl}/user/auth`);
       return res.data;
-    } catch (err) {
-      return rejectWithValue(err);
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response) {
+        return rejectWithValue(err.response.data.errorMessage);
+      }
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -71,23 +81,24 @@ export const registerThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post(
-        `https://kitapkurdu.onrender.com/user/register`,
-        {
-          username,
-          email,
-          password,
-          isAdmin,
-        }
-      );
+      const res = await axios.post(`${apiBaseUrl}/user/register`, {
+        username,
+        email,
+        password,
+        isAdmin,
+      });
       if (res.data.status) {
         const { token } = res.data;
         localStorage.setItem('jwtToken', token);
         setAuthorizationToken(token);
       }
       return res;
-    } catch (err) {
-      return rejectWithValue(err);
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response) {
+        return rejectWithValue(err.response.data.errorMessage);
+      }
+      return rejectWithValue(err.message);
     }
   }
 );

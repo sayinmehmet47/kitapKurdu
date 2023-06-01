@@ -1,13 +1,13 @@
 {
   "restartable": "rs",
   "ignore": [
-      ".git",
-      "node_modules/**/node_modules"
+    ".git",
+    "node_modules/**/node_modules"
   ],
   "verbose": true,
   "env": {
-      "NODE_ENV": "development"
+    "NODE_ENV": "development"
   },
-  "ext": "js,json,html,css",
+  "ext": "js,json,html,css,ts",
   "delay": "2500"
 }

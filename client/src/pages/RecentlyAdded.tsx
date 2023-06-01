@@ -13,7 +13,7 @@ import {
 import Loading from '../components/Loading';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
-import useFetchRecentlyAddedBooks from '../helpers/hooks/useFetchRecentlyAddedBooks';
+import { useFetchRecentlyAddedQuery } from '../redux/services/book.api';
 
 const Container = styled.div`
   margin-top: 55px;
@@ -25,9 +25,9 @@ const Container = styled.div`
 type Props = {};
 
 const RecentlyAdded = (props: Props) => {
-  const { recentlyAddedBooks, loading } = useFetchRecentlyAddedBooks();
+  const { data: recentlyAddedBooks, isLoading } = useFetchRecentlyAddedQuery();
 
-  if (loading) {
+  if (isLoading || !recentlyAddedBooks) {
     return <Loading />;
   }
 
@@ -35,14 +35,14 @@ const RecentlyAdded = (props: Props) => {
     <Layout>
       <Container>
         <Row lg={5} md={3} sm={3} className="d-flex justify-content-center">
-          {recentlyAddedBooks.map((book) => (
+          {recentlyAddedBooks?.map((book) => (
             <Card className="m-2" key={book.id}>
               <div className="w-50 d-flex justify-center mx-auto mt-3">
                 <CardImg
                   alt="Card image cap"
                   src={
-                    book.file.includes('pdf')
-                      ? book.file?.replace('pdf', 'jpg')
+                    book.url?.includes('pdf')
+                      ? book.url?.replace('pdf', 'jpg')
                       : 'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
                   }
                   top
@@ -53,11 +53,13 @@ const RecentlyAdded = (props: Props) => {
                 <CardText>{book.size}</CardText>
               </CardBody>
               <CardFooter>
-                <Button color="primary">
-                  <Link to={book.file} className="text-white">
-                    Download
-                  </Link>
-                </Button>
+                {book.url && (
+                  <Button color="primary">
+                    <Link to={book?.url} className="text-white">
+                      Download
+                    </Link>
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}

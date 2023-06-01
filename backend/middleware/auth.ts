@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 
-module.exports = (req, res, next) => {
+export const auth = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.split(' ')[1];
 
   // Check for token
@@ -9,10 +9,8 @@ module.exports = (req, res, next) => {
     return res.status(401).json({ msg: 'No token, authorization denied' });
 
   try {
-    // Verify token
     const decoded = jwt.verify(token, '' + process.env.JWT_SECRET);
-    // Add user from payload
-    req.user = decoded;
+    req.body.user = decoded;
     next();
   } catch (e) {
     res.status(400).json({ msg: 'Token is not valid' });

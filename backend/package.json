@@ -2,12 +2,12 @@
   "name": "kitapkurdu",
   "version": "0.0.3",
   "description": "Book searching engine",
-  "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "build": "npm install && tsc",
+    "start": "nodemon --exec ts-node server.ts",
+    "deploy": "node ./dist/server.js"
   },
   "dependencies": {
-    "@types/jest": "^29.2.4",
     "@types/node": "^18.11.13",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
@@ -26,17 +26,22 @@
     "node-url-shortener": "^2.0.3",
     "rc-progress": "^3.4.1",
     "simple-short": "^1.0.7",
-    "typescript": "^4.9.4",
     "validator": "^13.7.0",
     "wait-on": "^7.0.1"
   },
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.31.1",
-    "@types/react-table": "^7.7.12",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/styled-components": "^5.1.26",
+    "@types/validator": "^13.7.17",
     "nodemon": "^2.0.12",
     "react-app-rewired": "^2.2.1",
-    "simple-copy": "^2.2.1"
+    "simple-copy": "^2.2.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3"
   }
 }

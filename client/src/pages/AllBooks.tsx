@@ -25,13 +25,14 @@ const Container = styled.div`
 
 const AllBooks = () => {
   const [page, setPage] = useState(1);
-  const { data: bookData, isLoading } = useFetchAllBooksQuery(page);
+  const { data: bookData, isLoading, isFetching } = useFetchAllBooksQuery(page);
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
+    console.log('loading');
     return <Loading />;
   }
 
