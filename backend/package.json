@@ -2,10 +2,11 @@
   "name": "kitapkurdu",
   "version": "0.0.3",
   "description": "Book searching engine",
+  "main": "server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm install && tsc",
     "start": "nodemon --exec ts-node server.ts",
-    "deploy": "node ./dist/server.js"
+    "startDeploy": "node ./dist/server.js"
   },
   "dependencies": {
     "@types/jest": "^29.2.4",
