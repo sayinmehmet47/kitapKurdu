@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { setAuthorizationToken } from '../helpers/setAuthorizationToken';
 import { apiBaseUrl } from './common.api';
 
@@ -18,8 +18,12 @@ export const loginThunk = createAsyncThunk(
       localStorage.setItem('jwtToken', token);
       setAuthorizationToken(token);
       return res.data;
-    } catch (err) {
-      return rejectWithValue(err);
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response) {
+        return rejectWithValue(err.response.data.errorMessage);
+      }
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -31,8 +35,12 @@ export const logoutThunk = createAsyncThunk(
       localStorage.removeItem('jwtToken');
       setAuthorizationToken(false);
       return { status: true };
-    } catch (err) {
-      return rejectWithValue(err);
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response) {
+        return rejectWithValue(err.response.data.errorMessage);
+      }
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -46,8 +54,12 @@ export const loadUserThunk = createAsyncThunk(
       }
       const res = await axios.get(`${apiBaseUrl}/user/auth`);
       return res.data;
-    } catch (err) {
-      return rejectWithValue(err);
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response) {
+        return rejectWithValue(err.response.data.errorMessage);
+      }
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -81,8 +93,12 @@ export const registerThunk = createAsyncThunk(
         setAuthorizationToken(token);
       }
       return res;
-    } catch (err) {
-      return rejectWithValue(err);
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response) {
+        return rejectWithValue(err.response.data.errorMessage);
+      }
+      return rejectWithValue(err.message);
     }
   }
 );

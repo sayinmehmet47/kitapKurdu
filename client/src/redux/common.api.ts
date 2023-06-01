@@ -20,6 +20,6 @@ export const commonApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Book'],
+  tagTypes: ['Book', 'Messages'],
   endpoints: (_) => ({}),
 });

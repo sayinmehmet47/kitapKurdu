@@ -1,17 +1,18 @@
-import axios from 'axios';
 import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useTable, useSortBy, usePagination, Column } from 'react-table';
 import { toast } from 'react-toastify';
 import { AiOutlineDelete } from 'react-icons/ai';
-import { Book, BooksData } from '../helpers/hooks/useFetchBooks';
 import Loading from './Loading';
-import { useDeleteBookMutation } from '../redux/services/book.api';
+import {
+  Book,
+  BooksData,
+  useDeleteBookMutation,
+} from '../redux/services/book.api';
 
 type TableTypes = {
   books: BooksData;
   setPage: (page: number) => void;
-  refresh: () => void;
   isLoading: boolean;
 };
 
@@ -19,7 +20,7 @@ type ColumnWithShow<T extends Record<string, unknown>> = Column<T> & {
   show?: boolean;
 };
 
-export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
+export const Table = ({ books, setPage, isLoading }: TableTypes) => {
   const [data, setData] = React.useState(books.results);
   const [deleteBook] = useDeleteBookMutation();
 
@@ -44,7 +45,7 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
         accessor: (d: Book) => d.file,
         Cell: ({ row }: any) => {
           return (
-            <a href={row.original.file} download="renamed.pdf">
+            <a href={row.original.url} download="renamed.pdf">
               {row.original.name}
             </a>
           );
@@ -75,14 +76,14 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
         Cell: ({ row }: any) => (
           <div className="text-center delete-icon flex justify-content-center me-1">
             <AiOutlineDelete
-              onClick={() =>
-                deleteBook(row.original.id)
+              onClick={() => {
+                console.log(row.original);
+                return deleteBook(row.original._id)
                   .unwrap()
                   .then(() => {
                     toast.success('Book deleted successfully');
-                    refresh();
-                  })
-              }
+                  });
+              }}
             />
           </div>
         ),
@@ -179,7 +180,9 @@ export const Table = ({ books, setPage, refresh, isLoading }: TableTypes) => {
         </button>
         <button
           className="btn btn-outline-dark btn-sm"
-          onClick={() => setPage(next.page)}
+          onClick={() => {
+            setPage(next.page);
+          }}
           disabled={!next}
         >
           NextPage ➡

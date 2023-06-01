@@ -1,6 +1,30 @@
 import { BookModel } from '../../models/book.model';
 import { commonApi } from '../common.api';
 
+export type Book = {
+  name: string;
+  file: string;
+  date: string;
+  size: string;
+  id: string;
+  url?: string;
+  uploader: {
+    username: string;
+    _id: string;
+    email: string;
+  };
+};
+export type BooksData = {
+  results: Book[];
+  total: number;
+  next: {
+    page: number;
+  };
+  previous: {
+    page: number;
+  };
+};
+
 export const bookApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
     fetchAllBooks: build.query<BookModel, number | void>({
@@ -18,58 +42,59 @@ export const bookApi = commonApi.injectEndpoints({
         method: 'POST',
         body: { id },
       }),
-      invalidatesTags: ['Book'],
+      invalidatesTags: [{ type: 'Book', id: 'List' }],
     }),
 
-    // createExample: build.mutation<
-    //   BookModel,
-    //   { example: Partial<BookModel> & { limit?: number } }
-    // >({
-    //   query: ({ example }) => ({
-    //     url: '/example',
-    //     method: 'POST',
-    //     body: example,
-    //   }),
-    //   async onQueryStarted({ example }, { dispatch, queryFulfilled }) {
-    //     try {
-    //       const { data } = await queryFulfilled;
+    searchBooks: build.query<
+      BooksData,
+      {
+        name: string;
+        page: number;
+      }
+    >({
+      query: ({ name, page }) => ({
+        url: `/books/searchBooks`,
+        params: {
+          name,
+          page,
+        },
+      }),
+      providesTags: (result) => [{ type: 'Book', id: 'List' }],
+    }),
 
-    //       dispatch(
-    //         exampleApi.util.updateQueryData(
-    //           'fetchExampleList',
-    //           example.limit,
-    //           (draft) => {
-    //             draft.unshift(data);
-    //           }
-    //         )
-    //       );
-    //     } catch (e) {
-    //       console.error('userApi createUser error', e);
-    //     }
-    //   },
-    // }),
-    // updateExample: build.mutation<BookModel, { example: BookModel }>({
-    //   query: ({ example }) => ({
-    //     url: `/example`,
-    //     method: 'PUT',
-    //     body: example,
-    //   }),
-    //   invalidatesTags: ['Example'],
-    // }),
-    // deleteExample: build.mutation<BookModel, { example: BookModel }>({
-    //   query: ({ example }) => ({
-    //     url: `/example/${example.id}`,
-    //     method: 'DELETE',
-    //   }),
-    //   invalidatesTags: ['Example'],
-    // }),
+    addNewBook: build.mutation<
+      BookModel,
+      {
+        name: string;
+        size: string;
+        url: string;
+        uploader: string;
+      }
+    >({
+      query: (book) => ({
+        url: `/books/addNewBook`,
+        method: 'POST',
+        body: book,
+      }),
+      invalidatesTags: [{ type: 'Book', id: 'List' }],
+    }),
+
+    fetchRecentlyAdded: build.query<Book[], number | void>({
+      query: (page: number) => ({
+        url: '/books/recently-added',
+        params: {
+          page,
+        },
+        invalidatesTags: [{ type: 'Book', id: 'List' }],
+      }),
+    }),
   }),
 });
 
 export const {
   useFetchAllBooksQuery,
   useDeleteBookMutation,
-  // useCreateExampleMutation,
-  // useUpdateExampleMutation,
-  // useDeleteExampleMutation,
+  useLazySearchBooksQuery,
+  useAddNewBookMutation,
+  useFetchRecentlyAddedQuery,
 } = bookApi;

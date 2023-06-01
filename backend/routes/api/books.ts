@@ -72,7 +72,7 @@ router.get('/allBooks', async (req, res) => {
   );
 });
 
-router.get('/search', async (req, res) => {
+router.get('/searchBooks', async (req, res) => {
   const cacheKey = JSON.stringify(req.query); // use the query as the cache key
   const cachedResult = cache.get(cacheKey);
   if (cachedResult) {
@@ -81,6 +81,7 @@ router.get('/search', async (req, res) => {
   }
   const query = {
     name: {
+      // also find partial matches and turkish characters (i.e. case insensitive)
       $regex: req.query.name,
       $options: 'i',
     },
@@ -96,7 +97,7 @@ router.get('/search', async (req, res) => {
       .populate('uploader', 'username email')
       .skip(startIndex)
       .limit(limit)
-      .lean(), // return plain JS objects instead of Mongoose documents
+      .lean(),
   ]);
 
   const endIndex = Math.min(startIndex + limit, count);
@@ -155,8 +156,10 @@ router.get('/recently-added', (req, res) => {
     });
 });
 
-router.post('/deleteBook', auth, (req: any, res: any) => {
+router.post('/deleteBook', auth, (req: Request, res: Response) => {
   const id = req.body.id;
+
+  console.log('id: ', id);
 
   Books.findByIdAndDelete(id, (err: any, data: any) => {
     if (err) console.log(err);
