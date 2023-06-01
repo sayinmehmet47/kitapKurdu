@@ -3,7 +3,7 @@
   "version": "0.0.3",
   "description": "Book searching engine",
   "scripts": {
-    "build": "tsc",
+    "build": "npm install && tsc",
     "start": "nodemon --exec ts-node server.ts",
     "deploy": "node ./dist/server.js"
   },
