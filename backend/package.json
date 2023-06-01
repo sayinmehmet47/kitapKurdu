@@ -2,8 +2,6 @@
   "name": "kitapkurdu",
   "version": "0.0.3",
   "description": "Book searching engine",
-  "module": "esnext",
-  "main": "server.js",
   "scripts": {
     "start": "nodemon server.ts --exec ts-node"
   },
