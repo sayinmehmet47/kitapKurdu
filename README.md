@@ -50,7 +50,7 @@ This project includes many Turkish books for free. I used yandex API to fetch th
 
 ## :sparkles: Features
 
-:heavy_check_mark: You can install more than 10000 books free with one click
+:heavy_check_mark: You can install more than 7000 books free with one click
 
 :heavy_check_mark: Books are in e-pub format
 
