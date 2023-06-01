@@ -7,6 +7,8 @@ export const apiBaseUrl =
     ? process.env.REACT_APP_DEV_API
     : process.env.REACT_APP_LOCAL_API;
 
+console.log('apiBaseUrl', apiBaseUrl);
+
 export const commonApi = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
