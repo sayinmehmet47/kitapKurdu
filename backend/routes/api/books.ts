@@ -1,8 +1,11 @@
+import { BookModel } from './../../../client/src/models/book.model';
 import { Error } from 'mongoose';
 import { Books } from './../../models/Books';
 import express, { Request, Response } from 'express';
 import { User } from '../../models/User';
 import { auth } from '../../middleware/auth';
+import { NotFoundError } from '../../errors/not-found-error';
+import { ServerError } from '../../errors/server-error';
 const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
@@ -76,7 +79,6 @@ router.get('/searchBooks', async (req: Request, res: Response) => {
   const cacheKey = JSON.stringify(req.query); // use the query as the cache key
   const cachedResult = cache.get(cacheKey);
   if (cachedResult) {
-    console.log('Serving from cache');
     return res.json(cachedResult);
   }
   const query = {
@@ -161,10 +163,9 @@ router.post('/deleteBook', auth, (req: Request, res: Response) => {
 
   console.log('id: ', id);
 
-  Books.findByIdAndDelete(id, (err: any, data: any) => {
-    if (err) console.log(err);
+  Books.findByIdAndDelete(id, (data: BookModel[]) => {
     if (!data) {
-      return res.status(404).json({ msg: 'Book not found' });
+      throw new NotFoundError('Book not found');
     }
     res.json(data);
   });
@@ -175,13 +176,19 @@ router.post('/deleteBook', auth, (req: Request, res: Response) => {
 router.post('/updateBook', (req: Request, res: Response) => {
   User.findOne({ username: 'mehmesayin' })
     .then((user) => {
+      if (!user) throw new NotFoundError('User not found');
+
       return Books.updateMany({}, { $set: { uploader: user?._id } });
     })
     .then((result) => {
       res.json(result);
     })
     .catch((error) => {
-      console.error(error);
+      if (error instanceof NotFoundError) {
+        return res.status(error.statusCode).json(error.serializeErrors());
+      }
+      const serverError = new ServerError('An error occurred');
+      res.status(serverError.statusCode).json(serverError.serializeErrors());
     });
 });
 

@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import { NotFoundError } from './errors/not-found-error';
+import { errorHandler } from './middleware/error-handler';
 
 const app = express();
 const books = require('./routes/api/books');
@@ -27,6 +29,12 @@ app.use(cors(corsOptions));
 app.use('/books', books);
 app.use('/user', user);
 app.use('/messages', messages);
+
+app.all('*', (req: Request, res: Response) => {
+  throw new NotFoundError();
+});
+
+app.use(errorHandler);
 
 if (process.env.NODE_ENV === 'production') {
   // Set static folder

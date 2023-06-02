@@ -58,7 +58,14 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
 
       {
         Header: 'Date',
-        accessor: 'date',
+        accessor: (d: Book) => d.date,
+        Cell: ({ row }: any) => {
+          return (
+            <div className="text-success ms-5">
+              {new Date(row.original.date).toLocaleDateString()}
+            </div>
+          );
+        },
       },
       {
         Header: 'Uploaded By',
@@ -77,7 +84,6 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
           <div className="text-center delete-icon flex justify-content-center me-1">
             <AiOutlineDelete
               onClick={() => {
-                console.log(row.original);
                 return deleteBook(row.original._id)
                   .unwrap()
                   .then(() => {
