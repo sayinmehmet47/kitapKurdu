@@ -1,11 +1,13 @@
 import { BookModel } from './../../../client/src/models/book.model';
 import { Error } from 'mongoose';
 import { Books } from './../../models/Books';
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { User } from '../../models/User';
 import { auth } from '../../middleware/auth';
 import { NotFoundError } from '../../errors/not-found-error';
 import { ServerError } from '../../errors/server-error';
+import { body } from 'express-validator';
+import { validateRequest } from '../../middleware/validate-request';
 const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
@@ -83,11 +85,11 @@ router.get('/searchBooks', async (req: Request, res: Response) => {
   }
   const query = {
     name: {
-      // also find partial matches and turkish characters (i.e. case insensitive)
       $regex: req.query.name,
       $options: 'i',
     },
   };
+
   const page = parseInt(String(req.query.page)) || 1;
   const limit = parseInt(String(req.query.limit)) || 10;
   const startIndex = (page - 1) * limit;
@@ -158,20 +160,29 @@ router.get('/recently-added', (req: Request, res: Response) => {
     });
 });
 
-router.post('/deleteBook', auth, (req: Request, res: Response) => {
-  const id = req.body.id;
+router.post(
+  '/deleteBook',
+  [body('id').not().isEmpty().withMessage('Id is required')],
+  validateRequest,
+  auth,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.body.id.toString().trim();
 
-  console.log('id: ', id);
+    try {
+      const data = await Books.findByIdAndRemove(id);
 
-  Books.findByIdAndDelete(id, (data: BookModel[]) => {
-    if (!data) {
-      throw new NotFoundError('Book not found');
+      if (!data) {
+        throw new NotFoundError('Book not found');
+      }
+
+      res.json(data);
+    } catch (err) {
+      next(err); // Pass the error to the next error-handling middleware
     }
-    res.json(data);
-  });
 
-  cache.flushAll();
-});
+    cache.flushAll();
+  }
+);
 
 router.post('/updateBook', (req: Request, res: Response) => {
   User.findOne({ username: 'mehmesayin' })

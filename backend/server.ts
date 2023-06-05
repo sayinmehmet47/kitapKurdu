@@ -1,4 +1,8 @@
 import { Request, Response } from 'express';
+import 'express-async-errors';
+
+import { json } from 'body-parser';
+
 import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
@@ -7,6 +11,9 @@ import { NotFoundError } from './errors/not-found-error';
 import { errorHandler } from './middleware/error-handler';
 
 const app = express();
+app.set('trust proxy', true);
+app.use(json());
+
 const books = require('./routes/api/books');
 const user = require('./routes/api/user');
 const messages = require('./routes/api/messages');
