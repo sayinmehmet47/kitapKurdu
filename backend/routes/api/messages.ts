@@ -1,6 +1,10 @@
 import express, { Response, Request } from 'express';
 import { auth } from '../../middleware/auth';
 import { Messages } from '../../models/Messages';
+import { body } from 'express-validator';
+import { validateRequest } from '../../middleware/validate-request';
+import { NotAuthorizedError } from '../../errors/not-authorized-error';
+import { NotFoundError } from '../../errors/not-found-error';
 
 const router = express.Router();
 
@@ -24,35 +28,36 @@ router.post('/userMessages', auth, async (req: Request, res: Response) => {
   res.json({ status: 'Message Sent' });
 });
 
-router.delete('/deleteMessage', auth, async (req: Request, res: Response) => {
-  const { id } = req.body.id;
-  if (!req.body.user.isAdmin) {
-    return res.status(401).json({ msg: 'Not authorized to delete message' });
-  }
-
-  if (!id) {
-    res.status(400).json({ error: 'Missing id' });
-    return;
-  }
-
-  Messages.findByIdAndDelete(
-    id,
-    (
-      err: Error,
-      data: {
-        _id: string;
-        text: string;
-        date: Date;
-        sender: string;
-      }
-    ) => {
-      if (err) console.log(err);
-      if (!data) {
-        return res.status(404).json({ msg: 'Message not found' });
-      }
-      res.json(data);
+router.delete(
+  '/deleteMessage',
+  auth,
+  [body('id').not().isEmpty().withMessage('Id is required')],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { id } = req.body.id.toString().trim();
+    if (!req.body.user.isAdmin) {
+      throw new NotAuthorizedError();
     }
-  );
-});
+
+    Messages.findByIdAndDelete(
+      id,
+      (
+        err: Error,
+        data: {
+          _id: string;
+          text: string;
+          date: Date;
+          sender: string;
+        }
+      ) => {
+        if (err) console.log(err);
+        if (!data) {
+          throw new NotFoundError('Message not found');
+        }
+        res.json(data);
+      }
+    );
+  }
+);
 
 module.exports = router;
