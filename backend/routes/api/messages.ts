@@ -1,10 +1,11 @@
-import express, { Response, Request } from 'express';
+import express, { Response, Request, NextFunction } from 'express';
 import { auth } from '../../middleware/auth';
 import { Messages } from '../../models/Messages';
 import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
 import { NotAuthorizedError } from '../../errors/not-authorized-error';
 import { NotFoundError } from '../../errors/not-found-error';
+import { ServerError } from '../../errors/server-error';
 
 const router = express.Router();
 
@@ -34,29 +35,22 @@ router.delete(
   [body('id').not().isEmpty().withMessage('Id is required')],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { id } = req.body.id.toString().trim();
+    const { id } = req.body.id;
     if (!req.body.user.isAdmin) {
       throw new NotAuthorizedError();
     }
 
-    Messages.findByIdAndDelete(
-      id,
-      (
-        err: Error,
-        data: {
-          _id: string;
-          text: string;
-          date: Date;
-          sender: string;
-        }
-      ) => {
-        if (err) console.log(err);
-        if (!data) {
-          throw new NotFoundError('Message not found');
-        }
-        res.json(data);
+    try {
+      const data = await Messages.findByIdAndRemove(id);
+
+      if (!data) {
+        throw new NotFoundError('Message not found');
       }
-    );
+
+      res.json(data);
+    } catch (err) {
+      throw new ServerError('An error occurred');
+    }
   }
 );
 
