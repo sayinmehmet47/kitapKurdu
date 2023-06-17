@@ -5,14 +5,11 @@ services:
     image: sayinmehmet/kitapkurdu-backend:latest
     volumes:
       - ./:/var/www/app
-        - /usr/app/node_modules
+      - /usr/app/node_modules
     ports:
       - '5000:5000'
-    environment:
-      - NODE_ENV=development
-      - MONGO_URI=mongodb+srv://sayinmehmet47:Mardin.1992,@cluster0.ywv3z.mongodb.net/kitaplar?retryWrites=true&w=majority
-      - JWT_SECRET=fsafdafdasfdk
-
+    env_file:
+      - backend/.env
     command: npm start
     networks:
       - sayin
@@ -30,10 +27,7 @@ services:
       - '3000:3000'
     networks:
       - sayin
-    environment:
-      - REACT_APP_LOCAL_API=http://localhost:5000
-      - REACT_APP_DEV_API=https://kitapkurdu.onrender.com
-      - REACT_APP_PROD_API=https://kitapkurdu.onrender.com
-      - REACT_APP_CLOUDINARY_URL=https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads
+    env_file:
+      - client/.env
 networks:
   sayin:
