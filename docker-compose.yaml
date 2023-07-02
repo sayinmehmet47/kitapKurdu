@@ -2,7 +2,7 @@ version: '3.9'
 services:
   backend:
     # build: ./backend/
-    image: sayinmehmet/kitapkurdu-backend:latest
+    image: sayinmehmet47/backend-kitapkurdu-1:latest
     volumes:
       - ./:/var/www/app
       - /usr/app/node_modules
@@ -16,7 +16,7 @@ services:
   client:
     # build:
     #   context: ./client/
-    image: sayinmehmet/kitapkurdu-client:latest
+    image: sayinmehmet47/client-kitapkurdu-1:latest
     command: npm start
     volumes:
       - ./client/:/usr/app
