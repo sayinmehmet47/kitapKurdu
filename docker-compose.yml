@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  client: 
+    image: sayinmehmet47/client-kitapkurdu-1:latest 
+    restart: always
+    volumes:
+      - ./client/:/usr/app
+      - /usr/app/node_modules
+    depends_on:
+      - backend
+    ports:
+      - 3000:3000 
+    labels:
+      kompose.image-pull-secret: "regcred"
+    env_file:
+      - client/.env
+  backend: 
+    image: sayinmehmet47/backend-kitapkurdu-1:latest
+    restart: always
+    volumes:
+      - ./backend/:/var/www/app
+      - /usr/app/node_modules
+    ports:
+      - 5000:5000
+    labels:
+      kompose.image-pull-secret: "regcred"
+    env_file:
+      - backend/.env
