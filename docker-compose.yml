@@ -10,8 +10,8 @@ services:
       - backend
     ports:
       - 3000:3000 
-    labels:
-      kompose.image-pull-secret: "regcred"
+    # labels:
+    #   kompose.image-pull-secret: "regcred"
     env_file:
       - client/.env
   backend: 
@@ -22,7 +22,7 @@ services:
       - /usr/app/node_modules
     ports:
       - 5000:5000
-    labels:
-      kompose.image-pull-secret: "regcred"
+    # labels:
+    #   kompose.image-pull-secret: "regcred"
     env_file:
       - backend/.env

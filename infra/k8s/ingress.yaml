@@ -10,23 +10,16 @@ metadata:
 spec:
   tls:
     - hosts:
-        - kitapkurdu.alphaworld.ch
+        - kitapkurdu.alphaworld.chh
       secretName: kitapkurdu-tls
   rules:
-    - host: kitapkurdu.alphaworld.ch
+    - host: kitapkurdu.alphaworld.chh
       http:
-        paths:
-          - path: /api/?(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: backend-service
-                port:
-                  number: 5000
+        paths: 
           - path: /?(.*)
             pathType: Prefix
             backend:
               service:
                 name: frontend-service
                 port:
-                  number: 3000
+                  number: 30001 
