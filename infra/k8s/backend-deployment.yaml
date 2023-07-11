@@ -20,7 +20,7 @@ spec:
           image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
-              value: 'xxxx'
+              value: '***'
             - name: JWT_SECRET
               value: 'fsafdafdasfdk'
             - name: PORT

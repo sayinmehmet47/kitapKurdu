@@ -10,10 +10,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - kitapkurdu.alphaworld.chh
+        - kitapkurdu.alphaworld.ch
       secretName: kitapkurdu-tls
   rules:
-    - host: kitapkurdu.alphaworld.chh
+    - host: kitapkurdu.alphaworld.ch
       http:
         paths: 
           - path: /?(.*)
