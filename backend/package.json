@@ -14,7 +14,7 @@
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cloudinary": "^1.34.0",
-    "concurrently": "^6.5.1",
+    "concurrently": "^8.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.2",
