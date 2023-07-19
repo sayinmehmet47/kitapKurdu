@@ -7,18 +7,22 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: kitapkurdu
+      tier: frontend
+      track: stable
   template:
     metadata:
       labels:
-        app: frontend
+        app: kitapkurdu
+        tier: frontend
+        track: stable
     spec:
       containers:
         - name: frontend
           image: sayinmehmet47/client-kitapkurdu-1:latest
           env:
             - name: REACT_APP_LOCAL_API
-              value: http://localhost:30003
+              value: http://backend-service
           ports:
             - containerPort: 3000
           resources:
@@ -29,12 +33,12 @@ kind: Service
 metadata:
   name: frontend-service
   namespace: kitapkurdu
-spec:
-  type: NodePort 
+spec: 
   selector:
-    app: frontend
+      app: kitapkurdu
+      tier: frontend
+  # type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 3000
+      port: 80
       targetPort: 3000
-      nodePort: 30001

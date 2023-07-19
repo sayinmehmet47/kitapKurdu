@@ -7,14 +7,18 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: kitapkurdu
+      tier: backend
+      track: stable
   template:
     metadata:
       labels:
-        app: backend
+        app: kitapkurdu
+        tier: backend
+        track: stable
     spec:
       containers:
-        - name: backend
+        - name: kitapkurdu
           image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
@@ -24,23 +28,21 @@ spec:
             - name: PORT
               value: '5000'
           ports:
-            - containerPort: 5000
+            - name: http
+              containerPort: 5000
           resources:
       restartPolicy: Always
-
----
+--- 
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
   namespace: kitapkurdu
-spec:
-  type: NodePort 
+spec: 
   selector:
-    app: backend
+      app: kitapkurdu
+      tier: backend 
   ports:
-    - name: backend
-      protocol: TCP
-      port: 5000
-      targetPort: 5000
-      nodePort: 30003
+    - protocol: TCP
+      port: 80
+      targetPort: http 
