@@ -23,6 +23,9 @@ spec:
           env:
             - name: REACT_APP_LOCAL_API
               value: https://kitapkurdu.alphaworld.ch/api
+            - name: REACT_APP_CLOUDINARY_URL
+              value: https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads
+
           ports:
             - containerPort: 3000
           resources:
