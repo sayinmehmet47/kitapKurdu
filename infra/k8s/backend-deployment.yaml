@@ -18,16 +18,13 @@ spec:
           image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
-              value: '***'
+              value: '**'
             - name: JWT_SECRET
               value: 'fsafdafdasfdk'
             - name: PORT
               value: '5000'
           ports:
             - containerPort: 5000
-          resources:
-      restartPolicy: Always
-
 ---
 apiVersion: v1
 kind: Service
@@ -35,7 +32,6 @@ metadata:
   name: backend-service
   namespace: kitapkurdu
 spec:
-  type: NodePort 
   selector:
     app: backend
   ports:
@@ -43,4 +39,3 @@ spec:
       protocol: TCP
       port: 5000
       targetPort: 5000
-      nodePort: 30003
