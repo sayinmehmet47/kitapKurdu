@@ -40,8 +40,7 @@ metadata:
 spec: 
   selector:
       app: kitapkurdu
-      tier: backend 
-  # type: LoadBalancer
+      tier: backend  
   ports:
     - protocol: TCP
       port: 80
