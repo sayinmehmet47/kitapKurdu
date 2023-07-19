@@ -33,9 +33,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use('/books', books);
-app.use('/user', user);
-app.use('/messages', messages);
+app.use('/api/books', books);
+app.use('/api/user', user);
+app.use('/api/messages', messages);
 
 app.all('*', (req: Request, res: Response) => {
   throw new NotFoundError();

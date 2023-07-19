@@ -22,7 +22,7 @@ spec:
           image: sayinmehmet47/client-kitapkurdu-1:latest
           env:
             - name: REACT_APP_LOCAL_API
-              value: http://backend-service
+              value: https://kitapkurdu.alphaworld.ch/api
           ports:
             - containerPort: 3000
           resources:
