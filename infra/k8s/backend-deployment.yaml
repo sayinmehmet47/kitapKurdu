@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: kitapkurdu
-          image: latifyildirim/kitapkurdu-backend:latest
+          image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
               value: '***'
