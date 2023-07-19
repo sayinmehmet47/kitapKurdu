@@ -7,26 +7,29 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: kitapkurdu
+      tier: frontend
+      track: stable
   template:
     metadata:
       labels:
-        app: frontend
+        app: kitapkurdu
+        tier: frontend
+        track: stable
     spec:
       containers:
         - name: frontend
           image: sayinmehmet47/client-kitapkurdu-1:latest
           env:
             - name: REACT_APP_LOCAL_API
-              value: 'https://kitapkurdu.alphaworld.ch/api'
-            - name: REACT_APP_DEV_API
-              value: 'https://kitapkurdu.alphaworld.ch/api'
-            - name: REACT_APP_PROD_API
-              value: 'https://kitapkurdu.alphaworld.ch/api'
+              value: https://kitapkurdu.alphaworld.ch/api
             - name: REACT_APP_CLOUDINARY_URL
-              value: 'https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads'
+              value: https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads
+
           ports:
             - containerPort: 3000
+          resources:
+
 ---
 apiVersion: v1
 kind: Service
@@ -35,8 +38,10 @@ metadata:
   namespace: kitapkurdu
 spec:
   selector:
-    app: frontend
+    app: kitapkurdu
+    tier: frontend
+  # type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 3000
+      port: 80
       targetPort: 3000

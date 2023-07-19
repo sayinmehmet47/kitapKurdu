@@ -7,24 +7,30 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: kitapkurdu
+      tier: backend
+      track: stable
   template:
     metadata:
       labels:
-        app: backend
+        app: kitapkurdu
+        tier: backend
+        track: stable
     spec:
       containers:
-        - name: backend
+        - name: kitapkurdu
           image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
-              value: '**'
+              value: '***'
             - name: JWT_SECRET
               value: 'fsafdafdasfdk'
             - name: PORT
               value: '5000'
           ports:
             - containerPort: 5000
+          resources:
+      restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
@@ -33,9 +39,10 @@ metadata:
   namespace: kitapkurdu
 spec:
   selector:
-    app: backend
+    app: kitapkurdu
+    tier: backend
+  # type: LoadBalancer
   ports:
-    - name: backend
-      protocol: TCP
-      port: 5000
+    - protocol: TCP
+      port: 80
       targetPort: 5000
