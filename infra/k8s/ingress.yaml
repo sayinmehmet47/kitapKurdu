@@ -5,11 +5,8 @@ metadata:
   namespace: kitapkurdu
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/use-regex: 'true'
-    # nginx.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    # nginx.ingress.kubernetes.io/ssl-redirect: '443'
-    # nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    cert-manager.io/cluster-issuer: letsencrypt-http # certbot sonrasinda-- cronjob ile yenilenmeli.
+    nginx.ingress.kubernetes.io/use-regex: 'true' 
+    cert-manager.io/cluster-issuer: letsencrypt-http 
   labels:
     app: frontend
 spec:

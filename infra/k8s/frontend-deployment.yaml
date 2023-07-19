@@ -39,8 +39,7 @@ metadata:
 spec: 
   selector:
       app: kitapkurdu
-      tier: frontend
-  # type: LoadBalancer
+      tier: frontend 
   ports:
     - protocol: TCP
       port: 80
