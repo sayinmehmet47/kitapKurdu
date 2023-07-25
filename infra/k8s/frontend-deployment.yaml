@@ -29,6 +29,12 @@ spec:
           ports:
             - containerPort: 3000
           resources:
+            requests:
+              cpu: "100m" 
+              memory: "800Mi" 
+            limits:
+                    cpu: "500m" 
+                    memory: "1600Mi" 
 
 ---
 apiVersion: v1
@@ -36,11 +42,10 @@ kind: Service
 metadata:
   name: frontend-service
   namespace: kitapkurdu
-spec:
+spec: 
   selector:
-    app: kitapkurdu
-    tier: frontend
-  # type: LoadBalancer
+      app: kitapkurdu
+      tier: frontend 
   ports:
     - protocol: TCP
       port: 80
