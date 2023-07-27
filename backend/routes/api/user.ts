@@ -100,7 +100,6 @@ router.post(
 );
 
 router.get('/auth', auth, async (req: Request, res: Response) => {
-  console.log('req.body: ', req.body);
   try {
     const user = await User.findById(req.body.user.id).select('-password');
     const token = req.header('Authorization')?.split(' ')[1];
