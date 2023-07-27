@@ -1,14 +1,15 @@
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
-const PrivateRoute = ({
+interface PrivateRouteProps extends PropsWithChildren<any> {
+  redirectPath?: string;
+}
+
+export const PrivateRoute = ({
   redirectPath = '/login',
   children,
-}: {
-  redirectPath?: string;
-  children: React.ReactNode;
-}) => {
+}: PrivateRouteProps) => {
   const isLoggedIn = useSelector((state: any) => state.authSlice.isLoggedIn);
   console.log(isLoggedIn);
   if (!isLoggedIn) {
@@ -17,5 +18,3 @@ const PrivateRoute = ({
 
   return children;
 };
-
-export default PrivateRoute;
