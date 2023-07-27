@@ -64,7 +64,9 @@ The following tools were used in this project:
 - [x] Bootsrap-5
 - [x] MongoDB
 - [x] NodeJS
-- [x] Kubernetes 
+- [x] Kubernetes
+- [x] Github Actions
+- [x] Integration test for backend 
 
 ## :white_check_mark: Requirements
 
