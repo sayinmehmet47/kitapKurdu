@@ -19,11 +19,6 @@ const messages = require('./routes/api/messages');
 
 app.use(express.json());
 
-// require('dotenv').config();
-
-// mongoose.connect(process.env.MONGO_URI || '').then(() => {
-//   console.log('Connected to MongoDB');
-// });
 const corsOptions = {
   origin: '*',
   credentials: true, //access-control-allow-credentials:true
