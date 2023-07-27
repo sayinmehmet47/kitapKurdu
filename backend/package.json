@@ -4,8 +4,17 @@
   "description": "Book searching engine",
   "scripts": {
     "build": "npm install && tsc",
-    "start": "nodemon --exec ts-node server.ts",
-    "deploy": "node ./dist/server.js"
+    "start": "nodemon --exec ts-node index.ts",
+    "deploy": "node ./dist/index.js",
+    "test": "jest --watchAll --no-cache",
+    "test:ci": "jest"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./test/setup.ts"
+    ]
   },
   "dependencies": {
     "@types/node": "^18.11.13",
@@ -23,8 +32,7 @@
     "mongoose": "^6.5.1",
     "node-cache": "^5.1.2",
     "node-url-shortener": "^2.0.3",
-    "validator": "^13.7.0",
-    "wait-on": "^7.0.1"
+    "validator": "^13.7.0"
   },
   "license": "MIT",
   "devDependencies": {
@@ -36,6 +44,12 @@
     "@types/validator": "^13.7.17",
     "nodemon": "^2.0.12",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "@types/jest": "^29.5.2",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.5.0",
+    "mongodb-memory-index": "^8.12.2",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0"
   }
 }

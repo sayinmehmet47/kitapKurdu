@@ -1,14 +1,13 @@
 import express, { Request, Response } from 'express';
 
 import jwt from 'jsonwebtoken';
-import { body, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import { User } from '../../models/User';
 import bcrypt from 'bcrypt';
 import { auth } from '../../middleware/auth';
 import { Error } from 'mongoose';
 import { NotFoundError } from '../../errors/not-found-error';
 import { validateRequest } from '../../middleware/validate-request';
-import { ServerError } from '../../errors/server-error';
 import { BadRequestError } from '../../errors/bad-request-error';
 const router = express.Router();
 
@@ -20,32 +19,32 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    try {
-      const { username, password } = req.body;
-      const user = await User.findOne({ username });
-      if (!user) throw new NotFoundError('User not found');
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) throw new NotFoundError('Invalid credentials');
-      const token = jwt.sign(
-        { id: user._id, isAdmin: user.isAdmin },
-        process.env.JWT_SECRET || '',
-        { expiresIn: '4h' }
-      );
+    const { username, password } = req.body;
 
-      res.status(200).json({
-        token,
-        user: {
-          _id: user._id,
-          username: user.username,
-          isAdmin: user.isAdmin,
-          email: user.email,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        },
-      });
-    } catch (error: any) {
-      throw new ServerError(error.message);
-    }
+    const user = await User.findOne({ username });
+
+    if (!user) throw new BadRequestError('Invalid credentials');
+
+    console.log('user: ', user);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) throw new NotFoundError('Invalid credentials');
+    const token = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET || '',
+      { expiresIn: '4h' }
+    );
+
+    res.status(201).json({
+      token,
+      user: {
+        _id: user._id,
+        username: user.username,
+        isAdmin: user.isAdmin,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
   }
 );
 
@@ -60,47 +59,43 @@ router.post(
       .trim()
       .isLength({ min: 4, max: 20 })
       .withMessage('Password must be between 4 and 20 characters'),
-    body('isAdmin', 'Please enter a valid isAdmin').isBoolean(),
+    body('isAdmin', 'Please enter a valid isAdmin').isBoolean().optional(),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { username, email, password, isAdmin } = req.body;
+    const { username, email, password, isAdmin = false } = req.body;
 
-    try {
-      const user = await User.findOne({ email });
-      if (user) throw new BadRequestError('User already exists');
-      const salt = await bcrypt.genSalt(10);
-      if (!salt) throw new Error('Something went wrong with bcrypt');
+    const user = await User.findOne({ email });
+    if (user) throw new BadRequestError('User already exists');
+    const salt = await bcrypt.genSalt(10);
+    if (!salt) throw new Error('Something went wrong with bcrypt');
 
-      const hash = await bcrypt.hash(password, salt);
-      if (!hash) throw new Error('Something went wrong hashing the password');
+    const hash = await bcrypt.hash(password, salt);
+    if (!hash) throw new Error('Something went wrong hashing the password');
 
-      const newUser = new User({
-        username,
-        email,
-        password: hash,
-        isAdmin,
-      });
+    const newUser = new User({
+      username,
+      email,
+      password: hash,
+      isAdmin,
+    });
 
-      const savedUser = await newUser.save();
-      if (!savedUser) throw new Error('Something went wrong saving the user');
+    const savedUser = await newUser.save();
+    if (!savedUser) throw new Error('Something went wrong saving the user');
 
-      const token = jwt.sign(
-        { id: savedUser._id, isAdmin: savedUser.isAdmin },
-        process.env.JWT_SECRET || '',
-        { expiresIn: '4h' }
-      );
-      res.status(200).json({
-        token,
-        user: {
-          id: savedUser.id,
-          username: savedUser.username,
-          email: savedUser.email,
-        },
-      });
-    } catch (e: any) {
-      throw new ServerError(e.message);
-    }
+    const token = jwt.sign(
+      { id: savedUser._id, isAdmin: savedUser.isAdmin },
+      process.env.JWT_SECRET || '',
+      { expiresIn: '4h' }
+    );
+    res.status(201).json({
+      token,
+      user: {
+        id: savedUser.id,
+        username: savedUser.username,
+        email: savedUser.email,
+      },
+    });
   }
 );
 

@@ -3,7 +3,6 @@ import 'express-async-errors';
 
 import { json } from 'body-parser';
 
-import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -20,11 +19,11 @@ const messages = require('./routes/api/messages');
 
 app.use(express.json());
 
-require('dotenv').config();
+// require('dotenv').config();
 
-mongoose.connect(process.env.MONGO_URI || '').then(() => {
-  console.log('Connected to MongoDB');
-});
+// mongoose.connect(process.env.MONGO_URI || '').then(() => {
+//   console.log('Connected to MongoDB');
+// });
 const corsOptions = {
   origin: '*',
   credentials: true, //access-control-allow-credentials:true
@@ -51,9 +50,4 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
 }
-
-const listener = app.listen(process.env.PORT || 5000, () => {
-  console.log(`Server started on port pro` + process.env.PORT || 5000);
-});
-
-module.exports = listener;
+export { app };
