@@ -5,7 +5,7 @@ import { AuthProvider } from 'react-auth-kit';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 import './App.css';
-import PrivateRoute from './components/privateRoute';
+
 import AllBooks from './pages/AllBooks';
 import Login from './pages/Login';
 import RecentlyAdded from './pages/RecentlyAdded';
@@ -14,6 +14,7 @@ import Register from './pages/Register';
 import UploadNewBook from './pages/UploadNewBook';
 
 import ShelfSpace from './pages/ShelfSpace';
+import { PrivateRoute } from './components/privateRoute';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
