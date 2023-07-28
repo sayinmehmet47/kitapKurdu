@@ -14,30 +14,42 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         
-      # - run: cd auth && docker build -t sayinmehmet47/auth .
-
-      # # Set up kubectl with the Rancher kubeconfig from the GitHub secret
-      # - name: Configure kubectl
-      #   run: |
-      #     echo "$RANCHER_KUBECONFIG" > kubeconfig.yaml
-      #     export KUBECONFIG=$PWD/kubeconfig.yaml
-
-      # # Apply your Kubernetes manifests to the Rancher cluster
-      # - name: Apply Kubernetes manifests
-      #   run: |
-      #     kubectl apply -f infra/k8s
-      #     kubectl apply -f infra/k8s-prod
-
-      - name: Update Rancher deployment with new image
-        env:
-          RANCHER_SERVER: https://rancher.riwi.dev
-          RANCHER_ACCESS_KEY: ${{ secrets.RANCHER_ACCESS_KEY }}
-          RANCHER_SECRET_KEY: ${{ secrets.RANCHER_SECRET_KEY }}
-          RANCHER_CLUSTER_ID: c-m-cp898j4l
-          RANCHER_NAMESPACE: kitapkurdu
-          RANCHER_DEPLOYMENT_NAME: frontend-deployment
-          DOCKER_IMAGE: sayinmehmet47/client-kitapkurdu-1:latest
+      - name: Install kubectl
         run: |
-          rancher login $RANCHER_SERVER -t $RANCHER_ACCESS_KEY -p $RANCHER_SECRET_KEY --context $RANCHER_CLUSTER_ID
-          rancher kubectl set image deployment/$RANCHER_DEPLOYMENT_NAME $RANCHER_DEPLOYMENT_NAME=$DOCKER_IMAGE --namespace $RANCHER_NAMESPACE
-          rancher kubectl rollout restart deployment/$RANCHER_DEPLOYMENT_NAME --namespace $RANCHER_NAMESPACE
+          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Create .kube directory
+        run: mkdir -p $HOME/.kube
+
+      - name: Create .kube/config
+        run: |
+          cat <<EOF > $HOME/.kube/config
+          apiVersion: v1
+          kind: Config
+          clusters:
+          - name: rancher
+            cluster:
+              server: "https://rancher.riwi.dev/k8s/clusters/c-m-cp898j4l"
+
+          users:
+          - name: rancher
+            user:
+              token: ${{ secrets.KUBE_CONFIG_TOKEN }}
+
+
+          contexts:
+          - name: rancher
+            context:
+              user: rancher
+              cluster: rancher
+              namespace: kitapkurdu
+
+          current-context: rancher
+
+      - name: Deploy using kubectl
+        # run:  kubectl rollout restart deployment/frontend-deployment -n kitapkurdu
+        run:  kubectl apply -f infra/k8s/ -n kitapkurdu
+
+        
