@@ -22,7 +22,7 @@ spec:
           image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
-              value: 'mongodb+srv://sayinmehmet47:Mardin.1992,@cluster0.ywv3z.mongodb.net/kitaplar?retryWrites=true&w=majority'
+              value: '**'
             - name: JWT_SECRET
               value: 'fsafdafdasfdk'
             - name: PORT
