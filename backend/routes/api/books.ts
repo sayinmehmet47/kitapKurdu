@@ -2,7 +2,7 @@ import { Error } from 'mongoose';
 import { Books } from './../../models/Books';
 import express, { NextFunction, Request, Response } from 'express';
 import { User } from '../../models/User';
-import { auth } from '../../middleware/auth';
+import { auth, isAdmin } from '../../middleware/auth';
 import { NotFoundError } from '../../errors/not-found-error';
 import { ServerError } from '../../errors/server-error';
 import { body } from 'express-validator';
@@ -70,7 +70,9 @@ router.get('/allBooks', async (req: Request, res: Response) => {
         }
 
         results.results = Books.slice(startIndex, endIndex);
-        res.json(results);
+
+        console.log(results);
+        res.status(201).json(results);
       }
     }
   );
@@ -135,19 +137,29 @@ router.get('/searchBooks', async (req: Request, res: Response) => {
   res.json(pagination);
 });
 
-router.post('/addNewBook', (req: Request, res) => {
-  const ikinciParti = new Books({
-    name: req.body.name,
-    url: req.body.url,
-    size: req.body.size,
-    date: new Date(),
-    uploader: req.body.uploader,
-  });
-  ikinciParti.save((err, data) => {
-    if (err) console.log(err);
-    res.json(data);
-  });
-});
+router.post(
+  '/addNewBook',
+  [
+    body('name').not().isEmpty().withMessage('Name is required'),
+    body('url').not().isEmpty().withMessage('Url is required'),
+    body('size').not().isEmpty().withMessage('Size is required'),
+    body('uploader').not().isEmpty().withMessage('Uploader is required'),
+  ],
+  validateRequest,
+  auth,
+  (req: Request, res: Response) => {
+    const books = new Books({
+      name: req.body.name,
+      url: req.body.url,
+      size: req.body.size,
+      date: new Date(),
+      uploader: req.body.uploader,
+    });
+    books.save();
+
+    res.status(201).json(books);
+  }
+);
 
 router.get('/recently-added', (req: Request, res: Response) => {
   Books.find({})
@@ -163,7 +175,7 @@ router.post(
   '/deleteBook',
   [body('id').not().isEmpty().withMessage('Id is required')],
   validateRequest,
-  auth,
+  isAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.body.id.toString().trim();
 
@@ -174,7 +186,7 @@ router.post(
         throw new NotFoundError('Book not found');
       }
 
-      res.json(data);
+      res.status(201).json(data);
     } catch (err) {
       next(err); // Pass the error to the next error-handling middleware
     }

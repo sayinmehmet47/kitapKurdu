@@ -5,7 +5,6 @@ import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
 import { NotAuthorizedError } from '../../errors/not-authorized-error';
 import { NotFoundError } from '../../errors/not-found-error';
-import { ServerError } from '../../errors/server-error';
 
 const router = express.Router();
 

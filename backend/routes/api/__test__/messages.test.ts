@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { app } from '../../../app';
-import e from 'express';
 
 it('returns a 400 with a invalid sender', async () => {
   const { token, sender } = await global.signin();
