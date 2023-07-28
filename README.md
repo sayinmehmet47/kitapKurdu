@@ -66,7 +66,7 @@ The following tools were used in this project:
 - [x] NodeJS
 - [x] Kubernetes
 - [x] Github Actions
-- [x] Integration test for backend 
+- [x] Integration test for backend
 
 ## :white_check_mark: Requirements
 

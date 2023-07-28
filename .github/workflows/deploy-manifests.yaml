@@ -12,9 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd auth && docker build -t sayinmehmet47/auth .
-
-      # Set up kubectl with the Rancher kubeconfig from the GitHub secret
       - name: Configure kubectl
         run: |
           echo "$RANCHER_KUBECONFIG" > kubeconfig.yaml
