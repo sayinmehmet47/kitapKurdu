@@ -179,6 +179,8 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.body.id.toString().trim();
 
+    console.log(id);
+
     try {
       const data = await Books.findByIdAndRemove(id);
 
