@@ -47,9 +47,8 @@ jobs:
               namespace: kitapkurdu
 
           current-context: rancher
-
+          EOF
       - name: Deploy using kubectl
-        # run:  kubectl rollout restart deployment/frontend-deployment -n kitapkurdu
         run:  kubectl apply -f infra/k8s/ -n kitapkurdu
 
         
