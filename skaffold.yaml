@@ -8,7 +8,7 @@ build:
       context: backend
       sync:
         manual:
-          - src: src/**/*.ts
+          - src: '**/*.ts'
             dest: .
       docker:
         dockerfile: Dockerfile
@@ -17,7 +17,7 @@ build:
       context: client
       sync:
         manual:
-          - src: '**/*.tsx'
+          - src: '**/*.ts'
             dest: .
       docker:
         dockerfile: Dockerfile
