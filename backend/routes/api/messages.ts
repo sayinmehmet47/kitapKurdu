@@ -1,4 +1,4 @@
-import express, { Response, Request, NextFunction } from 'express';
+import express, { Response, Request } from 'express';
 import { auth } from '../../middleware/auth';
 import { Messages } from '../../models/Messages';
 import { body } from 'express-validator';
@@ -17,17 +17,30 @@ router.get('/userMessages', auth, async (req: Request, res: Response) => {
   res.json(userMessages);
 });
 
-router.post('/userMessages', auth, async (req: Request, res: Response) => {
-  const { text, sender } = req.body;
+router.post(
+  '/userMessages',
+  auth,
+  [
+    body('text').not().isEmpty().isString().withMessage('Text is required'),
+    body('sender').not().isEmpty().isString().withMessage('Sender is required'),
+  ],
+  validateRequest,
+  async (req: Request, res: Response) => {
+    const { text, sender } = req.body;
 
-  const userMessages = new Messages({
-    text,
-    date: new Date(),
-    sender,
-  });
-  await userMessages.save();
-  res.json({ status: 'Message Sent' });
-});
+    try {
+      const userMessages = new Messages({
+        text,
+        date: new Date(),
+        sender,
+      });
+      await userMessages.save();
+      res.status(201).json(userMessages);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 router.delete(
   '/deleteMessage',
@@ -35,22 +48,18 @@ router.delete(
   [body('id').not().isEmpty().withMessage('Id is required')],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { id } = req.body.id;
+    const { id } = req.body;
     if (!req.body.user.isAdmin) {
       throw new NotAuthorizedError();
     }
 
-    try {
-      const data = await Messages.findByIdAndRemove(id);
+    const data = await Messages.findByIdAndRemove(id);
 
-      if (!data) {
-        throw new NotFoundError('Message not found');
-      }
-
-      res.json(data);
-    } catch (err) {
-      throw new ServerError('An error occurred');
+    if (!data) {
+      throw new NotFoundError('Message not found');
     }
+
+    res.status(201).json({ message: 'Message deleted' });
   }
 );
 

@@ -13,7 +13,7 @@ export const messagesApi = commonApi.injectEndpoints({
       query: (id) => ({
         url: `/messages/deleteMessage`,
         method: 'DELETE',
-        body: { id },
+        body: id,
       }),
       invalidatesTags: ['Messages'],
     }),

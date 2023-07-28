@@ -1,6 +1,9 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import bcrypt from 'bcrypt';
+
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import { User } from '../models/User';
 
 let mongo: MongoMemoryServer;
 
@@ -28,25 +31,31 @@ afterAll(async () => {
 });
 
 declare global {
-  var signin: () => Promise<string[]>;
+  var signin: (isAdmin?: boolean) => Promise<any>;
 }
 
-global.signin = async () => {
-  // Build a JWT payload. { id, email }
+global.signin = async (isAdmin: boolean = false) => {
+  const salt = await bcrypt.genSalt(10);
+  if (!salt) throw new Error('Something went wrong with bcrypt');
+  const hash = await bcrypt.hash('test', salt);
+  if (!hash) throw new Error('Something went wrong hashing the password');
+
+  const newUser = new User({
+    username: 'test',
+    email: 'example@gmail.com',
+    password: hash,
+    isAdmin,
+  });
+
+  const savedUser = await newUser.save();
+  if (!savedUser) throw new Error('Something went wrong saving the user');
+
   const payload = {
-    id: new mongoose.Types.ObjectId().toHexString(),
-    email: 'test@gmail.com',
+    id: savedUser._id,
+    isAdmin: savedUser.isAdmin,
   };
 
-  // Create the JWT!
-  const token = jwt.sign(payload, process.env.JWT_KEY!);
+  const token = jwt.sign(payload, process.env.JWT_SECRET!);
 
-  //Turn that session into JSON
-  const sessionJSON = JSON.stringify({ jwt: token });
-
-  //Take JSON and encode it as base64
-  const base64 = Buffer.from(sessionJSON).toString('base64');
-
-  //return a string thats the cookie with the encoded data
-  return [`session=${base64}`];
+  return { token, sender: savedUser._id };
 };
