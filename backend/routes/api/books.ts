@@ -162,6 +162,7 @@ router.post(
 );
 
 router.get('/recently-added', (req: Request, res: Response) => {
+  console.log('recently added');
   Books.find({})
     .sort({ date: -1 })
     .limit(50)
