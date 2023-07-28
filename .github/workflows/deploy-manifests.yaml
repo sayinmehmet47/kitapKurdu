@@ -11,14 +11,46 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Configure kubectl
-        run: |
-          echo "$RANCHER_KUBECONFIG" > kubeconfig.yaml
-          export KUBECONFIG=$PWD/kubeconfig.yaml
 
-      # Apply your Kubernetes manifests to the Rancher cluster
-      - name: Apply Kubernetes manifests
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Install kubectl
+
         run: |
-          kubectl apply -f infra/k8s
-          kubectl apply -f infra/k8s-prod
+          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Create .kube directory
+        run: mkdir -p $HOME/.kube
+
+      - name: Create .kube/config
+        run: |
+          cat <<EOF > $HOME/.kube/config
+          apiVersion: v1
+          kind: Config
+          clusters:
+          - name: rancher
+            cluster:
+              server: "https://rancher.riwi.dev/k8s/clusters/c-m-cp898j4l"
+
+          users:
+          - name: rancher
+            user:
+              token: ${{ secrets.KUBE_CONFIG_TOKEN }}
+
+
+          contexts:
+          - name: rancher
+            context:
+              user: rancher
+              cluster: rancher
+              namespace: kitapkurdu
+
+          current-context: rancher
+          EOF
+      - name: Deploy using kubectl
+        run:  kubectl apply -f infra/k8s/ -n kitapkurdu
+
+        

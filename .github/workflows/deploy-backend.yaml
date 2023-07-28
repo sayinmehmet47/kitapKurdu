@@ -18,3 +18,37 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       - run: docker push sayinmehmet47/backend-kitapkurdu-1
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Create .kube directory
+        run: mkdir -p $HOME/.kube
+
+      - name: Create .kube/config
+        run: |
+          cat <<EOF > $HOME/.kube/config
+          apiVersion: v1
+          kind: Config
+          clusters:
+          - name: rancher
+            cluster:
+              server: "https://rancher.riwi.dev/k8s/clusters/c-m-cp898j4l"
+          users:
+          - name: rancher
+            user:
+              token: ${{ secrets.KUBE_CONFIG_TOKEN }}
+          contexts:
+          - name: rancher
+            context:
+              user: rancher
+              cluster: rancher
+              namespace: kitapkurdu
+          current-context: rancher
+          EOF
+
+      - name: Deploy using kubectl
+        run:  kubectl rollout restart deployment/backend-deployment -n kitapkurdu
