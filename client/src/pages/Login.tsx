@@ -79,25 +79,8 @@ export default function Login() {
     e.preventDefault();
     const data = new FormData(e.target as HTMLFormElement);
     const { username, password } = Object.fromEntries(data.entries());
-
-    // This is the old way of doing it:
-    // dispatch(loginThunk({ username, password })).then(
-    //   (res: any) => {
-    //     if (res.payload.token) {
-    //       toast.success('Login successful');
-    //     } else {
-    //       toast.error(res.payload.response.data.error);
-    //     }
-    //   },
-    //   (err: any) => {
-    //     console.log(err);
-    //   }
-    // );
-
-    // This is the new way of doing it:
     try {
-      const res = dispatch(loginThunk({ username, password }));
-      console.log(res);
+      dispatch(loginThunk({ username, password }));
     } catch (error) {}
   };
 
