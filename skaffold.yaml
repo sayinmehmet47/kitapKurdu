@@ -1,0 +1,30 @@
+apiVersion: skaffold/v4beta3
+kind: Config
+build:
+  local:
+    push: false
+  artifacts:
+    - image: sayinmehmet47/backend-kitapkurdu-1
+      context: backend
+      sync:
+        manual:
+          - src: '**/*.ts'
+            dest: .
+      docker:
+        dockerfile: Dockerfile
+
+    - image: sayinmehmet47/client-kitapkurdu-1
+      context: client
+      sync:
+        manual:
+          - src: '**/*.ts'
+            dest: .
+      docker:
+        dockerfile: Dockerfile
+
+manifests:
+  rawYaml:
+    - ./infra/k8s/*
+    - ./infra/k8s-dev/*
+deploy:
+  kubectl: {}

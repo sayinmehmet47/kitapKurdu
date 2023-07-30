@@ -32,21 +32,22 @@ spec:
           resources:
             requests:
               cpu: "100m" 
-              memory: "500Mi" 
+              memory: "300Mi" 
             limits:
-                    cpu: "500m" 
-                    memory: "1024Mi"  
+                    cpu: "200m" 
+                    memory: "512Mi" 
+      restartPolicy: Always
 --- 
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
   namespace: kitapkurdu
-spec: 
+spec:
   selector:
-      app: kitapkurdu
-      tier: backend  
+    app: kitapkurdu
+    tier: backend
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 5000
+      targetPort: 5000 
