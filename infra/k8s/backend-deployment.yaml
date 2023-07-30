@@ -22,7 +22,7 @@ spec:
           image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
-              value: '***'
+              value: ${{ secrets.MONGO_URI_VALUE }}
             - name: JWT_SECRET
               value: 'fsafdafdasfdk'
             - name: PORT
@@ -32,11 +32,10 @@ spec:
           resources:
             requests:
               cpu: "100m" 
-              memory: "300Mi" 
+              memory: "500Mi" 
             limits:
-                    cpu: "200m" 
-                    memory: "512Mi" 
-      restartPolicy: Always
+                    cpu: "500m" 
+                    memory: "1024Mi"  
 --- 
 apiVersion: v1
 kind: Service
@@ -50,4 +49,4 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 5000 
+      targetPort: 5000
