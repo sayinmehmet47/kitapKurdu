@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: 'true' 
     cert-manager.io/cluster-issuer: letsencrypt-http
   labels:
-    app: frontend
+    app: kitapkurdu
 spec:
   ingressClassName: nginx
   tls:
@@ -27,9 +27,9 @@ spec:
                   number: 80
             pathType: Prefix
           - path: /api
-            pathType: Prefix
             backend:
               service:
                 name: backend-service
                 port:
                   number: 80
+            pathType: Prefix
