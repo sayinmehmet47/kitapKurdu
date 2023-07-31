@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
 import { ToastContainer, toast } from 'react-toastify';
-import { useSignIn } from 'react-auth-kit';
+
 import 'react-toastify/dist/ReactToastify.css';
 import { loginThunk } from '../redux/authSlice';
 import { mobile } from '../responsive';
@@ -70,7 +70,6 @@ const NavLink = styled(Link)`
 
 export default function Login() {
   const dispatch = useDispatch<any>();
-  const signIn = useSignIn();
   const { isLoggedIn, isLoading } = useSelector(
     (state: any) => state.authSlice
   );
