@@ -7,9 +7,6 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { useAddNewBookMutation } from '../redux/services/book.api';
 
-const CLOUD_NAME = 'dsequsn4l',
-  UPLOAD_PRESET = 'uploads';
-
 const Container = styled.div`
   display: grid;
   place-items: center;

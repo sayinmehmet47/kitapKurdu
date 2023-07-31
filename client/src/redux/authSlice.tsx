@@ -20,9 +20,6 @@ export const loginThunk = createAsyncThunk(
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
-      if (err.response) {
-        return rejectWithValue(err.response.data.errorMessage);
-      }
       return rejectWithValue(err.message);
     }
   }
@@ -37,9 +34,6 @@ export const logoutThunk = createAsyncThunk(
       return { status: true };
     } catch (error) {
       const err = error as AxiosError;
-      if (err.response) {
-        return rejectWithValue(err.response.data.errorMessage);
-      }
       return rejectWithValue(err.message);
     }
   }
@@ -56,9 +50,7 @@ export const loadUserThunk = createAsyncThunk(
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
-      if (err.response) {
-        return rejectWithValue(err.response.data.errorMessage);
-      }
+
       return rejectWithValue(err.message);
     }
   }
@@ -95,9 +87,7 @@ export const registerThunk = createAsyncThunk(
       return res;
     } catch (error) {
       const err = error as AxiosError;
-      if (err.response) {
-        return rejectWithValue(err.response.data.errorMessage);
-      }
+
       return rejectWithValue(err.message);
     }
   }
