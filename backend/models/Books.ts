@@ -21,6 +21,23 @@ export const schema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    category: {
+      type: [String],
+      enum: [
+        'Science',
+        'Literature',
+        'History',
+        'Philosophy',
+        'Poetry',
+        'Religion',
+      ],
+      default: ['Science'],
+    },
+    language: {
+      type: String,
+      enum: ['turkish', 'english'],
+      default: 'turkish',
+    },
   },
   { collection: 'ilkparti' }
 );
