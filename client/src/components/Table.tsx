@@ -36,6 +36,9 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
 
   const isAdmin = isLoggedIn && USERINFO.user?.isAdmin;
 
+  console.log(isAdmin);
+
+
   const columns = useMemo(
     (): readonly ColumnWithShow<Book>[] => [
       {
@@ -79,7 +82,8 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
       {
         Header: 'Category',
         accessor: 'category',
-        show:isAdmin,
+        id: 'category',
+        show: isAdmin,
         Cell: ({ row }) => (
           <div className="text-success ms-5">{row.original.category[0]}</div>
         ),
@@ -88,7 +92,8 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
       {
         Header: 'Language',
         accessor: 'language',
-        show:isAdmin,
+        id: 'language',
+        show: isAdmin,
         Cell: ({ row }) => (
           <div className="text-success ms-5">{row.original.language}</div>
         ),
@@ -118,11 +123,8 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
     ]
   );
 
-  React.useEffect(() => {
-    setHiddenColumns(
-      columns.filter((column) => !column.show).map((column) => column.id)
-    );
-  }, []);
+;
+
 
   const {
     getTableProps,
@@ -139,6 +141,15 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
     useSortBy,
     usePagination
   ) as any;
+
+  React.useEffect(() => {
+    setHiddenColumns(
+      columns.filter((column) => !column.show).map((column) => column.id)
+    );
+  }, [
+    columns,
+    setHiddenColumns,
+  ])
 
   if (isLoading) {
     return <Loading />;
