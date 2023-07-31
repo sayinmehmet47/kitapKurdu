@@ -98,7 +98,7 @@ router.get('/searchBooks', async (req: Request, res: Response) => {
   const [count, results] = await Promise.all([
     Books.countDocuments(query, { collation: { locale: 'tr', strength: 2 } }),
     Books.find(query)
-      .select('name path size date url uploader')
+      .select('name path size date url uploader category language')
       .populate('uploader', 'username email')
       .skip(startIndex)
       .limit(limit)
@@ -198,22 +198,43 @@ router.post(
 );
 
 router.post('/updateBook', (req: Request, res: Response) => {
-  User.findOne({ username: 'mehmesayin' })
-    .then((user) => {
-      if (!user) throw new NotFoundError('User not found');
+  const id = req.body.id;
+  const name = req.body.name;
+  const url = req.body.url;
+  const size = req.body.size;
+  const uploader = req.body.uploader;
+  const category = req.body.category;
+  const language = req.body.language;
 
-      return Books.updateMany({}, { $set: { uploader: user?._id } });
-    })
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((error) => {
-      if (error instanceof NotFoundError) {
-        return res.status(error.statusCode).json(error.serializeErrors());
-      }
-      const serverError = new ServerError('An error occurred');
-      res.status(serverError.statusCode).json(serverError.serializeErrors());
-    });
+  Books.findById(id, (
+    err: Error,
+    data: {
+      name: string;
+      url: string;
+      size: string;
+      uploader: string;
+      category: string[];
+      language: string;
+      save: (arg0: (err: any, data: any) => void) => void;
+    }
+
+  ) => {
+    if (err) console.log(err);
+    if (data) {
+      data.name = name;
+      data.url = url;
+      data.size = size;
+      data.uploader = uploader;
+      data.category = category
+      data.language = language;
+
+      data.save((err, data) => {
+        if (err) console.log(err);
+        res.status(201).json(data);
+      });
+    }
+  }
+  );
 });
 
 module.exports = router;

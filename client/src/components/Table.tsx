@@ -70,17 +70,34 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
       {
         Header: 'Uploaded By',
         accessor: 'uploader',
-        Cell: ({ row }: any) => (
+        Cell: ({ row }) => (
           <div className="text-success ms-5">
             {row.original.uploader.username}
           </div>
         ),
       },
       {
+        Header: 'Category',
+        accessor: 'category',
+        show:isAdmin,
+        Cell: ({ row }) => (
+          <div className="text-success ms-5">{row.original.category[0]}</div>
+        ),
+          
+      },
+      {
+        Header: 'Language',
+        accessor: 'language',
+        show:isAdmin,
+        Cell: ({ row }) => (
+          <div className="text-success ms-5">{row.original.language}</div>
+        ),
+      },
+      {
         Header: 'Delete',
         id: 'delete',
         show: isAdmin,
-        Cell: ({ row }: any) => (
+        Cell: ({ row }:any) => (
           <div className="text-center delete-icon flex justify-content-center me-1">
             <AiOutlineDelete
               onClick={() => {
@@ -95,14 +112,17 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
         ),
       },
     ],
-    []
+    [
+      deleteBook,
+      isAdmin,
+    ]
   );
 
   React.useEffect(() => {
     setHiddenColumns(
       columns.filter((column) => !column.show).map((column) => column.id)
     );
-  }, [columns]);
+  }, []);
 
   const {
     getTableProps,

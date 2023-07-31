@@ -7,6 +7,8 @@ export type Book = {
   date: string;
   size: string;
   id: string;
+  category: string[];
+  language: string;
   url?: string;
   uploader: {
     username: string;
