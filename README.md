@@ -67,6 +67,8 @@ The following tools were used in this project:
 - [x] Kubernetes
 - [x] Github Actions
 - [x] Integration test for backend
+- [x] Prometheus
+- [x] Graphana
 
 ## :white_check_mark: Requirements
 
