@@ -7,31 +7,20 @@ import { NotFoundError } from '../../errors/not-found-error';
 import { ServerError } from '../../errors/server-error';
 import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
-import { Counter, Histogram } from 'prom-client';
+import client from 'prom-client';
 const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
 
-const booksRequestCounter = new Counter({
-  name: 'api_books_requests_total',
-  help: 'Total number of /api/books requests',
-});
-
-const booksRequestDurationHistogram = new Histogram({
-  name: 'api_books_request_duration_ms',
-  help: 'Duration of /api/books requests in ms',
-  labelNames: ['status'],
+// Create a counter metric to track the number of visitors
+const visitorsCounter = new client.Counter({
+  name: 'visitors_total',
+  help: 'Total number of visitors to the /allBooks endpoint',
 });
 
 router.get('/allBooks', async (req: Request, res: Response) => {
-  const start = Date.now();
-  res.on('finish', () => {
-    const duration = Date.now() - start;
-    booksRequestCounter.inc();
-    booksRequestDurationHistogram
-      .labels(res.statusCode.toString())
-      .observe(duration);
-  });
+  // Increment the counter
+  visitorsCounter.inc();
 
   Books.find(
     {},
@@ -227,34 +216,35 @@ router.post('/updateBook', (req: Request, res: Response) => {
   const category = req.body.category;
   const language = req.body.language;
 
-  Books.findById(id, (
-    err: Error,
-    data: {
-      name: string;
-      url: string;
-      size: string;
-      uploader: string;
-      category: string[];
-      language: string;
-      save: (arg0: (err: any, data: any) => void) => void;
-    }
+  Books.findById(
+    id,
+    (
+      err: Error,
+      data: {
+        name: string;
+        url: string;
+        size: string;
+        uploader: string;
+        category: string[];
+        language: string;
+        save: (arg0: (err: any, data: any) => void) => void;
+      }
+    ) => {
+      if (err) console.log(err);
+      if (data) {
+        data.name = name;
+        data.url = url;
+        data.size = size;
+        data.uploader = uploader;
+        data.category = category;
+        data.language = language;
 
-  ) => {
-    if (err) console.log(err);
-    if (data) {
-      data.name = name;
-      data.url = url;
-      data.size = size;
-      data.uploader = uploader;
-      data.category = category
-      data.language = language;
-
-      data.save((err, data) => {
-        if (err) console.log(err);
-        res.status(201).json(data);
-      });
+        data.save((err, data) => {
+          if (err) console.log(err);
+          res.status(201).json(data);
+        });
+      }
     }
-  }
   );
 });
 
