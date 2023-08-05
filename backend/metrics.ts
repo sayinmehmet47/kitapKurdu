@@ -65,6 +65,5 @@ app.get(
 );
 
 module.exports = {
-  metricsServer: app,
   updateMetrics,
 };
