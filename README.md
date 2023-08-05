@@ -63,6 +63,7 @@ The following tools were used in this project:
 - [x] ReactJS
 - [x] Bootsrap-5
 - [x] MongoDB
+- [x] Typescript
 - [x] NodeJS
 - [x] Kubernetes
 - [x] Github Actions
