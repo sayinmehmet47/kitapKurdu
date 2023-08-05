@@ -7,11 +7,32 @@ import { NotFoundError } from '../../errors/not-found-error';
 import { ServerError } from '../../errors/server-error';
 import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
+import { Counter, Histogram } from 'prom-client';
 const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
 
+const booksRequestCounter = new Counter({
+  name: 'api_books_requests_total',
+  help: 'Total number of /api/books requests',
+});
+
+const booksRequestDurationHistogram = new Histogram({
+  name: 'api_books_request_duration_ms',
+  help: 'Duration of /api/books requests in ms',
+  labelNames: ['status'],
+});
+
 router.get('/allBooks', async (req: Request, res: Response) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    booksRequestCounter.inc();
+    booksRequestDurationHistogram
+      .labels(res.statusCode.toString())
+      .observe(duration);
+  });
+
   Books.find(
     {},
     (
