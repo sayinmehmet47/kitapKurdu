@@ -103,6 +103,16 @@ $ cd ..
 # The server will initialize in the <http://localhost:3000>
 ```
 
+- to run graphana and prometheus
+
+```bash
+$ docker-compose up -d
+
+Graphana will run on <http://localhost:4000>
+Prometheus will run on <http://localhost:9090>
+
+```
+
 ## :memo: License
 
 This project is under license from MIT. For more details, see the [LICENSE](LICENSE.md) file.

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import 'express-async-errors';
+const { updateMetrics } = require('./metrics');
 
 import { json } from 'body-parser';
 
@@ -30,6 +31,7 @@ app.use(cors(corsOptions));
 app.use('/api/books', books);
 app.use('/api/user', user);
 app.use('/api/messages', messages);
+app.use(updateMetrics);
 
 app.all('*', (req: Request, res: Response) => {
   throw new NotFoundError();
