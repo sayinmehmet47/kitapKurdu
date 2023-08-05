@@ -1,0 +1,17 @@
+{
+	"ulid": "01H73SJC2EZBGB70S30HCW1YR4",
+	"minTime": 1691258400000,
+	"maxTime": 1691265600000,
+	"stats": {
+		"numSamples": 328565,
+		"numSeries": 2578,
+		"numChunks": 2578
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01H73SJC2EZBGB70S30HCW1YR4"
+		]
+	},
+	"version": 1
+}

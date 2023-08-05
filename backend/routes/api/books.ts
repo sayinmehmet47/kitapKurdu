@@ -1,10 +1,8 @@
 import { Error } from 'mongoose';
 import { Books } from './../../models/Books';
 import express, { NextFunction, Request, Response } from 'express';
-import { User } from '../../models/User';
 import { auth, isAdmin } from '../../middleware/auth';
 import { NotFoundError } from '../../errors/not-found-error';
-import { ServerError } from '../../errors/server-error';
 import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
 import client from 'prom-client';
@@ -12,15 +10,18 @@ const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
 
+const register = new client.Registry();
+
 // Create a counter metric to track the number of visitors
 const visitorsCounter = new client.Counter({
   name: 'visitors_total',
   help: 'Total number of visitors to the /allBooks endpoint',
 });
 
+register.registerMetric(visitorsCounter);
+
 router.get('/allBooks', async (req: Request, res: Response) => {
-  // Increment the counter
-  visitorsCounter.inc();
+  visitorsCounter.inc(); // Increment by 1
 
   Books.find(
     {},
