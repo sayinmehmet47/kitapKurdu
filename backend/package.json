@@ -7,6 +7,7 @@
     "start": "nodemon --exec ts-node index.ts",
     "deploy": "node ./dist/index.js",
     "test": "jest --watchAll --no-cache",
+    "serve": "pm2 start index.ts --watch",
     "test:ci": "jest"
   },
   "jest": {

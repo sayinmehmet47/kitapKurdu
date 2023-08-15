@@ -71,6 +71,7 @@ The following tools were used in this project:
 - [x] Prometheus
 - [x] Graphana
 - [x] Renovate
+- [x] Docker
 
 ## :white_check_mark: Requirements
 
