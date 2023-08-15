@@ -1,40 +1,3 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: frontend-deployment
-  namespace: kitapkurdu
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: kitapkurdu
-      tier: frontend
-      track: stable
-  template:
-    metadata:
-      labels:
-        app: kitapkurdu
-        tier: frontend
-        track: stable
-    spec:
-      containers:
-        - name: frontend
-          image: sayinmehmet47/client-kitapkurdu-1:latest
-          env:
-            - name: REACT_APP_LOCAL_API
-              value: https://kitapkurdu.alphaworld.ch/api
-            - name: REACT_APP_CLOUDINARY_URL
-              value: https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads
-          ports:
-            - containerPort: 3000
-          resources:
-            requests:
-              cpu: "100m" 
-              memory: "900Mi" 
-            limits:
-                    cpu: "500m" 
-                    memory: "1600Mi"  
----
 apiVersion: v1 
 kind: Service
 metadata:
@@ -48,3 +11,43 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: kitapkurdu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kitapkurdu
+      tier: frontend 
+  template:
+    metadata:
+      labels:
+        app: kitapkurdu
+        tier: frontend 
+    spec:
+      containers:
+        - name: frontend
+          image: sayinmehmet47/client-kitapkurdu-1:latest
+          env:
+            # - name: REACT_APP_LOCAL_API
+            #   value: ${{ secrets.REACT_APP_LOCAL_API }}
+            - name: REACT_APP_LOCAL_API
+              value: https://kitapkurdu.alphaworld.ch/api
+            # - name: REACT_APP_CLOUDINARY_URL
+            #   value: ${{ secrets.REACT_APP_CLOUDINARY_URL }}
+            - name: REACT_APP_CLOUDINARY_URL
+              value: https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m" 
+              memory: "900Mi" 
+            limits:
+                    cpu: "500m" 
+                    memory: "1600Mi"  
+---
