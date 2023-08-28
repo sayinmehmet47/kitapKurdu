@@ -17,6 +17,9 @@
       "./test/setup.ts"
     ]
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "dependencies": {
     "@types/node": "^18.17.12",
     "bcrypt": "^5.0.1",
