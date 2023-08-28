@@ -38,7 +38,6 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
 
   console.log(isAdmin);
 
-
   const columns = useMemo(
     (): readonly ColumnWithShow<Book>[] => [
       {
@@ -85,9 +84,8 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
         id: 'category',
         show: isAdmin,
         Cell: ({ row }) => (
-          <div className="text-success ms-5">{row.original.category[0]}</div>
+          <div className="text-success ms-5">{row.original?.category[0]}</div>
         ),
-          
       },
       {
         Header: 'Language',
@@ -102,7 +100,7 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
         Header: 'Delete',
         id: 'delete',
         show: isAdmin,
-        Cell: ({ row }:any) => (
+        Cell: ({ row }: any) => (
           <div className="text-center delete-icon flex justify-content-center me-1">
             <AiOutlineDelete
               onClick={() => {
@@ -117,14 +115,8 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
         ),
       },
     ],
-    [
-      deleteBook,
-      isAdmin,
-    ]
+    [deleteBook, isAdmin]
   );
-
-;
-
 
   const {
     getTableProps,
@@ -146,10 +138,7 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
     setHiddenColumns(
       columns.filter((column) => !column.show).map((column) => column.id)
     );
-  }, [
-    columns,
-    setHiddenColumns,
-  ])
+  }, [columns, setHiddenColumns]);
 
   if (isLoading) {
     return <Loading />;
