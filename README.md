@@ -72,6 +72,7 @@ The following tools were used in this project:
 - [x] Graphana
 - [x] Renovate
 - [x] Docker
+- [x] Cronjob
 
 ## :white_check_mark: Requirements
 
