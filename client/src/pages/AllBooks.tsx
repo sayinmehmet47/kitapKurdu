@@ -27,6 +27,8 @@ const AllBooks = () => {
   const [page, setPage] = useState(1);
   const { data: bookData, isLoading, isFetching } = useFetchAllBooksQuery(page);
 
+  console.log('test');
+
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
