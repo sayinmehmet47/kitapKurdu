@@ -90,7 +90,7 @@ router.get('/allBooks', async (req: Request, res: Response) => {
 });
 
 router.get('/searchBooks', async (req: Request, res: Response) => {
-  const cacheKey = JSON.stringify(req.query); // use the query as the cache key
+  const cacheKey = JSON.stringify(req.query);
   const cachedResult = cache.get(cacheKey);
   if (cachedResult) {
     return res.json(cachedResult);

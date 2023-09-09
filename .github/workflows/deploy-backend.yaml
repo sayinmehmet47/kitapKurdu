@@ -17,7 +17,14 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker push sayinmehmet47/backend-kitapkurdu-1
+      # - run: docker push sayinmehmet47/backend-kitapkurdu-1
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: backend/
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: sayinmehmet47/backend-kitapkurdu-1
 
       - name: Install kubectl
         run: |
