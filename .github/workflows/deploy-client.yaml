@@ -17,17 +17,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - run: cd client
+
+      # && docker build -t sayinmehmet47/client-kitapkurdu-1 .
+
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: sayinmehmet47/client-kitapkurdu-1
+          tags: sayinmehmet47/client-kitapkurdu-1 .
 
       - name: Install kubectl
         run: |
