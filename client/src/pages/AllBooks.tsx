@@ -32,7 +32,6 @@ const AllBooks = () => {
   };
 
   if (isLoading || isFetching) {
-    console.log('loading!!');
     return <Loading />;
   }
 
