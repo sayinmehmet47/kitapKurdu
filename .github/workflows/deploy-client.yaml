@@ -12,12 +12,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd client && docker build -t sayinmehmet47/client-kitapkurdu-1 .
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - run: cd client
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker push sayinmehmet47/client-kitapkurdu-1
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: sayinmehmet47/client-kitapkurdu-1
 
       - name: Install kubectl
         run: |
@@ -51,4 +61,4 @@ jobs:
           EOF
 
       - name: Deploy using kubectl
-        run:  kubectl rollout restart deployment/frontend-deployment -n kitapkurdu
+        run: kubectl rollout restart deployment/frontend-deployment -n kitapkurdu
