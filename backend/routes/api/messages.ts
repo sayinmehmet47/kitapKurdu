@@ -58,7 +58,7 @@ router.delete(
       throw new NotFoundError('Message not found');
     }
 
-    res.status(201).json({ message: 'Message deleted' });
+    res.status(201).json({ message: 'Message deleted!' });
   }
 );
 
