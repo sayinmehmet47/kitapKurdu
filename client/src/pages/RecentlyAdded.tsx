@@ -26,6 +26,7 @@ type Props = {};
 
 const RecentlyAdded = (props: Props) => {
   const { data: recentlyAddedBooks, isLoading } = useFetchRecentlyAddedQuery();
+  console.log('test');
 
   if (isLoading || !recentlyAddedBooks) {
     return <Loading />;
