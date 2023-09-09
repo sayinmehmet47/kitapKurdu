@@ -28,7 +28,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: client/
           platforms: linux/amd64,linux/arm64
           push: true
           tags: sayinmehmet47/client-kitapkurdu-1
