@@ -47,7 +47,7 @@
 ## :dart: About
 
 This project includes 5000 Turkish books for free. I used Cloudinary to fetch and uplaod new books.
-The books are searchable. Also you can get all the books and monitor the last books that added to the library. If the user can not find the book in the library, he/she can add in shelf space a comment to get help from other users. Other users can contribute to the library without any limitation. 
+The books are searchable. Also you can get all the books and monitor the last books that added to the library. If the user can not find the book in the library, he/she can add in shelf space a comment to get help from other users. Other users can contribute to the library without any limitation. Admin has different role that he can also delete the comments and books.
 
 
 Project mainly builded with in frontend(ReactJS), backend(NodeJS) and also deploy to kubernetes cluser(which is in rancher). In addition i deployed the app to the vercel. So the app now running in both kuberntes cluster and vercel. After you open a pull request, the tests will run and will wait your pr to be approved. After pr is merged, the app will be build and push to docker hub and vercel at the same time. After the building of the app finish in github actions, the kubernetes cluster will be trigger again to run new image that we pushed to dockerhub. So the kubernetes cluster will use the new image that we pushed to dockerhub. You can run the app in your local also using docker, but you need to get your own cloudinary secret key and add it to env file. 
