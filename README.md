@@ -46,11 +46,11 @@
 
 ## :dart: About
 
-This project includes 5000 Turkish books for free. I used Cloudinary to fetch and uplaod new books.
-The books are searchable. Also you can get all the books and monitor the last books that added to the library. If the user can not find the book in the library, he/she can add in shelf space a comment to get help from other users. Other users can contribute to the library without any limitation. Admin has different role that he can also delete the comments and books.
+This project comprises 5000 Turkish books available for free. I used Cloudinary to fetch and upload new books. The books are searchable, and you can access the entire library as well as monitor the latest additions. If a user cannot find a specific book in the library, they can add a comment to request assistance from other users. Other users can contribute to the library without limitations. The admin has a distinct role that allows them to delete comments and books.
 
+The project is primarily built using ReactJS for the frontend, NodeJS for the backend, and is deployed on a Kubernetes cluster within Rancher. Additionally, I have deployed the app on Vercel, making it accessible from both the Kubernetes cluster and Vercel. When you open a pull request, automated tests will run, and your pull request will be awaiting approval. After the pull request is merged, the app will be built and simultaneously pushed to Docker Hub and Vercel. Following the completion of the app's building process in GitHub Actions, the Kubernetes cluster will be triggered to run the new image we pushed to Docker Hub, ensuring it uses the latest version. You can also run the app locally using Docker, but you'll need to obtain your own Cloudinary secret key and add it to the environment file.
 
-Project mainly builded with in frontend(ReactJS), backend(NodeJS) and also deploy to kubernetes cluser(which is in rancher). In addition i deployed the app to the vercel. So the app now running in both kuberntes cluster and vercel. After you open a pull request, the tests will run and will wait your pr to be approved. After pr is merged, the app will be build and push to docker hub and vercel at the same time. After the building of the app finish in github actions, the kubernetes cluster will be trigger again to run new image that we pushed to dockerhub. So the kubernetes cluster will use the new image that we pushed to dockerhub. You can run the app in your local also using docker, but you need to get your own cloudinary secret key and add it to env file. 
+This project is my side project, where I mostly implement new concepts and technologies I've learned. It covers most of the technologies required for a real-world application. Currently, there are 112 active users registered with and using this app.
 
 ## :sparkles: Features
 
