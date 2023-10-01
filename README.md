@@ -78,6 +78,8 @@ The following tools were used in this project:
 - [x] Renovate
 - [x] Docker
 - [x] Cronjob
+- [x] Caching(Node Cache)
+
 
 ## :white_check_mark: Requirements
 
