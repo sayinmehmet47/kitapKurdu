@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-import Marquee from 'react-fast-marquee';
 import styled from 'styled-components';
 import { loadUserThunk } from '../redux/authSlice';
 import NavbarComponent from './Navbar';
@@ -26,11 +25,6 @@ export default function Layout({ children }: any) {
     <Wrapper>
       <ToastContainer />
       <NavbarComponent />
-      <Marquee className="mt-5 bg-info">
-        Kütüphanemize katkıda bulunarak, diğer kullanıcıların da okumasına
-        yardımcı olabilirsiniz!.Kütüphanemize katki saglamak icin uploadBook
-        sekmesini kullanabilirsiniz. Yeni kitap önerileriniz için bize katılın!
-      </Marquee>{' '}
       <Main>{children}</Main>
     </Wrapper>
   );
