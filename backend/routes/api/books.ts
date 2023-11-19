@@ -145,6 +145,7 @@ router.get('/searchBooks', async (req: Request, res: Response) => {
   }
   pagination.results = results;
   cache.set(cacheKey, pagination); // store the result in the cache
+
   res.json(pagination);
 });
 

@@ -18,11 +18,11 @@ export default function NavbarComponent(args: any) {
   return (
     <div className="mb-5">
       <Navbar color="dark" fixed="top" expand="md">
-        <NavbarBrand className="ms-2">
+        <div className="cursor-pointer">
           <Link to="/">
-            <img src="logo-white.svg" alt="fd" height={60} width={60} />
+            <img src="logo-white.svg" alt="fd" height={60} width={90} />
           </Link>
-        </NavbarBrand>
+        </div>
         <NavbarToggler onClick={toggleNavbar} />
         <Collapse navbar isOpen={!collapsed}>
           <Nav className="me-auto" navbar>

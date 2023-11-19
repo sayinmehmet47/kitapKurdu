@@ -100,7 +100,14 @@ export const authSlice = createSlice({
     error: false,
     errorMessage: '',
     isLoading: false,
-    user: {},
+    user: {
+      token: '',
+      user: {
+        username: '',
+        email: '',
+        isAdmin: false,
+      },
+    },
   },
   reducers: {
     login: (state, action) => {
@@ -108,7 +115,14 @@ export const authSlice = createSlice({
     },
     logout: (state, action) => {
       state.isLoggedIn = false;
-      state.user = {};
+      state.user = {
+        token: '',
+        user: {
+          username: '',
+          email: '',
+          isAdmin: false,
+        },
+      };
     },
 
     loadUser: (state, action) => {
@@ -139,7 +153,14 @@ export const authSlice = createSlice({
       .addCase(logoutThunk.fulfilled, (state, action) => {
         state.isLoggedIn = false;
         state.isLoading = false;
-        state.user = {};
+        state.user = {
+          token: '',
+          user: {
+            username: '',
+            email: '',
+            isAdmin: false,
+          },
+        };
       })
       .addCase(logoutThunk.rejected, (state: any, action) => {
         state.error = true;

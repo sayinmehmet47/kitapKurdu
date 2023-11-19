@@ -31,6 +31,10 @@ export const Search = () => {
   }
 
   useEffect(() => {
+    if (!form.getValues('name')) {
+      return;
+    }
+
     searchBook({ name: form.getValues('name'), page });
   }, [form, page, searchBook]);
 
