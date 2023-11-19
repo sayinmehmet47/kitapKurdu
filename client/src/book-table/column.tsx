@@ -4,12 +4,18 @@ import {
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
 import { Button } from '../components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
+import {
+  DeleteIcon,
+  Download,
+  DownloadIcon,
+  MoreHorizontal,
+} from 'lucide-react';
 import { DropdownMenuContent } from '../components/ui/dropdown-menu';
 import { DropdownMenuLabel } from '../components/ui/dropdown-menu';
 import { DropdownMenuItem } from '../components/ui/dropdown-menu';
 import { DropdownMenuSeparator } from '../components/ui/dropdown-menu';
 import { Book } from 'src/redux/services/book.api';
+import { AiOutlineDelete } from 'react-icons/ai';
 
 export const columns: ColumnDef<Book>[] = [
   {
@@ -41,12 +47,16 @@ export const columns: ColumnDef<Book>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(payment.id)}
+              className="cursor-pointer"
             >
-              Copy payment ID
+              <DownloadIcon className="h-4 w-4 mr-2 " />
+              Download Book
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>
+              <AiOutlineDelete className="h-4 w-4 mr-2 text-red-500" />
+              <span className="cursor-pointer text-red-500">Delete Book</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
