@@ -37,7 +37,7 @@ const RecentlyAdded = (props: Props) => {
       <Container>
         <Row lg={5} md={3} sm={3} className="d-flex justify-content-center">
           {recentlyAddedBooks?.map((book) => (
-            <Card className="m-2" key={book.id}>
+            <Card className="m-2" key={book._id}>
               <div className="w-50 d-flex justify-center mx-auto mt-3">
                 <CardImg
                   alt="Card image cap"

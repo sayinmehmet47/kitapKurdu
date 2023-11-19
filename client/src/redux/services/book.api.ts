@@ -6,7 +6,7 @@ export type Book = {
   file: string;
   date: string;
   size: string;
-  id: string;
+  _id: string;
   category: string[];
   language: string;
   url?: string;
@@ -81,6 +81,12 @@ export const bookApi = commonApi.injectEndpoints({
       invalidatesTags: [{ type: 'Book', id: 'List' }],
     }),
 
+    getBookById: build.query<Book, string | undefined>({
+      query: (id) => ({
+        url: `/books/getBookById/${id}`,
+      }),
+    }),
+
     fetchRecentlyAdded: build.query<Book[], number | void>({
       query: (page: number) => ({
         url: '/books/recently-added',
@@ -99,4 +105,5 @@ export const {
   useLazySearchBooksQuery,
   useAddNewBookMutation,
   useFetchRecentlyAddedQuery,
+  useGetBookByIdQuery,
 } = bookApi;

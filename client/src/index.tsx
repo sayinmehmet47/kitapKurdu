@@ -1,7 +1,7 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { pdfjs } from 'react-pdf';
 import App from './App';
 import './App.css';
 
@@ -14,10 +14,16 @@ import UploadNewBook from './pages/UploadNewBook';
 
 import ShelfSpace from './pages/ShelfSpace';
 import { PrivateRoute } from './components/privateRoute';
+import { BookPreviewPage } from './pages/BookPreviewPage';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url
+).toString();
 
 root.render(
   <Provider store={store}>
@@ -28,6 +34,7 @@ root.render(
         <Route path="/register" element={<Register />} />
         <Route path="/recently-added" element={<RecentlyAdded />} />
         <Route path="/all-books" element={<AllBooks />} />
+        <Route path="book/:bookId" element={<BookPreviewPage />} />
 
         <Route
           path="upload"

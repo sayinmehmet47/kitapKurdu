@@ -13,6 +13,17 @@ import { Book } from 'src/redux/services/book.api';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import { BookPreview } from '../components/BookPreview';
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../components/ui/dialog';
+import { Link } from 'react-router-dom';
 
 const downloadBook = async (url: string | undefined, name: string) => {
   if (!url) {
@@ -72,6 +83,14 @@ export const columns: ColumnDef<Book>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
+    cell: ({ row }) => (
+      <Link
+        className="text-gray-700 hover:text-blue-400 cursor-pointer"
+        to={`/book/${row.original._id}`}
+      >
+        {row.original.name}
+      </Link>
+    ),
   },
   {
     accessorKey: 'date',
