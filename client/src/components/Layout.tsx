@@ -4,6 +4,8 @@ import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { loadUserThunk } from '../redux/authSlice';
 import NavbarComponent from './Navbar';
+import { CustomFlowbiteTheme, Flowbite } from 'flowbite-react';
+import { customTheme } from './ui/theme';
 
 const Wrapper = styled.div`
   display: flex;
@@ -22,10 +24,12 @@ export default function Layout({ children }: any) {
     dispatch(loadUserThunk());
   }, [dispatch]);
   return (
-    <Wrapper>
-      <ToastContainer />
-      <NavbarComponent />
-      <Main>{children}</Main>
-    </Wrapper>
+    <Flowbite theme={{ theme: customTheme }}>
+      <Wrapper>
+        <ToastContainer />
+        <NavbarComponent />
+        <Main>{children}</Main>
+      </Wrapper>
+    </Flowbite>
   );
 }

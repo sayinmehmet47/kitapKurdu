@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from './button';
 
 export interface PaginationProps {
   previous: {
@@ -26,21 +27,13 @@ export const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="mt-2 d-flex justify-content-center">
-      <button
-        className="btn btn-outline-dark btn-sm"
-        onClick={onPreviousClick}
-        disabled={!previous}
-      >
+    <div className="mt-2 flex gap-2 items-center justify-center pb-4">
+      <Button onClick={onPreviousClick} disabled={!previous} variant="outline">
         ⬅ Previous
-      </button>
-      <button
-        className="btn btn-outline-dark btn-sm"
-        onClick={onNextClick}
-        disabled={!next}
-      >
+      </Button>
+      <Button onClick={onNextClick} disabled={!next} variant="outline">
         NextPage ➡
-      </button>
+      </Button>
     </div>
   );
 };

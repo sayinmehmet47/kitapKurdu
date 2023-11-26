@@ -9,6 +9,7 @@ import {
   BooksData,
   useDeleteBookMutation,
 } from '../redux/services/book.api';
+import { Button } from './ui/button';
 
 type TableTypes = {
   books: BooksData;
@@ -196,23 +197,18 @@ export const Table = ({ books, setPage, isLoading }: TableTypes) => {
           })}
         </tbody>
       </table>
-      <div className="mt-2 d-flex justify-content-center">
-        <button
-          className="btn btn-outline-dark btn-sm"
-          onClick={() => setPage(previous.page)}
-          disabled={!previous}
-        >
+      <div className="mt-2 flex items-center gap-2">
+        <Button onClick={() => setPage(previous.page)} disabled={!previous}>
           ⬅ Previous
-        </button>
-        <button
-          className="btn btn-outline-dark btn-sm"
+        </Button>
+        <Button
           onClick={() => {
             setPage(next.page);
           }}
           disabled={!next}
         >
           NextPage ➡
-        </button>
+        </Button>
       </div>
     </div>
   );

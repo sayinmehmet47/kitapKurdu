@@ -1,12 +1,14 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutThunk } from '../redux/authSlice';
+import { RootState } from '@/redux/store';
+import { Dispatch } from '@reduxjs/toolkit';
 
 export default function User() {
-  const dispatch = useDispatch<any>();
+  const dispatch = useDispatch<Dispatch<any>>();
 
-  const { username, isAdmin, email, createdAt } = useSelector(
-    (state: any) => state.authSlice.user.user
+  const { username, isAdmin, email } = useSelector(
+    (state: RootState) => state.authSlice.user.user
   );
 
   const handleLogout = () => {
@@ -28,10 +30,6 @@ export default function User() {
           <div className="mb-2">
             <h5 className="font-weight-bold mb-0">Email:</h5>
             <p className="mb-0">{email}</p>
-          </div>
-          <div className="mb-2">
-            <h5 className="font-weight-bold mb-0">Date:</h5>
-            <p className="mb-0">{new Date(createdAt).toISOString()}</p>
           </div>
         </div>
         <div className="card-footer text-center">

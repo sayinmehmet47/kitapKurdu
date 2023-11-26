@@ -1,60 +1,61 @@
-import React, { useState } from 'react';
-
+import { Navbar } from 'flowbite-react';
+import { UserNav } from './ui/user-avatar';
 import { Link } from 'react-router-dom';
-import { BiUser } from 'react-icons/bi';
-import {
-  NavbarBrand,
-  NavbarToggler,
-  Collapse,
-  Nav,
-  NavItem,
-  NavbarText,
-  Navbar,
-} from 'reactstrap';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
-export default function NavbarComponent(args: any) {
-  const [collapsed, setCollapsed] = useState(true);
-  const toggleNavbar = () => setCollapsed(!collapsed);
+export default function NavbarComponent() {
+  const { username, email } = useSelector(
+    (state: RootState) => state.authSlice.user.user
+  );
+
   return (
     <div className="mb-5">
-      <Navbar color="dark" fixed="top" expand="md">
-        <div className="cursor-pointer">
-          <Link to="/">
-            <img src="logo-white.svg" alt="fd" height={60} width={90} />
-          </Link>
-        </div>
-        <NavbarToggler onClick={toggleNavbar} />
-        <Collapse navbar isOpen={!collapsed}>
-          <Nav className="me-auto" navbar>
-            <div className="d-md-flex">
-              <NavItem className="px-md-5 ">
-                <Link to="/recently-added" className="text-white nav-link">
-                  Recently Added
-                </Link>
-              </NavItem>
-              <NavItem className="px-md-4">
-                <Link to="/upload" className="text-white nav-link">
-                  Upload Book
-                </Link>
-              </NavItem>
-              <NavItem className="px-md-4">
-                <Link to="/all-books" className="text-white nav-link">
-                  All Books
-                </Link>
-              </NavItem>
-              <NavItem className="px-md-4">
-                <Link to="/shelf-space" className="text-white nav-link">
-                  Shelf Space
-                </Link>
-              </NavItem>
-            </div>
-          </Nav>
-          <NavbarText className="me-3">
-            <Link to="/login">
-              <BiUser color="white" size={25} />
-            </Link>
-          </NavbarText>
-        </Collapse>
+      <Navbar>
+        <Navbar.Brand
+          as={Link}
+          href="https://flowbite-react.com"
+          hrefLang="en"
+          to="/"
+        >
+          <img
+            src="/logo-white.svg"
+            className="mr-3 h-6 sm:h-9"
+            alt="Flowbite React Logo"
+          />
+        </Navbar.Brand>
+        <Navbar.Toggle />
+        <Navbar.Collapse>
+          <Navbar.Link to="/" active>
+            Home
+          </Navbar.Link>
+          <Navbar.Link
+            as={Link}
+            to="/recently-added"
+            active={window.location.pathname === '/recently-added'}
+          >
+            Recently Added
+          </Navbar.Link>
+          <Navbar.Link
+            as={Link}
+            to="/upload"
+            active={window.location.pathname === '/upload'}
+          >
+            Upload Book
+          </Navbar.Link>
+          <Navbar.Link
+            as={Link}
+            to="/all-books"
+            active={window.location.pathname === '/all-books'}
+          >
+            All Books
+          </Navbar.Link>
+          <UserNav
+            username={username}
+            email={email}
+            avatarUrl="/avatars/01.png"
+          />
+        </Navbar.Collapse>
       </Navbar>
     </div>
   );

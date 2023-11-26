@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useLazySearchBooksQuery } from '../redux/services/book.api';
 import { DataTable } from '../book-table/data-table';
 import { columns } from '../book-table/column';
@@ -18,8 +19,13 @@ export const Search = () => {
   const [searchBook, { data: books, isLoading, isError }] =
     useLazySearchBooksQuery();
   const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const bookName = searchParams.get('name');
+  const bookPage = searchParams.get('page');
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const { setValue, getValues, control, handleSubmit, ...form } = useForm<
+    z.infer<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -27,16 +33,29 @@ export const Search = () => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    searchBook({ name: values.name, page: 1 });
+    setPage(1);
+    setSearchParams({ name: values.name, page: page.toString() });
+    searchBook({ name: values.name, page });
   }
 
   useEffect(() => {
-    if (!form.getValues('name')) {
-      return;
+    if (getValues('name')) {
+      setSearchParams({ name: getValues('name'), page: page.toString() });
     }
-
-    searchBook({ name: form.getValues('name'), page });
-  }, [form, page, searchBook]);
+    if (bookName) {
+      setValue('name', bookName);
+      searchBook({ name: bookName, page: parseInt(bookPage ?? '1') });
+    }
+  }, [
+    getValues,
+    page,
+    setSearchParams,
+    searchParams,
+    searchBook,
+    bookName,
+    bookPage,
+    setValue,
+  ]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -48,13 +67,19 @@ export const Search = () => {
 
   return (
     <>
-      <Form {...form}>
+      <Form
+        {...form}
+        setValue={setValue}
+        getValues={getValues}
+        control={control}
+        handleSubmit={handleSubmit}
+      >
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-96 mx-auto mt-6 flex items-center gap-2 my-4"
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-96 mx-auto mt-6 flex-col flex md:flex-row items-center gap-2 my-4"
         >
           <FormField
-            control={form.control}
+            control={control}
             name="name"
             render={({ field }) => (
               <FormItem className="flex gap-2">
@@ -70,7 +95,11 @@ export const Search = () => {
               </FormItem>
             )}
           />
-          {!isLoading && <Button type="submit">Submit</Button>}
+          {!isLoading && (
+            <Button type="submit" className="w-96" variant="dark">
+              Submit
+            </Button>
+          )}
           {isLoading && (
             <Button type="submit" disabled>
               <ReloadIcon />

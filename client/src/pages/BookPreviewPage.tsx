@@ -1,7 +1,7 @@
 import Layout from '../components/Layout';
 import { BookPreview } from '../components/BookPreview';
 import { useGetBookByIdQuery } from '../redux/services/book.api';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useParams } from 'react-router-dom';
 
 export const BookPreviewPage: FC = () => {
@@ -22,7 +22,11 @@ export const BookPreviewPage: FC = () => {
 
   return (
     <Layout>
-      <BookPreview bookUrl={book?.url || ''} fileType={fileType || ''} />;
+      <BookPreview
+        bookUrl={book?.url || ''}
+        fileType={fileType || ''}
+        bookName={book?.name || ''}
+      />
     </Layout>
   );
 };

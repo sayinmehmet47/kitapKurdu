@@ -19,6 +19,7 @@ export type Book = {
 export type BooksData = {
   results: Book[];
   total: number;
+  page: number;
   next: {
     page: number;
   };
