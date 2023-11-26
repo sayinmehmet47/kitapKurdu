@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-import Marquee from 'react-fast-marquee';
 import styled from 'styled-components';
 import { loadUserThunk } from '../redux/authSlice';
 import NavbarComponent from './Navbar';
+import { CustomFlowbiteTheme, Flowbite } from 'flowbite-react';
+import { customTheme } from './ui/theme';
 
 const Wrapper = styled.div`
   display: flex;
@@ -23,15 +24,12 @@ export default function Layout({ children }: any) {
     dispatch(loadUserThunk());
   }, [dispatch]);
   return (
-    <Wrapper>
-      <ToastContainer />
-      <NavbarComponent />
-      <Marquee className="mt-5 bg-info">
-        Kütüphanemize katkıda bulunarak, diğer kullanıcıların da okumasına
-        yardımcı olabilirsiniz!.Kütüphanemize katki saglamak icin uploadBook
-        sekmesini kullanabilirsiniz. Yeni kitap önerileriniz için bize katılın!
-      </Marquee>{' '}
-      <Main>{children}</Main>
-    </Wrapper>
+    <Flowbite theme={{ theme: customTheme }}>
+      <Wrapper>
+        <ToastContainer />
+        <NavbarComponent />
+        <Main>{children}</Main>
+      </Wrapper>
+    </Flowbite>
   );
 }

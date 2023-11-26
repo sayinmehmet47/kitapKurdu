@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   authSlice: authSlice,
 });
 
-const middleware = (getDefaultMiddleware: any) =>
+const middleware = (getDefaultMiddleware) =>
   getDefaultMiddleware()
     .concat(bookApi.middleware)
     .concat(messagesApi.middleware);

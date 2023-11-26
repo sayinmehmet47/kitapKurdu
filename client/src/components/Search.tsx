@@ -1,29 +1,65 @@
+import { ReloadIcon } from '@radix-ui/react-icons';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 import { useEffect, useState } from 'react';
-import { Button, Form, FormGroup, Input, Spinner } from 'reactstrap';
-import { Table } from './Table';
+import { useSearchParams } from 'react-router-dom';
 import { useLazySearchBooksQuery } from '../redux/services/book.api';
+import { DataTable } from '../book-table/data-table';
+import { columns } from '../book-table/column';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Form, FormControl, FormField, FormItem } from './ui/form';
+
+const formSchema = z.object({
+  name: z.string().min(2).max(50),
+});
 
 export const Search = () => {
   const [searchBook, { data: books, isLoading, isError }] =
     useLazySearchBooksQuery();
-  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const bookName = searchParams.get('name');
+  const bookPage = searchParams.get('page');
 
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
+  const { setValue, getValues, control, handleSubmit, ...form } = useForm<
+    z.infer<typeof formSchema>
+  >({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    setPage(1);
+    setSearchParams({ name: values.name, page: page.toString() });
+    searchBook({ name: values.name, page });
+  }
 
   useEffect(() => {
-    if (!search) return;
-    searchBook({ name: search, page });
-  }, [page, searchBook]);
+    if (getValues('name')) {
+      setSearchParams({ name: getValues('name'), page: page.toString() });
+    }
+    if (bookName) {
+      setValue('name', bookName);
+      searchBook({ name: bookName, page: parseInt(bookPage ?? '1') });
+    }
+  }, [
+    getValues,
+    page,
+    setSearchParams,
+    searchParams,
+    searchBook,
+    bookName,
+    bookPage,
+    setValue,
+  ]);
 
-  const handleSubmit = (
-    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>
-  ) => {
-    e.preventDefault();
-    searchBook({ name: search, page });
-  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (isError) {
     return <div>Something went wrong</div>;
@@ -32,46 +68,55 @@ export const Search = () => {
   return (
     <>
       <Form
-        className="mx-5 mt-5 pt-5 text-center d-flex flex-column align-items-center"
-        onSubmit={handleSubmit}
+        {...form}
+        setValue={setValue}
+        getValues={getValues}
+        control={control}
+        handleSubmit={handleSubmit}
       >
-        <FormGroup className="justify-content-center align-items-center mx-5 d-flex flex-column flex-md-row">
-          <Input
-            type="text"
-            className="mx-2 d-flex justify-content-center align-items-center my-2"
-            style={{ maxWidth: '450px', minWidth: '250px' }}
-            name="text"
-            inline="true"
-            id="search"
-            placeholder="Example:George Orwell"
-            onChange={handleChangeInput}
-            data-testid="search-input"
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-96 mx-auto mt-6 flex-col flex md:flex-row items-center gap-2 my-4"
+        >
+          <FormField
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="flex gap-2">
+                <FormControl>
+                  <Input
+                    placeholder="
+                    Search for a book example: 'George Orwell'
+                    "
+                    {...field}
+                    className="w-96"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
           />
-          {isLoading ? (
-            <div>
-              <Button
-                type="submit"
-                color="dark"
-                className="d-flex align-items-center"
-                block
-              >
-                <Spinner
-                  color="light"
-                  size="sm"
-                  className="me-2"
-                  data-testid="spinner"
-                />
-                Submit
-              </Button>
-            </div>
-          ) : (
-            <Button type="submit" color="dark" className="px-5 my-2">
+          {!isLoading && (
+            <Button type="submit" className="w-96" variant="dark">
               Submit
             </Button>
           )}
-        </FormGroup>
+          {isLoading && (
+            <Button type="submit" disabled>
+              <ReloadIcon />
+              Please wait
+            </Button>
+          )}
+        </form>
       </Form>
-      {books && <Table books={books} setPage={setPage} isLoading={isLoading} />}
+      {books && (
+        <DataTable
+          columns={columns}
+          data={books?.results}
+          setPage={setPage}
+          previous={books.previous}
+          next={books.next}
+        />
+      )}
     </>
   );
 };

@@ -145,6 +145,7 @@ router.get('/searchBooks', async (req: Request, res: Response) => {
   }
   pagination.results = results;
   cache.set(cacheKey, pagination); // store the result in the cache
+
   res.json(pagination);
 });
 
@@ -189,8 +190,6 @@ router.post(
   isAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.body.id.toString().trim();
-
-    console.log(id);
 
     try {
       const data = await Books.findByIdAndRemove(id);
@@ -245,6 +244,30 @@ router.post('/updateBook', (req: Request, res: Response) => {
           res.status(201).json(data);
         });
       }
+    }
+  );
+});
+
+router.get('/getBookById/:id', (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  console.log(id);
+
+  Books.findById(
+    id,
+    (
+      err: Error,
+      data: {
+        name: string;
+        url: string;
+        size: string;
+        uploader: string;
+        category: string[];
+        language: string;
+      }
+    ) => {
+      if (err) console.log(err);
+      res.status(201).json(data);
     }
   );
 });

@@ -4,6 +4,7 @@ export interface BookModel {
     limit: number;
   };
   total: number;
+  page: number;
   results: {
     id: string;
     name: string;
