@@ -47,7 +47,10 @@ export function UserNav({
             {username ? (
               username.slice(0, 2).toUpperCase()
             ) : (
-              <Button variant="ghost" className="text-muted-foreground">
+              <Button
+                variant="ghost"
+                className="text-muted-foreground shrink-0"
+              >
                 Login
               </Button>
             )}
