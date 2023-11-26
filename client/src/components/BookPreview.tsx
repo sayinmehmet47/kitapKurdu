@@ -60,7 +60,6 @@ export const BookPreview = ({
           locationChanged={(epubcfi: string) => setLocation(epubcfi)}
           title={bookName}
           showToc={true}
-          swipeable={true}
         />
       </div>
     );
