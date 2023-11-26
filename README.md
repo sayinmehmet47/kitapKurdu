@@ -66,7 +66,7 @@ This project is my side project, where I mostly implement new concepts and techn
 The following tools were used in this project:
 
 - [x] ReactJS
-- [x] Bootsrap-5
+- [x] Tailwind
 - [x] MongoDB
 - [x] Typescript
 - [x] NodeJS
