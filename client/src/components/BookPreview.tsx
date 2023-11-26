@@ -49,6 +49,11 @@ export const BookPreview = ({
   } else if (fileType === 'epub') {
     return (
       <div className="h-screen">
+        <ArrowLeftIcon
+          size={32}
+          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2  mb-2"
+          onClick={() => navigate(-1)}
+        />
         <ReactReader
           url={bookUrl}
           location={location}
