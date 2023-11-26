@@ -40,10 +40,12 @@ export const bookApi = commonApi.injectEndpoints({
       providesTags: (result) => [{ type: 'Book', id: 'List' }],
     }),
     deleteBook: build.mutation<BookModel, { id: string }>({
-      query: (id) => ({
-        url: `/books/deleteBook`,
+      query: ({ id }) => ({
+        url: `/books/deleteBook/${id}`,
         method: 'POST',
-        body: { id },
+        params: {
+          id,
+        },
       }),
       invalidatesTags: [{ type: 'Book', id: 'List' }],
     }),

@@ -184,12 +184,13 @@ router.get('/recently-added', (req: Request, res: Response) => {
 });
 
 router.post(
-  '/deleteBook',
-  [body('id').not().isEmpty().withMessage('Id is required')],
+  '/deleteBook/:id',
   validateRequest,
   isAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.body.id.toString().trim();
+    const id = req.params.id;
+
+    console.log('fdf', id);
 
     try {
       const data = await Books.findByIdAndRemove(id);

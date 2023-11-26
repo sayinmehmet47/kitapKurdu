@@ -1,4 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,7 +10,7 @@ import { DropdownMenuContent } from '../components/ui/dropdown-menu';
 import { DropdownMenuLabel } from '../components/ui/dropdown-menu';
 import { DropdownMenuItem } from '../components/ui/dropdown-menu';
 import { DropdownMenuSeparator } from '../components/ui/dropdown-menu';
-import { Book } from 'src/redux/services/book.api';
+import { Book, useDeleteBookMutation } from 'src/redux/services/book.api';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
@@ -39,7 +40,17 @@ const BookOptions = ({ row }: { row: { original: Book } }) => {
     (state: RootState) => state.authSlice
   );
 
+  const [deleteBook, { isSuccess, isError }] = useDeleteBookMutation();
+
   const isAdmin = isLoggedIn && user.user.isAdmin;
+
+  const handleDelete = async () => {
+    deleteBook({ id: row.original._id }).catch((err) => {
+      isError && toast.error('Something went wrong');
+    });
+
+    isSuccess && toast.success('Book deleted successfully');
+  };
 
   return (
     <DropdownMenu>
@@ -60,7 +71,7 @@ const BookOptions = ({ row }: { row: { original: Book } }) => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {isAdmin && (
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleDelete}>
             <AiOutlineDelete className="h-4 w-4 mr-2 text-red-500" />
             <span className="cursor-pointer text-red-500">Delete Book</span>
           </DropdownMenuItem>
