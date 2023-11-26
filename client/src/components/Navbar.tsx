@@ -40,6 +40,13 @@ export default function NavbarComponent() {
         >
           All Books
         </Navbar.Link>
+        <Navbar.Link
+          as={Link}
+          to="/shelf-space"
+          active={window.location.pathname === '/shelf-space'}
+        >
+          Shelf Space
+        </Navbar.Link>
         <UserNav
           username={username}
           email={email}
