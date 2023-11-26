@@ -26,7 +26,7 @@ export const BookPreview = ({
 
   if (fileType === 'pdf') {
     return (
-      <div className="mt-5 ">
+      <div className="mt-3 ">
         <DocViewer
           documents={docs}
           initialActiveDocument={docs[1]}
@@ -43,10 +43,10 @@ export const BookPreview = ({
     );
   } else if (fileType === 'epub') {
     return (
-      <div style={{ height: '90vh', marginTop: '20px' }}>
+      <div style={{ height: '100vh' }}>
         <ArrowLeftIcon
           size={32}
-          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2 top-2 my-4"
+          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2  mb-2"
           onClick={() => navigate(-1)}
         />
         <ReactReader
