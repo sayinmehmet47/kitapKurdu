@@ -1,4 +1,4 @@
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from 'react-dropzone-uploader';
 

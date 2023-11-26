@@ -3,6 +3,7 @@ import { BookPreview } from '../components/BookPreview';
 import { useGetBookByIdQuery } from '../redux/services/book.api';
 import { FC } from 'react';
 import { useParams } from 'react-router-dom';
+import { Spinner } from 'flowbite-react';
 
 export const BookPreviewPage: FC = () => {
   const router = useParams<{ bookId: string }>();
@@ -12,21 +13,23 @@ export const BookPreviewPage: FC = () => {
 
   const fileType = book?.url ? book.url.split('.').pop() : '';
 
-  if (isLoading || !book) {
-    return <div>Loading...</div>;
-  }
-
   if (isError) {
     return <div>Error...</div>;
   }
 
   return (
     <Layout>
-      <BookPreview
-        bookUrl={book?.url || ''}
-        fileType={fileType || ''}
-        bookName={book?.name || ''}
-      />
+      {isLoading ? (
+        <div className="h-screen w-full grid place-items-center">
+          <Spinner />
+        </div>
+      ) : (
+        <BookPreview
+          bookUrl={book?.url || ''}
+          fileType={fileType || ''}
+          bookName={book?.name || ''}
+        />
+      )}
     </Layout>
   );
 };

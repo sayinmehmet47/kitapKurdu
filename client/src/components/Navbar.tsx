@@ -10,53 +10,42 @@ export default function NavbarComponent() {
   );
 
   return (
-    <div className="mb-5">
-      <Navbar>
-        <Navbar.Brand
+    <Navbar>
+      <Navbar.Brand as={Link} hrefLang="en" to="/">
+        <img src="/logo-white.svg" className="h-6" alt="Flowbite React Logo" />
+      </Navbar.Brand>
+      <Navbar.Toggle />
+      <Navbar.Collapse>
+        <Navbar.Link to="/" as={Link} active={window.location.pathname === '/'}>
+          Home
+        </Navbar.Link>
+        <Navbar.Link
           as={Link}
-          href="https://flowbite-react.com"
-          hrefLang="en"
-          to="/"
+          to="/recently-added"
+          active={window.location.pathname === '/recently-added'}
         >
-          <img
-            src="/logo-white.svg"
-            className="mr-3 h-6 sm:h-9"
-            alt="Flowbite React Logo"
-          />
-        </Navbar.Brand>
-        <Navbar.Toggle />
-        <Navbar.Collapse>
-          <Navbar.Link to="/" active>
-            Home
-          </Navbar.Link>
-          <Navbar.Link
-            as={Link}
-            to="/recently-added"
-            active={window.location.pathname === '/recently-added'}
-          >
-            Recently Added
-          </Navbar.Link>
-          <Navbar.Link
-            as={Link}
-            to="/upload"
-            active={window.location.pathname === '/upload'}
-          >
-            Upload Book
-          </Navbar.Link>
-          <Navbar.Link
-            as={Link}
-            to="/all-books"
-            active={window.location.pathname === '/all-books'}
-          >
-            All Books
-          </Navbar.Link>
-          <UserNav
-            username={username}
-            email={email}
-            avatarUrl="/avatars/01.png"
-          />
-        </Navbar.Collapse>
-      </Navbar>
-    </div>
+          Recently Added
+        </Navbar.Link>
+        <Navbar.Link
+          as={Link}
+          to="/upload"
+          active={window.location.pathname === '/upload'}
+        >
+          Upload Book
+        </Navbar.Link>
+        <Navbar.Link
+          as={Link}
+          to="/all-books"
+          active={window.location.pathname === '/all-books'}
+        >
+          All Books
+        </Navbar.Link>
+        <UserNav
+          username={username}
+          email={email}
+          avatarUrl="/avatars/01.png"
+        />
+      </Navbar.Collapse>
+    </Navbar>
   );
 }

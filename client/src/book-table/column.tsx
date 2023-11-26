@@ -85,10 +85,10 @@ export const columns: ColumnDef<Book>[] = [
   },
   {
     accessorKey: 'date',
-    header: 'Date',
+    header: () => <div className="text-gray-500 hidden md:flex">Date</div>,
     cell: ({ row }) => {
       return (
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 hidden md:flex">
           {new Date(row.original.date).toLocaleDateString()}
         </div>
       );
@@ -96,10 +96,12 @@ export const columns: ColumnDef<Book>[] = [
   },
 
   {
-    header: 'Uploaded By',
+    header: () => <div className="text-gray-500 hidden md:flex">Uploader</div>,
     accessorKey: 'uploader',
     cell: ({ row }) => (
-      <div className="text-gray-500">{row.original.uploader.username}</div>
+      <div className="text-gray-500 hidden md:flex">
+        {row.original.uploader.username}
+      </div>
     ),
   },
   {

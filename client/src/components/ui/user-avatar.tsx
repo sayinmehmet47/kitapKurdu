@@ -8,12 +8,12 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from './dropdown-menu';
 import { Dispatch } from '@reduxjs/toolkit';
 import { logoutThunk } from '../../redux/authSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export interface UserNavProps {
   avatarUrl?: string;
@@ -27,28 +27,32 @@ export function UserNav({
   email = 'exampe@example.com',
 }: UserNavProps) {
   const dispatch = useDispatch<Dispatch<any>>();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logoutThunk());
+    toast.success('Logout successful');
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="relative h-8 w-8 rounded-full hover:w-8"
-        >
-          <Avatar className="h-8 w-8 hover:w-8">
-            <AvatarImage src={avatarUrl} alt="@shadcn" />
-            <AvatarFallback>
-              {username
-                .split(' ')
-                .map((n) => n[0])
-                .join('')}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
+        <Avatar className="h-10 w-10">
+          <AvatarImage src={avatarUrl} alt="@shadcn" />
+          <AvatarFallback>
+            {username ? (
+              username.slice(0, 2).toUpperCase()
+            ) : (
+              <Button variant="ghost" className="text-muted-foreground">
+                Login
+              </Button>
+            )}
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
@@ -62,11 +66,15 @@ export function UserNav({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link to="/login">Profile</Link>
+            <Link to={username ? '/login' : '/register'}>
+              {username ? <span>Profile</span> : <span>Register</span>}
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={username ? handleLogout : handleLogin}>
+          {username ? <span>Logout</span> : <span>Login</span>}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

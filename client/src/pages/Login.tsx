@@ -1,11 +1,9 @@
-import React, { SyntheticEvent } from 'react';
+import { SyntheticEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import styled from 'styled-components';
 import Layout from '../components/Layout';
-import { ToastContainer, toast } from 'react-toastify';
-
-import 'react-toastify/dist/ReactToastify.css';
 import { loginThunk } from '../redux/authSlice';
 import { mobile } from '../responsive';
 import User from '../components/User';
@@ -80,6 +78,7 @@ export default function Login() {
     const { username, password } = Object.fromEntries(data.entries());
     try {
       dispatch(loginThunk({ username, password }));
+      toast.success('Login successful');
     } catch (error) {}
   };
 
@@ -119,7 +118,6 @@ export default function Login() {
           </div>
         )}
       </Container>
-      <ToastContainer />
     </Layout>
   );
 }

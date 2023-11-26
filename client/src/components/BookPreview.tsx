@@ -26,7 +26,12 @@ export const BookPreview = ({
 
   if (fileType === 'pdf') {
     return (
-      <div className="mt-3 ">
+      <>
+        <ArrowLeftIcon
+          size={32}
+          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2  mb-2"
+          onClick={() => navigate(-1)}
+        />
         <DocViewer
           documents={docs}
           initialActiveDocument={docs[1]}
@@ -39,16 +44,11 @@ export const BookPreview = ({
             },
           }}
         />
-      </div>
+      </>
     );
   } else if (fileType === 'epub') {
     return (
-      <div style={{ height: '100vh' }}>
-        <ArrowLeftIcon
-          size={32}
-          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2  mb-2"
-          onClick={() => navigate(-1)}
-        />
+      <div className="h-screen">
         <ReactReader
           url={bookUrl}
           location={location}

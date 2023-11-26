@@ -1,35 +1,25 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
-import styled from 'styled-components';
+import { Toaster } from 'sonner';
+
 import { loadUserThunk } from '../redux/authSlice';
 import NavbarComponent from './Navbar';
 import { Flowbite } from 'flowbite-react';
 import { customTheme } from './ui/theme';
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: white;
-  color: black;
-`;
-const Main = styled.div`
-  overflow: hidden;
-`;
+import { Dispatch } from '@reduxjs/toolkit';
 
 export default function Layout({ children }: any) {
-  const dispatch = useDispatch<any>();
+  const dispatch = useDispatch<Dispatch<any>>();
   useEffect(() => {
     dispatch(loadUserThunk());
   }, [dispatch]);
   return (
     <Flowbite theme={{ theme: customTheme }}>
-      <Wrapper>
-        <ToastContainer />
+      <Toaster />
+      <div className="flex flex-col min-h-screen bg-gray-100">
         <NavbarComponent />
-        <Main>{children}</Main>
-      </Wrapper>
+        <div>{children}</div>
+      </div>
     </Flowbite>
   );
 }

@@ -10,6 +10,7 @@ import { columns } from '../book-table/column';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Form, FormControl, FormField, FormItem } from './ui/form';
+import { Spinner } from 'flowbite-react';
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -58,7 +59,11 @@ export const Search = () => {
   ]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-10 w-10">
+        <Spinner />
+      </div>
+    );
   }
 
   if (isError) {
@@ -89,14 +94,14 @@ export const Search = () => {
                     Search for a book example: 'George Orwell'
                     "
                     {...field}
-                    className="w-96"
+                    className="w-80"
                   />
                 </FormControl>
               </FormItem>
             )}
           />
           {!isLoading && (
-            <Button type="submit" className="w-96" variant="dark">
+            <Button type="submit" className="w-80" variant="dark">
               Submit
             </Button>
           )}

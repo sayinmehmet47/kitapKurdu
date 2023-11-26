@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import Layout from '../components/Layout';
 import Loading from '../components/Loading';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import {
   useAddMessageMutation,
   useDeleteMessageMutation,

@@ -3,8 +3,7 @@ import { mobile } from '../responsive';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { registerThunk } from '../redux/authSlice';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'sonner';
 import Layout from '../components/Layout';
 import React, { SyntheticEvent } from 'react';
 
@@ -98,8 +97,6 @@ const Register = () => {
   return (
     <Layout>
       <Container>
-        <ToastContainer />
-
         <Wrapper>
           <Title>CREATE AN ACCOUNT</Title>
           <Form onSubmit={handleSubmit}>
