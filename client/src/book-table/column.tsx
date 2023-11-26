@@ -10,12 +10,12 @@ import { DropdownMenuContent } from '../components/ui/dropdown-menu';
 import { DropdownMenuLabel } from '../components/ui/dropdown-menu';
 import { DropdownMenuItem } from '../components/ui/dropdown-menu';
 import { DropdownMenuSeparator } from '../components/ui/dropdown-menu';
-import { Book, useDeleteBookMutation } from 'src/redux/services/book.api';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
 
 import { Link } from 'react-router-dom';
+import { Book, useDeleteBookMutation } from 'redux/services/book.api';
+import { RootState } from 'redux/store';
 
 const downloadBook = async (url: string | undefined, name: string) => {
   if (!url) {

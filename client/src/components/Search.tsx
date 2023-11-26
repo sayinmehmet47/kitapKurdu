@@ -5,12 +5,12 @@ import * as z from 'zod';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useLazySearchBooksQuery } from '../redux/services/book.api';
-import { DataTable } from '../book-table/data-table';
 import { columns } from '../book-table/column';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Form, FormControl, FormField, FormItem } from './ui/form';
 import { Spinner } from 'flowbite-react';
+import { DataTable } from 'book-table/data-table';
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),

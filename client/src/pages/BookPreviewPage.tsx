@@ -1,10 +1,9 @@
-import Layout from '../components/Layout';
-import { BookPreview } from '../components/BookPreview';
 import { useGetBookByIdQuery } from '../redux/services/book.api';
 import { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { Spinner } from 'flowbite-react';
-
+import { BookPreview } from 'components';
+import Layout from 'components/Layout';
 export const BookPreviewPage: FC = () => {
   const router = useParams<{ bookId: string }>();
   const bookId = router.bookId;

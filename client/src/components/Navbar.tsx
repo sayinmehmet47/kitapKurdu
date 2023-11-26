@@ -2,7 +2,7 @@ import { Navbar } from 'flowbite-react';
 import { UserNav } from './ui/user-avatar';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
+import { RootState } from 'redux/store';
 
 export default function NavbarComponent() {
   const { username, email } = useSelector(

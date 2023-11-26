@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutThunk } from '../redux/authSlice';
-import { RootState } from '@/redux/store';
 import { Dispatch } from '@reduxjs/toolkit';
+import { RootState } from 'redux/store';
 
 export default function User() {
   const dispatch = useDispatch<Dispatch<any>>();

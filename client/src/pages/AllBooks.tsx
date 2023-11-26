@@ -11,10 +11,11 @@ import {
   CardTitle,
   Row,
 } from 'reactstrap';
-import Loading from '../components/Loading';
+
 import styled from 'styled-components';
-import Layout from '../components/Layout';
-import { useFetchAllBooksQuery } from '../redux/services/book.api';
+import Loading from '@/components/Loading';
+import { useFetchAllBooksQuery } from '@/redux/services/book.api';
+import Layout from '@/components/Layout';
 
 const Container = styled.div`
   margin-top: 55px;

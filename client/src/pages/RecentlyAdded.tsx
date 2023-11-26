@@ -1,25 +1,26 @@
-import Loading from '../components/Loading';
-import Layout from '../components/Layout';
+import { DownloadIcon, Eye, MoreHorizontal } from 'lucide-react';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import { RootState } from 'redux/store';
 import {
   useDeleteBookMutation,
   useFetchRecentlyAddedQuery,
-} from '../redux/services/book.api';
-import { Card, CardTitle } from '../components/ui/card';
+} from 'redux/services/book.api';
 import {
+  Button,
+  Card,
+  CardTitle,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
-import { DropdownMenuLabel } from '../components/ui/dropdown-menu';
-import { DropdownMenuItem } from '../components/ui/dropdown-menu';
-import { DropdownMenuSeparator } from '../components/ui/dropdown-menu';
-import { DownloadIcon, Eye, MoreHorizontal } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { AiOutlineDelete } from 'react-icons/ai';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
+} from '@/components/ui';
+import Layout from '@/components/Layout';
+import Loading from '@/components/Loading';
 
 const RecentlyAdded = () => {
   const { data: recentlyAddedBooks, isLoading } = useFetchRecentlyAddedQuery();

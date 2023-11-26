@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import styled from 'styled-components';
-import Layout from '../components/Layout';
-import { loginThunk } from '../redux/authSlice';
-import { mobile } from '../responsive';
-import User from '../components/User';
+
+import { loginThunk } from '@/redux/authSlice';
+import Layout from '@/components/Layout';
+import User from '@/components/User';
+import { mobile } from '@/responsive';
 
 const Container = styled.div`
   width: 100vw;
