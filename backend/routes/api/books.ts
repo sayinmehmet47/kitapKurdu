@@ -251,8 +251,6 @@ router.post('/updateBook', (req: Request, res: Response) => {
 router.get('/getBookById/:id', (req: Request, res: Response) => {
   const id = req.params.id;
 
-  console.log(id);
-
   Books.findById(
     id,
     (
