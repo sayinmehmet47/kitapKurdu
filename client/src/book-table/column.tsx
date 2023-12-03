@@ -91,7 +91,11 @@ export const columns: ColumnDef<Book>[] = [
     cell: ({ row }) =>
       row.original.category.length > 1 &&
       row.original.category.map((category) => (
-        <Badge className="text-xs text-gray-500" key={category} variant="dark">
+        <Badge
+          className="text-xs max-w-36 truncate"
+          key={category}
+          variant="dark"
+        >
           {category}
         </Badge>
       )),
