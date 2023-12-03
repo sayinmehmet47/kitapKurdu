@@ -35,13 +35,15 @@ const RecentlyAdded = () => {
       return;
     }
 
+    const fileType = url.split('.').pop();
+
     const response = await fetch(url);
     const data = await response.blob();
     const blobUrl = window.URL.createObjectURL(data);
 
     const a = document.createElement('a');
     a.href = blobUrl;
-    a.download = name;
+    a.download = `${name}.${fileType}`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -62,7 +64,7 @@ const RecentlyAdded = () => {
 
   return (
     <Layout>
-      <div className="mt-5 grid xl:grid-cols-6 lg:grid-cols-4  gap-12 m-4 md:grid-cols-3 sm:grid-cols-2">
+      <div className="mt-5 2xl:grid-cols-6 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1">
         {recentlyAddedBooks?.map((book) => (
           <Card className="h-full w-full p-12 pb-20 relative" key={book._id}>
             <img
