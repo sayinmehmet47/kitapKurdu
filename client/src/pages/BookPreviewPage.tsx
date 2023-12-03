@@ -3,7 +3,6 @@ import { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { Spinner } from 'flowbite-react';
 import { BookPreview } from 'components';
-import Layout from 'components/Layout';
 export const BookPreviewPage: FC = () => {
   const router = useParams<{ bookId: string }>();
   const bookId = router.bookId;
@@ -17,7 +16,7 @@ export const BookPreviewPage: FC = () => {
   }
 
   return (
-    <Layout>
+    <div>
       {isLoading ? (
         <div className="h-screen w-full grid place-items-center">
           <Spinner />
@@ -29,6 +28,6 @@ export const BookPreviewPage: FC = () => {
           bookName={book?.name || ''}
         />
       )}
-    </Layout>
+    </div>
   );
 };

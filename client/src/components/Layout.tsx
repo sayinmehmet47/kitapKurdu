@@ -16,7 +16,8 @@ export default function Layout({ children }: any) {
   return (
     <Flowbite theme={{ theme: customTheme }}>
       <Toaster />
-      <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-50 to-gray-200">
+        {' '}
         <NavbarComponent />
         <div>{children}</div>
       </div>

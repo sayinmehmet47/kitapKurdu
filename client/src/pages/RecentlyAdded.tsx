@@ -22,6 +22,8 @@ import {
 import Layout from '@/components/Layout';
 import Loading from '@/components/Loading';
 import { downloadBook } from '@/helpers/downloadBook';
+import { CardBody, CardFooter } from 'reactstrap';
+import { Badge } from '@/components/ui/badge';
 
 const RecentlyAdded = () => {
   const { data: recentlyAddedBooks, isLoading } = useFetchRecentlyAddedQuery();
@@ -45,25 +47,42 @@ const RecentlyAdded = () => {
 
   return (
     <Layout>
-      <div className="mt-5 2xl:grid-cols-6 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1">
+      <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1">
         {recentlyAddedBooks?.map((book) => (
-          <Card className="h-full w-full p-12 pb-20 relative" key={book._id}>
+          <Card
+            className="h-full w-full p-12 pb-20 relative bg-gray-100 hover:scale-105 transform transition-all duration-300 ease-in-out shadow-lg rounded-lg"
+            key={book._id}
+          >
             <img
               src={
                 book.url?.includes('pdf')
                   ? book.url?.replace('pdf', 'jpg')
-                  : 'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                  : book.imageLinks?.thumbnail ||
+                    'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
               }
-              className="h-3/4 w-full rounded-t-lg"
+              className="h-3/4 w-full rounded-t-lg object-contain"
               alt="Book Cover"
             />
 
             <CardTitle
               title={book.name}
-              className="text-left ps-2 text-lg mt-2 text-gray-800"
+              className="text-left ps-2 text-lg mt-2 text-gray-800 line-clamp-2"
             >
               {book.name}
             </CardTitle>
+            {book.description && (
+              <CardBody className="text-left ps-2 text-gray-600 overflow-auto md:h-36 h-28">
+                {book.description}
+              </CardBody>
+            )}
+            <CardFooter className="mt-2">
+              {book.category.length > 1 &&
+                book.category.slice(0, 3).map((category) => (
+                  <Badge className="text-sm" key={category} variant="dark">
+                    {category}
+                  </Badge>
+                ))}
+            </CardFooter>
             <div
               data-testid="book-options"
               className="flex justify-between items-center mt-4 absolute -top-3 right-2"

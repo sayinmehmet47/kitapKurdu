@@ -10,6 +10,11 @@ export type Book = {
   category: string[];
   language: string;
   url?: string;
+  description: string;
+  imageLinks: {
+    smallThumbnail: string;
+    thumbnail: string;
+  };
   uploader: {
     username: string;
     _id: string;

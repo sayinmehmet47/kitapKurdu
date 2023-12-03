@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import { Book, useDeleteBookMutation } from 'redux/services/book.api';
 import { RootState } from 'redux/store';
 import { downloadBook } from '@/helpers/downloadBook';
+import { Badge } from '@/components/ui/badge';
 
 const BookOptions = ({ row }: { row: { original: Book } }) => {
   const { user, isLoggedIn } = useSelector(
@@ -67,7 +68,9 @@ const BookOptions = ({ row }: { row: { original: Book } }) => {
 export const columns: ColumnDef<Book>[] = [
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: () => (
+      <div className="text-green-800 font-bold text-base">Name</div>
+    ),
     cell: ({ row }) => (
       <Link
         className="text-gray-700 hover:text-blue-400 cursor-pointer"
@@ -77,9 +80,30 @@ export const columns: ColumnDef<Book>[] = [
       </Link>
     ),
   },
+
+  {
+    accessorKey: 'category',
+    header: () => (
+      <div className="text-green-800 font-bold text-base  hidden md:flex">
+        Category
+      </div>
+    ),
+    cell: ({ row }) =>
+      row.original.category.length > 1 &&
+      row.original.category.map((category) => (
+        <Badge className="text-xs text-gray-500" key={category} variant="dark">
+          {category}
+        </Badge>
+      )),
+  },
+
   {
     accessorKey: 'date',
-    header: () => <div className="text-gray-500 hidden md:flex">Date</div>,
+    header: () => (
+      <div className="text-green-800 font-bold text-base  hidden md:flex">
+        Date
+      </div>
+    ),
     cell: ({ row }) => {
       return (
         <div className="text-sm text-gray-500 hidden md:flex">
@@ -90,7 +114,11 @@ export const columns: ColumnDef<Book>[] = [
   },
 
   {
-    header: () => <div className="text-gray-500 hidden md:flex">Uploader</div>,
+    header: () => (
+      <div className="text-green-800 font-bold text-base hidden md:flex">
+        Uploader
+      </div>
+    ),
     accessorKey: 'uploader',
     cell: ({ row }) => (
       <div className="text-gray-500 hidden md:flex">
