@@ -6,6 +6,8 @@ import { NotFoundError } from '../../errors/not-found-error';
 import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
 import client from 'prom-client';
+import axios from 'axios';
+import Bottleneck from 'bottleneck';
 const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
@@ -17,6 +19,14 @@ const visitorsCounter = new client.Counter({
   name: 'visitors_total',
   help: 'Total number of visitors to the /allBooks endpoint',
 });
+
+interface VolumeInfo {
+  categories: string[];
+}
+
+interface Item {
+  volumeInfo: VolumeInfo;
+}
 
 register.registerMetric(visitorsCounter);
 
@@ -109,7 +119,9 @@ router.get('/searchBooks', async (req: Request, res: Response) => {
   const [count, results] = await Promise.all([
     Books.countDocuments(query, { collation: { locale: 'tr', strength: 2 } }),
     Books.find(query)
-      .select('name path size date url uploader category language')
+      .select(
+        'name path size date url uploader category language description imageLinks'
+      )
       .populate('uploader', 'username email')
       .skip(startIndex)
       .limit(limit)
@@ -159,15 +171,37 @@ router.post(
   ],
   validateRequest,
   auth,
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
+    const response = await axios.get(
+      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+        req.body.name
+      )}`
+    );
+
+    const categories = new Set(
+      response.data.items
+        .slice(0, 10)
+        .filter((item: Item) => item.volumeInfo.categories)
+        .flatMap((item: Item) => item.volumeInfo.categories)
+        .map((category: string) => category.toLowerCase())
+    );
+
+    const convertedCategories = Array.from(categories);
+
+    const { description, imageLinks } = response.data.items[0].volumeInfo;
+
     const books = new Books({
       name: req.body.name,
       url: req.body.url,
       size: req.body.size,
       date: new Date(),
       uploader: req.body.uploader,
+      category: convertedCategories,
+      description,
+      imageLinks,
     });
-    books.save();
+
+    await books.save();
 
     res.status(201).json(books);
   }
@@ -263,12 +297,60 @@ router.get('/getBookById/:id', (req: Request, res: Response) => {
         uploader: string;
         category: string[];
         language: string;
+        description: string;
+        imageLinks: {
+          smallThumbnail: string;
+          thumbnail: string;
+        };
       }
     ) => {
       if (err) console.log(err);
       res.status(201).json(data);
     }
   );
+});
+
+const limiter = new Bottleneck({
+  minTime: 200, // Minimum time between subsequent tasks in ms. Adjust this value to fit the rate limit of the API.
+});
+
+router.post('/updateCategories', async (req: Request, res: Response) => {
+  const books = await Books.find({}).lean();
+
+  const updatePromises = books.map((book) => {
+    return limiter.schedule(async () => {
+      if (book.name) {
+        const response = await axios.get(
+          `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+            book.name
+          )}`
+        );
+
+        const categories = new Set(
+          response.data.items
+            .slice(0, 10)
+            .filter((item: Item) => item.volumeInfo.categories)
+            .flatMap((item: Item) => item.volumeInfo.categories)
+            .map((category: string) => category.toLowerCase())
+        );
+
+        const convertedCategories = Array.from(categories);
+        const { description, imageLinks } = response.data.items[0].volumeInfo;
+
+        console.log('book', book.name);
+
+        return Books.findByIdAndUpdate(book._id, {
+          category: convertedCategories,
+          description,
+          imageLinks,
+        });
+      }
+    });
+  });
+
+  await Promise.all(updatePromises);
+
+  res.status(200).send('Categories updated');
 });
 
 module.exports = router;

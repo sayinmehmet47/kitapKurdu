@@ -23,16 +23,21 @@ export const schema = new mongoose.Schema(
     },
     category: {
       type: [String],
-      enum: [
-        'Science',
-        'Literature',
-        'History',
-        'Philosophy',
-        'Poetry',
-        'Religion',
-      ],
       default: ['Science'],
     },
+    description: {
+      type: String,
+    },
+
+    imageLinks: {
+      smallThumbnail: {
+        type: String,
+      },
+      thumbnail: {
+        type: String,
+      },
+    },
+
     language: {
       type: String,
       enum: ['turkish', 'english'],
