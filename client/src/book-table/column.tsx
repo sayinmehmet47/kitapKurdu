@@ -16,24 +16,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Book, useDeleteBookMutation } from 'redux/services/book.api';
 import { RootState } from 'redux/store';
-
-const downloadBook = async (url: string | undefined, name: string) => {
-  if (!url) {
-    console.error('URL is undefined');
-    return;
-  }
-  const fileType = url.split('.').pop();
-  const response = await fetch(url);
-  const data = await response.blob();
-  const blobUrl = window.URL.createObjectURL(data);
-
-  const a = document.createElement('a');
-  a.href = blobUrl;
-  a.download = `${name}.${fileType}`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-};
+import { downloadBook } from '@/helpers/downloadBook';
 
 const BookOptions = ({ row }: { row: { original: Book } }) => {
   const { user, isLoggedIn } = useSelector(
