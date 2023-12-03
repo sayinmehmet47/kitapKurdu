@@ -71,7 +71,7 @@ const RecentlyAdded = () => {
               {book.name}
             </CardTitle>
             {book.description && (
-              <CardBody className="text-left ps-2 text-gray-600 overflow-auto md:h-36 h-28">
+              <CardBody className="text-left ps-2 text-gray-600 overflow-auto md:h-28 h-24">
                 {book.description}
               </CardBody>
             )}
