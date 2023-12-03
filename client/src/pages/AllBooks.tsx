@@ -51,9 +51,8 @@ const AllBooks = () => {
                   src={
                     book.url?.includes('pdf')
                       ? book.url?.replace('pdf', 'jpg')
-                      : book.url?.includes('epub')
-                      ? 'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-                      : 'https://images.pexels.com/photos/7829649/pexels-photo-7829649.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+                      : book.imageLinks?.thumbnail ||
+                        'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
                   }
                   top
                 />

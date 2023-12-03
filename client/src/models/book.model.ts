@@ -13,5 +13,12 @@ export interface BookModel {
     date: string;
     uploader: string;
     __v: number;
+    category: string;
+    language: string;
+    description: string;
+    imageLinks: {
+      smallThumbnail: string;
+      thumbnail: string;
+    };
   }[];
 }
