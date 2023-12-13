@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { pdfjs } from 'react-pdf';
 import App from './App';
 import './App.css';
 
@@ -19,11 +18,6 @@ import { BookPreviewPage } from './pages/BookPreviewPage';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url
-).toString();
 
 root.render(
   <Provider store={store}>
