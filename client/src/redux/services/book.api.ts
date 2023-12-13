@@ -89,10 +89,37 @@ export const bookApi = commonApi.injectEndpoints({
       invalidatesTags: [{ type: 'Book', id: 'List' }],
     }),
 
+    updateBook: build.mutation<
+      BookModel,
+      {
+        id: string;
+        name?: string;
+        language?: string;
+      }
+    >({
+      query: ({ id, name, language }) => ({
+        url: `/books/updateBook/${id}`,
+        method: 'POST',
+        params: {
+          id,
+        },
+        body: {
+          name,
+          language,
+        },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Book', id: 'List' },
+        { type: 'Book', id: 'RecentlyAdded' },
+        { type: 'Book', id },
+      ],
+    }),
+
     getBookById: build.query<Book, string | undefined>({
       query: (id) => ({
         url: `/books/getBookById/${id}`,
       }),
+      providesTags: (result, error, id) => [{ type: 'Book', id }],
     }),
 
     fetchRecentlyAdded: build.query<Book[], number | void>({
@@ -101,8 +128,8 @@ export const bookApi = commonApi.injectEndpoints({
         params: {
           page,
         },
-        invalidatesTags: [{ type: 'Book', id: 'List' }],
       }),
+      providesTags: (result) => [{ type: 'Book', id: 'RecentlyAdded' }],
     }),
   }),
 });
@@ -114,4 +141,5 @@ export const {
   useAddNewBookMutation,
   useFetchRecentlyAddedQuery,
   useGetBookByIdQuery,
+  useUpdateBookMutation,
 } = bookApi;

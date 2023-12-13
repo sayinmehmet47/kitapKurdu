@@ -1,4 +1,4 @@
-import { DownloadIcon, Eye, MoreHorizontal } from 'lucide-react';
+import { DownloadIcon, Edit, Eye, MoreHorizontal } from 'lucide-react';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
@@ -112,9 +112,26 @@ const RecentlyAdded = () => {
                     <DownloadIcon className="h-4 w-4 mr-2 " />
                     Download Book
                   </DropdownMenuItem>
+
                   <DropdownMenuSeparator />
-                  {isAdmin && (
+                  {
+                    <DropdownMenuItem disabled={!isAdmin}>
+                      <Link
+                        className="cursor-pointer"
+                        to={`/book/edit/${book._id}`}
+                      >
+                        <div className="flex">
+                          <Edit className="h-4 w-4 mr-2" />
+                          <span>Edit Book</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  }
+
+                  <DropdownMenuSeparator />
+                  {
                     <DropdownMenuItem
+                      disabled={!isAdmin}
                       onClick={() =>
                         handleDelete({
                           id: book._id,
@@ -126,7 +143,7 @@ const RecentlyAdded = () => {
                         Delete Book
                       </span>
                     </DropdownMenuItem>
-                  )}
+                  }
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

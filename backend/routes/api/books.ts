@@ -242,13 +242,9 @@ router.post(
   }
 );
 
-router.post('/updateBook', (req: Request, res: Response) => {
-  const id = req.body.id;
+router.post('/updateBook/:id', (req: Request, res: Response) => {
+  const id = req.params.id;
   const name = req.body.name;
-  const url = req.body.url;
-  const size = req.body.size;
-  const uploader = req.body.uploader;
-  const category = req.body.category;
   const language = req.body.language;
 
   Books.findById(
@@ -257,10 +253,6 @@ router.post('/updateBook', (req: Request, res: Response) => {
       err: Error,
       data: {
         name: string;
-        url: string;
-        size: string;
-        uploader: string;
-        category: string[];
         language: string;
         save: (arg0: (err: any, data: any) => void) => void;
       }
@@ -268,10 +260,6 @@ router.post('/updateBook', (req: Request, res: Response) => {
       if (err) console.log(err);
       if (data) {
         data.name = name;
-        data.url = url;
-        data.size = size;
-        data.uploader = uploader;
-        data.category = category;
         data.language = language;
 
         data.save((err, data) => {

@@ -10,5 +10,6 @@ export * from './pagination';
 export * from './dropdown-menu';
 export * from './dialog';
 export * from './skeleton';
+export * from './select';
 export * from './theme';
 export * from './toaster';

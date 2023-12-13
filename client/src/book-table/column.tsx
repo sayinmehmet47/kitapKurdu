@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
 import { Button } from '../components/ui/button';
-import { DownloadIcon, MoreHorizontal } from 'lucide-react';
+import { DownloadIcon, Edit, MoreHorizontal } from 'lucide-react';
 import { DropdownMenuContent } from '../components/ui/dropdown-menu';
 import { DropdownMenuLabel } from '../components/ui/dropdown-menu';
 import { DropdownMenuItem } from '../components/ui/dropdown-menu';
@@ -32,9 +32,8 @@ const BookOptions = ({ row }: { row: { original: Book } }) => {
     deleteBook({ id: row.original._id }).catch((err) => {
       isError && toast.error('Something went wrong');
     });
-
-    isSuccess && toast.success('Book deleted successfully');
   };
+  isSuccess && toast.success('Book deleted successfully');
 
   return (
     <DropdownMenu>
@@ -54,12 +53,27 @@ const BookOptions = ({ row }: { row: { original: Book } }) => {
           Download Book
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {isAdmin && (
-          <DropdownMenuItem onClick={handleDelete}>
+        {
+          <DropdownMenuItem disabled={!isAdmin}>
+            <Link
+              className="cursor-pointer"
+              to={`/book/edit/${row.original._id}`}
+            >
+              <div className="flex">
+                <Edit className="h-4 w-4 mr-2" />
+                <span>Edit Book</span>
+              </div>
+            </Link>
+          </DropdownMenuItem>
+        }
+
+        <DropdownMenuSeparator />
+        {
+          <DropdownMenuItem onClick={handleDelete} disabled={!isAdmin}>
             <AiOutlineDelete className="h-4 w-4 mr-2 text-red-500" />
             <span className="cursor-pointer text-red-500">Delete Book</span>
           </DropdownMenuItem>
-        )}
+        }
       </DropdownMenuContent>
     </DropdownMenu>
   );
