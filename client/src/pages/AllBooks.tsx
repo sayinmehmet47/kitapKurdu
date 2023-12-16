@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useRoutes,
+  useSearchParams,
+} from 'react-router-dom';
 import Loading from '@/components/Loading';
 import {
   useDeleteBookMutation,
@@ -32,15 +37,17 @@ import { RootState } from '@/redux/store';
 import { Pagination } from 'flowbite-react';
 
 const AllBooks = () => {
-  const [page, setPage] = useState(1);
-  const [language, setLanguage] = useState('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  console.log(searchParams.get('language'));
+
   const {
     data: bookData,
     isLoading,
     isFetching,
   } = useFetchAllBooksQuery({
-    page,
-    language,
+    page: Number(searchParams.get('page' || 1)),
+    language: searchParams.get('language') || '',
   });
 
   const { user, isLoggedIn } = useSelector(
@@ -57,8 +64,22 @@ const AllBooks = () => {
     isSuccess && toast.success('Book deleted successfully');
   };
 
-  const handleChange = (page: number) => {
-    setPage(page);
+  const handlePageChange = (page: number) => {
+    searchParams.set('page', String(page));
+    setSearchParams(new URLSearchParams(searchParams));
+  };
+
+  const handleLanguageChange = (value: string) => {
+    if (value === 'english') {
+      searchParams.set('language', 'english');
+    }
+    if (value === 'turkish') {
+      searchParams.set('language', 'turkish');
+    }
+    if (value === 'all') {
+      searchParams.delete('language');
+    }
+    setSearchParams(new URLSearchParams(searchParams));
   };
 
   if (isLoading || isFetching) {
@@ -69,8 +90,8 @@ const AllBooks = () => {
     <Layout>
       <div className="flex justify-end m-8">
         <Select
-          defaultValue="all"
-          onValueChange={(value) => setLanguage(value)}
+          defaultValue={searchParams.get('language') || 'all'}
+          onValueChange={(value) => handleLanguageChange(value)}
         >
           <SelectTrigger className="max-w-[160px]">
             <SelectValue placeholder="Select a book language" />
@@ -177,9 +198,9 @@ const AllBooks = () => {
       {bookData && (
         <div className="d-flex justify-content-center mt-4 mb-4">
           <Pagination
-            currentPage={page}
+            currentPage={Number(searchParams.get('page' || 1))}
             totalPages={Math.ceil(bookData?.total / 10)}
-            onPageChange={handleChange}
+            onPageChange={handlePageChange}
             layout="pagination"
           />
         </div>
