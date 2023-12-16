@@ -99,7 +99,7 @@ export const columns: ColumnDef<Book>[] = [
   {
     accessorKey: 'category',
     header: () => (
-      <div className="text-green-800 font-bold text-base  hidden md:flex">
+      <div className="text-green-800 font-bold text-base hidden md:flex">
         Category
       </div>
     ),
@@ -107,7 +107,7 @@ export const columns: ColumnDef<Book>[] = [
       row.original.category.length > 1 &&
       row.original.category.map((category) => (
         <Badge
-          className="text-xs max-w-36 truncate"
+          className="text-xs max-w-36 truncate hidden md:inline-flex"
           key={category}
           variant="dark"
         >

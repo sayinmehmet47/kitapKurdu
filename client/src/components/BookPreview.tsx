@@ -29,7 +29,7 @@ export const BookPreview = ({
       <>
         <ArrowLeftIcon
           size={32}
-          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2  mb-2"
+          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2 my-2"
           onClick={() => navigate(-1)}
         />
         <DocViewer
@@ -51,7 +51,7 @@ export const BookPreview = ({
       <div className="h-screen">
         <ArrowLeftIcon
           size={32}
-          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2  mb-2"
+          className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2  my-2"
           onClick={() => navigate(-1)}
         />
         <ReactReader
