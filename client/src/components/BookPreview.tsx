@@ -17,12 +17,6 @@ export const BookPreview = ({
   const [location, setLocation] = useState<string | number>(0);
   const navigate = useNavigate();
 
-  const docs = [
-    {
-      uri: bookUrl,
-    },
-  ];
-
   if (fileType === 'pdf') {
     return (
       <>
