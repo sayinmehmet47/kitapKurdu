@@ -52,6 +52,9 @@ The project is primarily built using ReactJS for the frontend, NodeJS for the ba
 For updating the npm package, i used as a bot renovate. It opens pr for the outdated package periodically
 
 This project is my side project, where I mostly implement new concepts and technologies I've learned. It covers most of the technologies required for a real-world application. Currently, there are 112 active users registered with and using this app.
+![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/e7913605-ef0a-429e-a166-166dd10c0869)
+
+![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/b8f621b1-c6ac-4756-b7ab-cae86ba33391)
 
 ## :sparkles: Features
 
@@ -126,7 +129,6 @@ Prometheus will run on <http://localhost:9090>
 
 ```
 
-![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/b8f621b1-c6ac-4756-b7ab-cae86ba33391)
 
 - This is how it shows the metrics from prometheus in graphana dashboard
 
