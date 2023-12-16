@@ -1,10 +1,5 @@
 import { ArrowLeftIcon } from 'lucide-react';
-import { useRef, useState } from 'react';
-import DocViewer, {
-  DocViewerRenderers,
-  PDFRenderer,
-  PNGRenderer,
-} from '@cyntler/react-doc-viewer';
+import { useState } from 'react';
 import { ReactReader } from 'react-reader';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,12 +31,12 @@ export const BookPreview = ({
           className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2 my-2"
           onClick={() => navigate(-1)}
         />
-        <DocViewer
-          documents={docs}
-          initialActiveDocument={docs[1]}
-          config={{
-            pdfVerticalScrollByDefault: true,
-          }}
+        <iframe
+          title="pdf"
+          src={`https://docs.google.com/gview?url=${encodeURIComponent(
+            bookUrl
+          )}&embedded=true`}
+          className="w-full h-[calc(100vh-44px)]"
         />
       </>
     );
