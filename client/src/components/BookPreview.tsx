@@ -1,6 +1,10 @@
 import { ArrowLeftIcon } from 'lucide-react';
-import { useState } from 'react';
-import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
+import { useRef, useState } from 'react';
+import DocViewer, {
+  DocViewerRenderers,
+  PDFRenderer,
+  PNGRenderer,
+} from '@cyntler/react-doc-viewer';
 import { ReactReader } from 'react-reader';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,13 +39,8 @@ export const BookPreview = ({
         <DocViewer
           documents={docs}
           initialActiveDocument={docs[1]}
-          pluginRenderers={DocViewerRenderers}
           config={{
-            header: {
-              disableHeader: false,
-              disableFileName: false,
-              retainURLParams: false,
-            },
+            pdfVerticalScrollByDefault: true,
           }}
         />
       </>
