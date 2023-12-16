@@ -56,6 +56,9 @@ This project is my side project, where I mostly implement new concepts and techn
 
 ![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/b8f621b1-c6ac-4756-b7ab-cae86ba33391)
 
+![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/ab7ea536-c764-4556-9167-9d554393b164)
+
+
 ## :sparkles: Features
 
 :heavy_check_mark: You can install more than 7000 books free with one click
