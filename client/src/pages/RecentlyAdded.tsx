@@ -45,7 +45,7 @@ const RecentlyAdded = () => {
 
   return (
     <Layout>
-      <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1">
+      <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3 grid-cols-1 gap-12 m-4 md:grid-cols-2 sm:grid-cols-1 w-3/4 mx-auto">
         {recentlyAddedBooks?.map((book) => (
           <Card
             className="h-full w-full p-12 pb-20 relative bg-gray-100 hover:scale-105 transform transition-all duration-300 ease-in-out shadow-lg rounded-lg"
@@ -58,7 +58,7 @@ const RecentlyAdded = () => {
                   : book.imageLinks?.thumbnail ||
                     'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
               }
-              className="h-3/4 w-full rounded-t-lg object-contain"
+              className="h-full w-full rounded-t-lg object-contain"
               alt="Book Cover"
             />
 
@@ -68,19 +68,6 @@ const RecentlyAdded = () => {
             >
               {book.name}
             </CardTitle>
-            {/* {book.description && (
-              <CardBody className="text-left ps-2 text-gray-600 overflow-auto md:h-28 h-24">
-                {book.description}
-              </CardBody>
-            )}
-            <CardFooter className="mt-2">
-              {book.category.length > 1 &&
-                book.category.slice(0, 3).map((category) => (
-                  <Badge className="text-sm" key={category} variant="dark">
-                    {category}
-                  </Badge>
-                ))}
-            </CardFooter> */}
             <div
               data-testid="book-options"
               className="flex justify-between items-center mt-4 absolute -top-3 right-2"

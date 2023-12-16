@@ -34,12 +34,28 @@ router.get('/allBooks', async (req: Request, res: Response) => {
   try {
     const page = parseInt(String(req.query.page)) || 1;
     const limit = parseInt(String(req.query.limit)) || 10;
+    const language = String(req.query.language) || 'all';
 
     const startIndex = (page - 1) * limit;
 
-    const total = await Books.countDocuments();
+    let query: { language?: string } = {};
+    if (language !== 'all') {
+      query.language = language;
+    }
+
+    const total = await Books.countDocuments(query);
     const results: BooksData = {
-      results: await Books.find().skip(startIndex).limit(limit),
+      results: await Books.find(
+        query,
+        'name path size date url uploader category language description imageLinks'
+      )
+        .populate('uploader', 'username email')
+        .sort({ date: -1 })
+        .skip(startIndex)
+        .limit(limit)
+        .lean()
+        .skip(startIndex)
+        .limit(limit),
       total: total,
       page: page,
       next: total > startIndex + limit ? { page: page + 1 } : undefined,

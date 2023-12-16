@@ -16,6 +16,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components';
 import { DownloadIcon, Edit, Eye, MoreHorizontal } from 'lucide-react';
 import { AiOutlineDelete } from 'react-icons/ai';
@@ -27,7 +33,15 @@ import { Pagination } from 'flowbite-react';
 
 const AllBooks = () => {
   const [page, setPage] = useState(1);
-  const { data: bookData, isLoading, isFetching } = useFetchAllBooksQuery(page);
+  const [language, setLanguage] = useState('all');
+  const {
+    data: bookData,
+    isLoading,
+    isFetching,
+  } = useFetchAllBooksQuery({
+    page,
+    language,
+  });
 
   const { user, isLoggedIn } = useSelector(
     (state: RootState) => state.authSlice
@@ -53,7 +67,24 @@ const AllBooks = () => {
 
   return (
     <Layout>
-      <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1">
+      <div className="flex justify-end m-8">
+        <Select
+          defaultValue="all"
+          onValueChange={(value) => setLanguage(value)}
+        >
+          <SelectTrigger className="max-w-[160px]">
+            <SelectValue placeholder="Select a book language" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="all">All Books</SelectItem>
+              <SelectItem value="english">English 🏴󠁧󠁢󠁥󠁮󠁧󠁿</SelectItem>
+              <SelectItem value="turkish">Turkish 🇹🇷</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1 w-3/4 mx-auto">
         {bookData?.results.map((book) => (
           <Card
             className="h-full w-full p-12 pb-20 relative bg-gray-100 hover:scale-105 transform transition-all duration-300 ease-in-out shadow-lg rounded-lg"
@@ -66,7 +97,7 @@ const AllBooks = () => {
                   : book.imageLinks?.thumbnail ||
                     'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
               }
-              className="h-3/4 w-full rounded-t-lg object-contain"
+              className="h-full w-full rounded-t-lg object-contain"
               alt="Book Cover"
             />
 

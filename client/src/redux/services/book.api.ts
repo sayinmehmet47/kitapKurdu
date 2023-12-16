@@ -3,11 +3,12 @@ import { commonApi } from '../common.api';
 
 export const bookApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
-    fetchAllBooks: build.query<BookModel, number | void>({
-      query: (page: number) => ({
-        url: '/books/allBooks',
+    fetchAllBooks: build.query<BookModel, { page: number; language: string }>({
+      query: ({ page, language }) => ({
+        url: `/books/allBooks/`,
         params: {
           page,
+          language,
         },
       }),
       providesTags: (result) => [{ type: 'Book', id: 'List' }],
