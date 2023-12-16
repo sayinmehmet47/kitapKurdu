@@ -47,4 +47,20 @@ export const schema = new mongoose.Schema(
   { collection: 'ilkparti' }
 );
 
-export const Books = mongoose.model('Books', schema);
+export interface IBook extends Document {
+  name: string;
+  file: string;
+  size: number;
+  url: string;
+  date: Date;
+  uploader: mongoose.Schema.Types.ObjectId;
+  category: string[];
+  description: string;
+  imageLinks: {
+    smallThumbnail: string;
+    thumbnail: string;
+  };
+  language: 'turkish' | 'english';
+}
+
+export const Books = mongoose.model<IBook>('Books', schema);

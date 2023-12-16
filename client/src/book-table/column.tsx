@@ -14,10 +14,11 @@ import { AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 
 import { Link } from 'react-router-dom';
-import { Book, useDeleteBookMutation } from 'redux/services/book.api';
+import { useDeleteBookMutation } from 'redux/services/book.api';
 import { RootState } from 'redux/store';
 import { downloadBook } from '@/helpers/downloadBook';
 import { Badge } from '@/components/ui/badge';
+import { Book } from '@/models/book.model';
 
 const BookOptions = ({ row }: { row: { original: Book } }) => {
   const { user, isLoggedIn } = useSelector(

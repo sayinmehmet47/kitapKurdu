@@ -1,37 +1,5 @@
-import { BookModel } from '../../models/book.model';
+import { Book, BookModel, BooksData } from '../../models/book.model';
 import { commonApi } from '../common.api';
-
-export type Book = {
-  name: string;
-  file: string;
-  date: string;
-  size: string;
-  _id: string;
-  category: string[];
-  language: string;
-  url?: string;
-  description: string;
-  imageLinks: {
-    smallThumbnail: string;
-    thumbnail: string;
-  };
-  uploader: {
-    username: string;
-    _id: string;
-    email: string;
-  };
-};
-export type BooksData = {
-  results: Book[];
-  total: number;
-  page: number;
-  next: {
-    page: number;
-  };
-  previous: {
-    page: number;
-  };
-};
 
 export const bookApi = commonApi.injectEndpoints({
   endpoints: (build) => ({

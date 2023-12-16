@@ -6,7 +6,7 @@ export interface BookModel {
   total: number;
   page: number;
   results: {
-    id: string;
+    _id: string;
     name: string;
     size: number;
     url: string;
@@ -21,4 +21,36 @@ export interface BookModel {
       thumbnail: string;
     };
   }[];
+}
+
+export interface Book {
+  name: string;
+  file: string;
+  date: string;
+  size: number;
+  _id: string;
+  category: string[];
+  language: string;
+  url?: string;
+  description: string;
+  imageLinks: {
+    smallThumbnail: string;
+    thumbnail: string;
+  };
+  uploader: {
+    username: string;
+    _id: string;
+    email: string;
+  };
+}
+export interface BooksData {
+  results: Book[];
+  total: number;
+  page: number;
+  next: {
+    page: number;
+  };
+  previous: {
+    page: number;
+  };
 }

@@ -1,85 +1,155 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Pagination from '@mui/material/Pagination';
+import Loading from '@/components/Loading';
+import {
+  useDeleteBookMutation,
+  useFetchAllBooksQuery,
+} from '@/redux/services/book.api';
+import Layout from '@/components/Layout';
 import {
   Button,
   Card,
-  CardBody,
-  CardFooter,
-  CardImg,
-  CardText,
   CardTitle,
-  Row,
-} from 'reactstrap';
-
-import styled from 'styled-components';
-import Loading from '@/components/Loading';
-import { useFetchAllBooksQuery } from '@/redux/services/book.api';
-import Layout from '@/components/Layout';
-
-const Container = styled.div`
-  margin-top: 55px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components';
+import { DownloadIcon, Edit, Eye, MoreHorizontal } from 'lucide-react';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { downloadBook } from '@/helpers/downloadBook';
+import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { RootState } from '@/redux/store';
+import { Pagination } from 'flowbite-react';
 
 const AllBooks = () => {
   const [page, setPage] = useState(1);
   const { data: bookData, isLoading, isFetching } = useFetchAllBooksQuery(page);
 
-  console.log('test');
+  const { user, isLoggedIn } = useSelector(
+    (state: RootState) => state.authSlice
+  );
+  const [deleteBook, { isSuccess, isError }] = useDeleteBookMutation();
 
-  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
+  const isAdmin = isLoggedIn && user.user.isAdmin;
+  const handleDelete = async ({ id }: { id: string }) => {
+    deleteBook({ id }).catch((err) => {
+      isError && toast.error('Something went wrong');
+    });
+
+    isSuccess && toast.success('Book deleted successfully');
+  };
+
+  const handleChange = (page: number) => {
+    setPage(page);
   };
 
   if (isLoading || isFetching) {
-    console.log('loading!!');
     return <Loading />;
   }
 
   return (
     <Layout>
-      <Container>
-        <Row lg={6} md={4} sm={3} className="d-flex justify-content-center">
-          {bookData?.results.map((book) => (
-            <Card className="m-2" key={book.id}>
-              <div className="w-50 d-flex justify-center mx-auto mt-3">
-                <CardImg
-                  alt="Card image cap"
-                  src={
-                    book.url?.includes('pdf')
-                      ? book.url?.replace('pdf', 'jpg')
-                      : book.imageLinks?.thumbnail ||
-                        'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+      <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1">
+        {bookData?.results.map((book) => (
+          <Card
+            className="h-full w-full p-12 pb-20 relative bg-gray-100 hover:scale-105 transform transition-all duration-300 ease-in-out shadow-lg rounded-lg"
+            key={book._id}
+          >
+            <img
+              src={
+                book.url?.includes('pdf')
+                  ? book.url?.replace('pdf', 'jpg')
+                  : book.imageLinks?.thumbnail ||
+                    'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+              }
+              className="h-3/4 w-full rounded-t-lg object-contain"
+              alt="Book Cover"
+            />
+
+            <CardTitle
+              title={book.name}
+              className="text-left ps-2 text-lg mt-2 text-gray-800 line-clamp-2"
+            >
+              {book.name}
+            </CardTitle>
+            <div
+              data-testid="book-options"
+              className="flex justify-between items-center mt-4 absolute -top-3 right-2"
+            >
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Link
+                      to={`/book/${book._id}`}
+                      className="flex items-center"
+                    >
+                      <Eye className="h-4 w-4 mr-2 " />
+                      Preview
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => downloadBook(book.url, book.name)}
+                  >
+                    <DownloadIcon className="h-4 w-4 mr-2 " />
+                    Download Book
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+                  {
+                    <DropdownMenuItem disabled={!isAdmin}>
+                      <Link
+                        className="cursor-pointer"
+                        to={`/book/edit/${book._id}`}
+                      >
+                        <div className="flex">
+                          <Edit className="h-4 w-4 mr-2" />
+                          <span>Edit Book</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
                   }
-                  top
-                />
-              </div>
-              <CardBody>
-                <CardTitle tag="h5">{book.name}</CardTitle>
-                <CardText>{book.size}</CardText>
-              </CardBody>
-              <CardFooter>
-                <Button color="primary">
-                  <Link to={book.url} className="text-white">
-                    Download
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </Row>
-      </Container>
+
+                  <DropdownMenuSeparator />
+                  {
+                    <DropdownMenuItem
+                      disabled={!isAdmin}
+                      onClick={() =>
+                        handleDelete({
+                          id: book._id,
+                        })
+                      }
+                    >
+                      <AiOutlineDelete className="h-4 w-4 mr-2 text-red-500" />
+                      <span className="cursor-pointer text-red-500">
+                        Delete Book
+                      </span>
+                    </DropdownMenuItem>
+                  }
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </Card>
+        ))}
+      </div>
       {bookData && (
         <div className="d-flex justify-content-center mt-4 mb-4">
           <Pagination
-            count={Math.ceil(bookData?.total / 10)}
-            color="primary"
-            boundaryCount={2}
-            page={page}
-            onChange={handleChange}
+            currentPage={page}
+            totalPages={Math.ceil(bookData?.total / 10)}
+            onPageChange={handleChange}
+            layout="pagination"
           />
         </div>
       )}

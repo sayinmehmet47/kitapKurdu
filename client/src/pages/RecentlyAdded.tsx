@@ -22,8 +22,6 @@ import {
 import Layout from '@/components/Layout';
 import Loading from '@/components/Loading';
 import { downloadBook } from '@/helpers/downloadBook';
-import { CardBody, CardFooter } from 'reactstrap';
-import { Badge } from '@/components/ui/badge';
 
 const RecentlyAdded = () => {
   const { data: recentlyAddedBooks, isLoading } = useFetchRecentlyAddedQuery();
@@ -70,7 +68,7 @@ const RecentlyAdded = () => {
             >
               {book.name}
             </CardTitle>
-            {book.description && (
+            {/* {book.description && (
               <CardBody className="text-left ps-2 text-gray-600 overflow-auto md:h-28 h-24">
                 {book.description}
               </CardBody>
@@ -82,7 +80,7 @@ const RecentlyAdded = () => {
                     {category}
                   </Badge>
                 ))}
-            </CardFooter>
+            </CardFooter> */}
             <div
               data-testid="book-options"
               className="flex justify-between items-center mt-4 absolute -top-3 right-2"

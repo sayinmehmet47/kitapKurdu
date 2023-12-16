@@ -1,24 +1,15 @@
 import { Error } from 'mongoose';
-import { Books } from './../../models/Books';
 import express, { NextFunction, Request, Response } from 'express';
 import { auth, isAdmin } from '../../middleware/auth';
 import { NotFoundError } from '../../errors/not-found-error';
 import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
-import client from 'prom-client';
 import axios from 'axios';
 import Bottleneck from 'bottleneck';
+import { Books, IBook } from '../../models/Books';
 const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
-
-const register = new client.Registry();
-
-// Create a counter metric to track the number of visitors
-const visitorsCounter = new client.Counter({
-  name: 'visitors_total',
-  help: 'Total number of visitors to the /allBooks endpoint',
-});
 
 interface VolumeInfo {
   categories: string[];
@@ -27,76 +18,42 @@ interface VolumeInfo {
 interface Item {
   volumeInfo: VolumeInfo;
 }
-
-register.registerMetric(visitorsCounter);
+export interface BooksData {
+  results: IBook[];
+  total: number;
+  page: number;
+  next?: {
+    page: number;
+  };
+  previous?: {
+    page: number;
+  };
+}
 
 router.get('/allBooks', async (req: Request, res: Response) => {
-  visitorsCounter.inc(); // Increment by 1
+  try {
+    const page = parseInt(String(req.query.page)) || 1;
+    const limit = parseInt(String(req.query.limit)) || 10;
 
-  Books.find(
-    {},
-    (
-      err: Error,
-      Books: {
-        name: string;
-        path: string;
-        size: number;
-        date: Date;
-        url: string;
-        uploader: string;
-      }[]
-    ) => {
-      if (err) throw new Error(err.message);
+    const startIndex = (page - 1) * limit;
 
-      if (Books) {
-        const page = parseInt(String(req.query.page)) || 1;
-        const limit = parseInt(String(req.query.limit)) || 10;
+    const total = await Books.countDocuments();
+    const results: BooksData = {
+      results: await Books.find().skip(startIndex).limit(limit),
+      total: total,
+      page: page,
+      next: total > startIndex + limit ? { page: page + 1 } : undefined,
+      previous: startIndex > 0 ? { page: page - 1 } : undefined,
+    };
 
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
-
-        const results: {
-          next?: {
-            page: number;
-            limit: number;
-          };
-          total?: number;
-          previous?: {
-            page: number;
-            limit: number;
-          };
-          results?: {
-            name: string;
-            path: string;
-            size: number;
-            date: Date;
-            url: string;
-            uploader: string;
-          }[];
-        } = {};
-
-        if (endIndex < Books.length) {
-          results.next = {
-            page: page + 1,
-            limit: limit,
-          };
-        }
-        results.total = Books.length;
-
-        if (startIndex > 0) {
-          results.previous = {
-            page: page - 1,
-            limit: limit,
-          };
-        }
-
-        results.results = Books.slice(startIndex, endIndex);
-
-        console.log(results);
-        res.status(201).json(results);
-      }
+    res.status(201).json(results);
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(err.message);
+    } else {
+      throw new Error(String(err));
     }
-  );
+  }
 });
 
 router.get('/searchBooks', async (req: Request, res: Response) => {
