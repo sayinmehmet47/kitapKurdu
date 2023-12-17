@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Link,
   useLocation,
@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from '@/components';
 import { DownloadIcon, Edit, Eye, MoreHorizontal } from 'lucide-react';
+import ReactGA from 'react-ga';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { downloadBook } from '@/helpers/downloadBook';
 import { useSelector } from 'react-redux';
@@ -38,7 +39,10 @@ import { Pagination } from 'flowbite-react';
 
 const AllBooks = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const location = useLocation();
+
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname + window.location.search);
+  }, []);
 
   const {
     data: bookData,
