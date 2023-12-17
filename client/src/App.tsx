@@ -5,7 +5,7 @@ import Layout from './components/Layout';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
-ReactGA.initialize('G-6H6Q971J60');
+ReactGA.initialize('G-R54SYJD2B8');
 
 function App() {
   const location = useLocation();
