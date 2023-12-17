@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import ReactGA from 'react-ga4';
 import { mobile } from '../responsive';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -69,6 +70,11 @@ const Register = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    ReactGA.event({
+      category: 'engagement',
+      action: 'submit_form',
+      label: 'register_form',
+    });
     const data = new FormData(e.target as HTMLFormElement);
     const { username, password, email, passwordRepeat } = Object.fromEntries(
       data.entries()

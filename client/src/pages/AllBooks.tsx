@@ -29,9 +29,9 @@ import {
   SelectValue,
 } from '@/components';
 import { DownloadIcon, Edit, Eye, MoreHorizontal } from 'lucide-react';
-import ReactGA from 'react-ga';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { downloadBook } from '@/helpers/downloadBook';
+import ReactGA from 'react-ga4';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { RootState } from '@/redux/store';
@@ -39,10 +39,6 @@ import { Pagination } from 'flowbite-react';
 
 const AllBooks = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    ReactGA.pageview(window.location.pathname + window.location.search);
-  }, []);
 
   const {
     data: bookData,
@@ -65,11 +61,25 @@ const AllBooks = () => {
     });
 
     isSuccess && toast.success('Book deleted successfully');
+
+    // Send event to Google Analytics
+    ReactGA.event({
+      category: 'Book',
+      action: 'Delete',
+      label: id,
+    });
   };
 
   const handlePageChange = (page: number) => {
     searchParams.set('page', String(page));
     setSearchParams(new URLSearchParams(searchParams));
+
+    // Send event to Google Analytics
+    ReactGA.event({
+      category: 'Page',
+      action: 'Change',
+      label: `Page ${page}`,
+    });
   };
 
   const handleLanguageChange = (value: string) => {
