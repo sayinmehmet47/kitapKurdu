@@ -86,9 +86,6 @@ export default function Login() {
     }
   };
   useEffect(() => {
-    if (error) {
-      toast.error('Login failed');
-    }
     if (isLoggedIn) {
       toast.success('Login successful');
     }

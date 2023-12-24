@@ -107,9 +107,8 @@ export const columns: ColumnDef<Book>[] = [
       row.original.category.length > 1 &&
       row.original.category.map((category) => (
         <Badge
-          className="text-xs max-w-36 truncate hidden md:inline-flex"
+          className="text-xs max-w-36 truncate hidden md:inline-flex m-1"
           key={category}
-          variant="dark"
         >
           {category}
         </Badge>
