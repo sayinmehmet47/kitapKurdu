@@ -1,6 +1,5 @@
 import { useDispatch } from 'react-redux';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
-import { Button } from './button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +13,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { logoutThunk } from '../../redux/authSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Button } from './button';
 
 export interface UserNavProps {
   avatarUrl?: string;

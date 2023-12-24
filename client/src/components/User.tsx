@@ -1,8 +1,16 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutThunk } from '../redux/authSlice';
 import { Dispatch } from '@reduxjs/toolkit';
 import { RootState } from 'redux/store';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Button,
+} from '@/components';
 
 export default function User() {
   const dispatch = useDispatch<Dispatch<any>>();
@@ -16,28 +24,26 @@ export default function User() {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center">
-      <div className="card shadow-lg rounded-lg p-4">
-        <div className="card-body">
-          <div className="mb-2">
-            <h5 className="font-weight-bold mb-0">Role:</h5>
-            <p className="mb-0">{isAdmin ? 'Admin' : 'User'}</p>
-          </div>
-          <div className="mb-2">
-            <h5 className="font-weight-bold mb-0">Username:</h5>
-            <p className="mb-0">{username}</p>
-          </div>
-          <div className="mb-2">
-            <h5 className="font-weight-bold mb-0">Email:</h5>
-            <p className="mb-0">{email}</p>
-          </div>
-        </div>
-        <div className="card-footer text-center">
-          <button className="btn btn-danger" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Role:</CardTitle>
+        <CardDescription className="text-base">
+          {isAdmin ? 'Admin' : 'User'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <CardTitle>Username:</CardTitle>
+        <CardDescription className="text-base">{username}</CardDescription>
+      </CardContent>
+      <CardContent>
+        <CardTitle>Email:</CardTitle>
+        <CardDescription className="text-base">{email}</CardDescription>
+      </CardContent>
+      <CardFooter className="justify-center">
+        <Button variant="destructive" onClick={handleLogout}>
+          Logout
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

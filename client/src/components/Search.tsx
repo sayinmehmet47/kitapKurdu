@@ -6,11 +6,11 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useLazySearchBooksQuery } from '../redux/services/book.api';
 import { columns } from '../book-table/column';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Form, FormControl, FormField, FormItem } from './ui/form';
 import { Spinner } from 'flowbite-react';
 import { DataTable } from 'book-table/data-table';
+import { Button } from './ui';
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -101,7 +101,7 @@ export const Search = () => {
             )}
           />
           {!isLoading && (
-            <Button type="submit" className="w-80" variant="dark">
+            <Button type="submit" className="w-80">
               Submit
             </Button>
           )}

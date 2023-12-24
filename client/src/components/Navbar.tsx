@@ -10,7 +10,7 @@ export default function NavbarComponent() {
   );
 
   return (
-    <Navbar>
+    <Navbar className="py-6">
       <Navbar.Brand as={Link} hrefLang="en" to="/">
         <img src="/logo-white.svg" className="h-6" alt="Flowbite React Logo" />
       </Navbar.Brand>
@@ -47,11 +47,13 @@ export default function NavbarComponent() {
         >
           Shelf Space
         </Navbar.Link>
-        <UserNav
-          username={username}
-          email={email}
-          avatarUrl="/avatars/01.png"
-        />
+        <Navbar.Link className="h-full md:h-4 flex items-center cursor-pointer">
+          <UserNav
+            username={username}
+            email={email}
+            avatarUrl="/avatars/01.png"
+          />
+        </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>
   );

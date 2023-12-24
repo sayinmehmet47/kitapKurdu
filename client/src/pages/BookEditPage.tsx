@@ -127,7 +127,7 @@ export const BookEditPage: FC = () => {
                   );
                 }}
               />
-              <Button type="submit" variant="dark">
+              <Button type="submit">
                 Update
                 <UpdateIcon className="ms-2" />
               </Button>

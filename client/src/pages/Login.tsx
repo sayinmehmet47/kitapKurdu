@@ -1,4 +1,4 @@
-import { SyntheticEvent } from 'react';
+import { SyntheticEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import { loginThunk } from '@/redux/authSlice';
 import Layout from '@/components/Layout';
 import User from '@/components/User';
 import { mobile } from '@/responsive';
+import { Spinner } from 'flowbite-react';
 
 const Container = styled.div`
   width: 100vw;
@@ -69,7 +70,7 @@ const NavLink = styled(Link)`
 
 export default function Login() {
   const dispatch = useDispatch<any>();
-  const { isLoggedIn, isLoading } = useSelector(
+  const { isLoggedIn, isLoading, error } = useSelector(
     (state: any) => state.authSlice
   );
 
@@ -79,10 +80,19 @@ export default function Login() {
     const { username, password } = Object.fromEntries(data.entries());
     try {
       dispatch(loginThunk({ username, password }));
-      toast.success('Login successful');
-    } catch (error) {}
+      isLoggedIn && toast.success('Login successful');
+    } catch (error) {
+      toast.error('Something went wrong');
+    }
   };
-
+  useEffect(() => {
+    if (error) {
+      toast.error('Login failed');
+    }
+    if (isLoggedIn) {
+      toast.success('Login successful');
+    }
+  }, [error, isLoggedIn]);
   return (
     <Layout>
       <Container>
@@ -109,14 +119,7 @@ export default function Login() {
             </Form>
           </Wrapper>
         ) : (
-          <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ height: '60vh' }}
-          >
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
+          <Spinner />
         )}
       </Container>
     </Layout>

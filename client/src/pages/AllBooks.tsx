@@ -1,11 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Link,
-  useLocation,
-  useRoutes,
-  useSearchParams,
-} from 'react-router-dom';
-import Loading from '@/components/Loading';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   useDeleteBookMutation,
   useFetchAllBooksQuery,
@@ -21,6 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  LoadingSpinner,
   Select,
   SelectContent,
   SelectGroup,
@@ -96,12 +90,18 @@ const AllBooks = () => {
   };
 
   if (isLoading || isFetching) {
-    return <Loading />;
+    return (
+      <Layout>
+        <div className="flex justify-center items-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      </Layout>
+    );
   }
 
   return (
     <Layout>
-      <div className="flex justify-end m-8">
+      <div className="flex justify-end m-3">
         <Select
           defaultValue={searchParams.get('language') || 'all'}
           onValueChange={(value) => handleLanguageChange(value)}
@@ -211,7 +211,7 @@ const AllBooks = () => {
         ))}
       </div>
       {bookData && (
-        <div className="d-flex justify-content-center mt-4 mb-4">
+        <div className="flex w-full justify-center py-3">
           <Pagination
             currentPage={Number(searchParams.get('page' || 1))}
             totalPages={Math.ceil(bookData?.total / 10)}

@@ -18,9 +18,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  LoadingSpinner,
 } from '@/components/ui';
 import Layout from '@/components/Layout';
-import Loading from '@/components/Loading';
 import { downloadBook } from '@/helpers/downloadBook';
 
 const RecentlyAdded = () => {
@@ -40,7 +40,13 @@ const RecentlyAdded = () => {
   };
 
   if (isLoading || !recentlyAddedBooks) {
-    return <Loading />;
+    return (
+      <Layout>
+        <div className="flex justify-center items-center min-h-screen">
+          <LoadingSpinner />
+        </div>
+      </Layout>
+    );
   }
 
   return (
