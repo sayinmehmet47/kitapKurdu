@@ -24,8 +24,6 @@ router.post(
     const user = await User.findOne({ username });
 
     if (!user) throw new BadRequestError('Invalid credentials');
-
-    console.log('user: ', user);
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new NotFoundError('Invalid credentials');
     const token = jwt.sign(
