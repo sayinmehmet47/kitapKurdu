@@ -1,12 +1,12 @@
-apiVersion: v1 
+apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
   namespace: kitapkurdu
-spec: 
+spec:
   selector:
-      app: kitapkurdu
-      tier: frontend 
+    app: kitapkurdu
+    tier: frontend
   ports:
     - protocol: TCP
       port: 80
@@ -22,12 +22,12 @@ spec:
   selector:
     matchLabels:
       app: kitapkurdu
-      tier: frontend 
+      tier: frontend
   template:
     metadata:
       labels:
         app: kitapkurdu
-        tier: frontend 
+        tier: frontend
     spec:
       containers:
         - name: frontend
@@ -41,13 +41,20 @@ spec:
             #   value: ${{ secrets.REACT_APP_CLOUDINARY_URL }}
             - name: REACT_APP_CLOUDINARY_URL
               value: https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads
+            - name: REACT_APP_PUBLIC_EMAILJS_SERVICE_ID
+              value: ${{ secrets.REACT_APP_PUBLIC_EMAILJS_SERVICE_ID }}
+            - name: REACT_APP_PUBLIC_EMAILJS_TEMPLATE_ID
+              value: ${{ secrets.REACT_APP_PUBLIC_EMAILJS_TEMPLATE_ID }}
+            - name: REACT_APP_PUBLIC_EMAILJS_PUBLIC_KEY
+              value: ${{ secrets.REACT_APP_PUBLIC_EMAILJS_PUBLIC_KEY }}
           ports:
             - containerPort: 3000
           resources:
             requests:
-              cpu: "100m" 
-              memory: "900Mi" 
+              cpu: '100m'
+              memory: '900Mi'
             limits:
-                    cpu: "500m" 
-                    memory: "1600Mi"  
+              cpu: '500m'
+              memory: '1600Mi'
 ---
+
