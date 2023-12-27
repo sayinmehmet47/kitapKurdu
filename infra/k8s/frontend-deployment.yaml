@@ -33,20 +33,25 @@ spec:
         - name: frontend
           image: sayinmehmet47/client-kitapkurdu-1:latest
           env:
-            # - name: REACT_APP_LOCAL_API
-            #   value: ${{ secrets.REACT_APP_LOCAL_API }}
             - name: REACT_APP_LOCAL_API
               value: https://kitapkurdu.alphaworld.ch/api
-            # - name: REACT_APP_CLOUDINARY_URL
-            #   value: ${{ secrets.REACT_APP_CLOUDINARY_URL }}
             - name: REACT_APP_CLOUDINARY_URL
               value: https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads
             - name: REACT_APP_PUBLIC_EMAILJS_SERVICE_ID
-              value: ${{ secrets.REACT_APP_PUBLIC_EMAILJS_SERVICE_ID }}
+              valueFrom:
+                secretKeyRef:
+                  name: react-app-public-emailjs-service-id
+                  key: value
             - name: REACT_APP_PUBLIC_EMAILJS_TEMPLATE_ID
-              value: ${{ secrets.REACT_APP_PUBLIC_EMAILJS_TEMPLATE_ID }}
+              valueFrom:
+                secretKeyRef:
+                  name: react-app-public-emailjs-template-id
+                  key: value
             - name: REACT_APP_PUBLIC_EMAILJS_PUBLIC_KEY
-              value: ${{ secrets.REACT_APP_PUBLIC_EMAILJS_PUBLIC_KEY }}
+              valueFrom:
+                secretKeyRef:
+                  name: react-app-public-emailjs-public-key
+                  key: value
           ports:
             - containerPort: 3000
           resources:
@@ -56,5 +61,3 @@ spec:
             limits:
               cpu: '500m'
               memory: '1600Mi'
----
-
