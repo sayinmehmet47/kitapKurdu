@@ -4,7 +4,7 @@
   "description": "Book searching engine",
   "scripts": {
     "build": "npm install && tsc",
-    "start": "nodemon --exec ts-node index.ts",
+    "start": "ts-node-dev --respawn --transpile-only index.ts",
     "deploy": "node ./dist/index.js",
     "test": "jest --watchAll --no-cache",
     "serve": "pm2 start index.ts --watch",
@@ -60,6 +60,7 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6"
   }
 }
