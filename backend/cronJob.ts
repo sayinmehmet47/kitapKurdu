@@ -9,7 +9,6 @@ export const myCronJob = () => {
     try {
       const response = await axios.get(allBooksURL);
       console.log('cron job started');
-      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
