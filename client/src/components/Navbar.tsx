@@ -47,6 +47,13 @@ export default function NavbarComponent() {
         >
           Shelf Space
         </Navbar.Link>
+        <Navbar.Link
+          as={Link}
+          to="/contact-us"
+          active={window.location.pathname === '/contact-us'}
+        >
+          Contact Us
+        </Navbar.Link>
         <Navbar.Link className="h-full md:h-4 flex items-center cursor-pointer">
           <UserNav
             username={username}

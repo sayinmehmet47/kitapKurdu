@@ -15,6 +15,7 @@ import ShelfSpace from './pages/ShelfSpace';
 import { PrivateRoute } from './components/privateRoute';
 import { BookPreviewPage } from './pages/BookPreviewPage';
 import { BookEditPage } from './pages/BookEditPage';
+import { ContactUs } from './pages/ContactPage';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -32,6 +33,7 @@ root.render(
         <Route path="book/:bookId" element={<BookPreviewPage />} />
         <Route path="book/edit/:bookId" element={<BookEditPage />} />
 
+        <Route path="contact-us" element={<ContactUs />} />
         <Route
           path="upload"
           element={
