@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { app } from '../../../app';
-import mongoose from 'mongoose';
 
 it('return 400 with invalid body', async () => {
   const { token } = await global.signin();
@@ -60,7 +59,7 @@ it('should not member delete book', async () => {
     .expect(201);
 
   await request(app)
-    .post('/api/books/deleteBook')
+    .post(`/api/books/deleteBook/${book.body._id}`)
     .set('Authorization', `Bearer ${token}`)
     .send({
       id: book.body._id,
@@ -82,11 +81,8 @@ it('should admin delete book', async () => {
     .expect(201);
 
   await request(app)
-    .post('/api/books/deleteBook')
+    .post(`/api/books/deleteBook/${book.body._id}`)
     .set('Authorization', `Bearer ${token}`)
-    .send({
-      id: book.body._id,
-    })
     .expect(201);
 });
 
@@ -111,15 +107,18 @@ it('should get all the books paginated', async () => {
       url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
       size: 100,
       uploader: sender,
+      language: 'all',
     })
     .expect(201);
 
   const allBooks = await request(app)
-    .get('/api/books/allBooks')
+    .get(`/api/books/allBooks/?page=0&language=`)
     .set('Authorization', `Bearer ${token}`)
     .expect(201);
 
+  console.log(allBooks.body);
+
   expect(allBooks.body.total).toEqual(2);
-  expect(allBooks.body.results[0].name).toEqual(book1.body.name);
-  expect(allBooks.body.results[1].name).toEqual(book2.body.name);
+  expect(allBooks.body.results[0].name).toEqual(book2.body.name);
+  expect(allBooks.body.results[1].name).toEqual(book1.body.name);
 });
