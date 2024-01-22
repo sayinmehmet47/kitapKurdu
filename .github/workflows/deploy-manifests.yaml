@@ -5,16 +5,15 @@ on:
     branches:
       - main
     paths:
-      - 'infra/**' 
+      - 'infra/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Install kubectl
 
         run: |
@@ -33,7 +32,7 @@ jobs:
           clusters:
           - name: rancher
             cluster:
-              server: "https://rancher.riwi.dev/k8s/clusters/c-m-cp898j4l"
+              server: ""
 
           users:
           - name: rancher
@@ -51,6 +50,4 @@ jobs:
           current-context: rancher
           EOF
       - name: Deploy using kubectl
-        run:  kubectl apply -f infra/k8s/ -n kitapkurdu
-
-        
+        run: kubectl apply -f infra/k8s/ -n kitapkurdu
