@@ -25,11 +25,9 @@ export const BookPreview = ({
           className="cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2 my-2"
           onClick={() => navigate(-1)}
         />
-        <iframe
-          title="pdf"
-          src={`https://docs.google.com/gview?url=${encodeURIComponent(
-            bookUrl
-          )}&embedded=true`}
+        <embed
+          src={bookUrl}
+          type="application/pdf"
           className="w-full h-[calc(100vh-44px)]"
         />
       </>
