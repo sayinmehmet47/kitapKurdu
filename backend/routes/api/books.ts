@@ -145,23 +145,18 @@ router.post(
   validateRequest,
   auth,
   async (req: Request, res: Response) => {
-    const response = await axios.get(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
-        req.body.name
-      )}`
-    );
+    let responseData;
 
-    const categories = new Set(
-      response.data.items
-        .slice(0, 10)
-        .filter((item: Item) => item.volumeInfo.categories)
-        .flatMap((item: Item) => item.volumeInfo.categories)
-        .map((category: string) => category.toLowerCase())
-    );
-
-    const convertedCategories = Array.from(categories);
-
-    const { description, imageLinks } = response.data.items[0].volumeInfo;
+    try {
+      const response = await axios.get(
+        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+          req.body.name
+        )}`
+      );
+      responseData = await response?.data?.items;
+    } catch (error) {
+      throw new Error('Could not find any categories');
+    }
 
     const books = new Books({
       name: req.body.name,
@@ -169,10 +164,24 @@ router.post(
       size: req.body.size,
       date: new Date(),
       uploader: req.body.uploader,
-      category: convertedCategories,
-      description,
-      imageLinks,
     });
+
+    if (responseData) {
+      const categories: Set<string> = new Set(
+        responseData
+          .slice(0, 10)
+          .filter((item: Item) => item.volumeInfo.categories)
+          .flatMap((item: Item) => item.volumeInfo.categories)
+          .map((category: string) => category.toLowerCase())
+      );
+
+      const convertedCategories = Array.from(categories);
+
+      const { description, imageLinks } = responseData[0].volumeInfo;
+      books.category = convertedCategories;
+      books.description = description;
+      books.imageLinks = imageLinks;
+    }
 
     await books.save();
 

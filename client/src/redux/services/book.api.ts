@@ -21,7 +21,11 @@ export const bookApi = commonApi.injectEndpoints({
           id,
         },
       }),
-      invalidatesTags: [{ type: 'Book', id: 'List' }],
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Book', id: 'List' },
+        { type: 'Book', id: 'RecentlyAdded' },
+        { type: 'Book', id },
+      ],
     }),
 
     searchBooks: build.query<
@@ -55,7 +59,10 @@ export const bookApi = commonApi.injectEndpoints({
         method: 'POST',
         body: book,
       }),
-      invalidatesTags: [{ type: 'Book', id: 'List' }],
+      invalidatesTags: [
+        { type: 'Book', id: 'List' },
+        { type: 'Book', id: 'RecentlyAdded' },
+      ],
     }),
 
     updateBook: build.mutation<

@@ -28,15 +28,16 @@ const RecentlyAdded = () => {
   const { user, isLoggedIn } = useSelector(
     (state: RootState) => state.authSlice
   );
-  const [deleteBook, { isSuccess, isError }] = useDeleteBookMutation();
+  const [deleteBook] = useDeleteBookMutation();
 
   const isAdmin = isLoggedIn && user.user.isAdmin;
   const handleDelete = async ({ id }: { id: string }) => {
-    deleteBook({ id }).catch((err) => {
-      isError && toast.error('Something went wrong');
-    });
-
-    isSuccess && toast.success('Book deleted successfully');
+    try {
+      await deleteBook({ id }).unwrap();
+      toast.success('Book deleted successfully');
+    } catch (err) {
+      toast.error('Something went wrong');
+    }
   };
 
   if (isLoading || !recentlyAddedBooks) {
@@ -124,11 +125,12 @@ const RecentlyAdded = () => {
                     {
                       <DropdownMenuItem
                         disabled={!isAdmin}
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleDelete({
                             id: book._id,
-                          })
-                        }
+                          });
+                        }}
                       >
                         <AiOutlineDelete className="h-4 w-4 mr-2 text-red-500" />
                         <span className="cursor-pointer text-red-500">
