@@ -191,7 +191,7 @@ router.post(
       books.imageLinks = imageLinks;
     }
 
-    // await books.save();
+    await books.save();
 
     const user = req.body.user;
 
