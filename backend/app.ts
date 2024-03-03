@@ -17,6 +17,7 @@ app.use(json());
 const books = require('./routes/api/books');
 const user = require('./routes/api/user');
 const messages = require('./routes/api/messages');
+const subscription = require('./routes/api/subscription');
 
 app.use(express.json());
 
@@ -31,6 +32,8 @@ app.use(cors(corsOptions));
 app.use('/api/books', books);
 app.use('/api/user', user);
 app.use('/api/messages', messages);
+app.use('/api/subscription', subscription);
+
 app.use(updateMetrics);
 
 app.all('*', (req: Request, res: Response) => {

@@ -39,6 +39,22 @@ const userSchema = new Schema(
         ref: 'Messages',
       },
     ],
+    subscription: {
+      endpoint: {
+        type: String,
+        required: true,
+      },
+      keys: {
+        auth: {
+          type: String,
+          required: true,
+        },
+        p256dh: {
+          type: String,
+          required: true,
+        },
+      },
+    },
   },
   {
     timestamps: true,

@@ -9,6 +9,7 @@ import Layout from '@/components/Layout';
 import User from '@/components/User';
 import { mobile } from '@/responsive';
 import { Spinner } from 'flowbite-react';
+import { regSw } from '@/App';
 
 const Container = styled.div`
   width: 100vw;
@@ -70,7 +71,7 @@ const NavLink = styled(Link)`
 
 export default function Login() {
   const dispatch = useDispatch<any>();
-  const { isLoggedIn, isLoading, error } = useSelector(
+  const { isLoggedIn, isLoading, error, user } = useSelector(
     (state: any) => state.authSlice
   );
 
@@ -80,7 +81,10 @@ export default function Login() {
     const { username, password } = Object.fromEntries(data.entries());
     try {
       dispatch(loginThunk({ username, password }));
-      isLoggedIn && toast.success('Login successful');
+
+      if (isLoggedIn) {
+        toast.success('Login successful');
+      }
     } catch (error) {
       toast.error('Something went wrong');
     }
@@ -88,6 +92,7 @@ export default function Login() {
   useEffect(() => {
     if (isLoggedIn) {
       toast.success('Login successful');
+      regSw(user.user);
     }
   }, [error, isLoggedIn]);
   return (
