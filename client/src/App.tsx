@@ -11,31 +11,41 @@ const publicVapidKey =
   'BCrScCgFJml1t1UsPNfsgd6562aSzuyRB_qQw79KrAfaALzpxkYPaLxavkP2s_P1OP3kWXuvhiK2T1ZJNmhhCiE'; //
 
 export async function regSw(user) {
-  if ('serviceWorker' in navigator) {
-    const register = await navigator.serviceWorker.register('/sw.js', {
-      scope: '/',
-    });
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    // Asking for permission
+    const permission = await window.Notification.requestPermission();
 
-    if (register.active) {
-      try {
-        const subscription = await register.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-        });
+    // If permission is granted
+    if (permission === 'granted') {
+      const register = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+      });
 
-        if (subscription && apiBaseUrl) {
-          await axios.post(`${apiBaseUrl}/subscription`, {
-            subscription,
-            user,
+      if (register.active) {
+        try {
+          const subscription = await register.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
           });
+
+          if (subscription && apiBaseUrl) {
+            await axios.post(`${apiBaseUrl}/subscription`, {
+              subscription,
+              user,
+            });
+          }
+          console.log('Push Sent...');
+        } catch (error) {
+          console.log(error);
         }
-        console.log('Push Sent...');
-      } catch (error) {
-        console.log(error);
       }
+    } else {
+      console.log('Push notifications are not allowed by the user');
     }
   } else {
-    console.log('Push');
+    console.log(
+      'Service workers or Push notifications are not supported by the browser'
+    );
   }
 }
 
