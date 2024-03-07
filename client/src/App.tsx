@@ -12,7 +12,7 @@ const publicVapidKey =
 
 export async function regSw(user) {
   if ('serviceWorker' in navigator) {
-    console.log('Registering service worker...');
+    console.log('regSw function called');
     const register = await navigator.serviceWorker.register('/sw.js', {
       scope: '/',
     });

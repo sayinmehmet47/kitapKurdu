@@ -222,9 +222,6 @@ router.post(
   isAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
-
-    console.log('fdf', id);
-
     try {
       const data = await Books.findByIdAndRemove(id);
 
@@ -323,8 +320,6 @@ router.post('/updateCategories', async (req: Request, res: Response) => {
 
         const convertedCategories = Array.from(categories);
         const { description, imageLinks } = response.data.items[0].volumeInfo;
-
-        console.log('book', book.name);
 
         return Books.findByIdAndUpdate(book._id, {
           category: convertedCategories,
