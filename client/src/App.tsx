@@ -12,12 +12,12 @@ const publicVapidKey =
 
 export async function regSw(user) {
   if ('serviceWorker' in navigator) {
-    console.log('regSw function called');
     const register = await navigator.serviceWorker.register('/sw.js', {
       scope: '/',
     });
 
     if (register.active) {
+      console.log('regSw function called');
       const subscription = await register.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
