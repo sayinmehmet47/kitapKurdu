@@ -17,19 +17,22 @@ export async function regSw(user) {
     });
 
     if (register.active) {
-      console.log('regSw function called');
-      const subscription = await register.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-      });
-
-      if (subscription && apiBaseUrl) {
-        await axios.post(`${apiBaseUrl}/subscription`, {
-          subscription,
-          user,
+      try {
+        const subscription = await register.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
         });
+
+        if (subscription && apiBaseUrl) {
+          await axios.post(`${apiBaseUrl}/subscription`, {
+            subscription,
+            user,
+          });
+        }
+        console.log('Push Sent...');
+      } catch (error) {
+        console.log(error);
       }
-      console.log('Push Sent...');
     }
   } else {
     console.log('Push');
