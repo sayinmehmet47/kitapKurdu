@@ -17,7 +17,6 @@ export const messagesApi = commonApi.injectEndpoints({
       }),
       invalidatesTags: ['Messages'],
     }),
-
     addMessage: build.mutation<MessagesModel, { text: string; sender: string }>(
       {
         query: (body) => ({

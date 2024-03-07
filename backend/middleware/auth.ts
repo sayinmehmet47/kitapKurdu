@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.split(' ')[1];
 
-  // Check for token
   if (!token)
     return res.status(401).json({ msg: 'No token, authorization denied' });
 
@@ -17,12 +16,9 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-// is admin
-
 export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.split(' ')[1];
 
-  // Check for token
   if (!token)
     return res.status(401).json({ msg: 'No token, authorization denied' });
 

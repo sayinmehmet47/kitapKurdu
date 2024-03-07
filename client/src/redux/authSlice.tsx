@@ -29,6 +29,10 @@ export const logoutThunk = createAsyncThunk(
   'authSlice/logout',
   async (_, { rejectWithValue }) => {
     try {
+      if (localStorage.jwtToken) {
+        setAuthorizationToken(localStorage.jwtToken);
+      }
+      await axios.post(`${apiBaseUrl}/user/logout`);
       localStorage.removeItem('jwtToken');
       setAuthorizationToken(false);
       return { status: true };
@@ -50,7 +54,6 @@ export const loadUserThunk = createAsyncThunk(
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
-
       return rejectWithValue(err.message);
     }
   }
@@ -84,11 +87,10 @@ export const registerThunk = createAsyncThunk(
         localStorage.setItem('jwtToken', token);
         setAuthorizationToken(token);
       }
-      return res;
+      return res.data;
     } catch (error) {
-      const err = error as AxiosError;
-
-      return rejectWithValue(err.message);
+      const err = error as any;
+      return rejectWithValue(err.response?.data.errors[0].message);
     }
   }
 );
@@ -185,6 +187,11 @@ export const authSlice = createSlice({
       .addCase(loadUserThunk.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.user = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(registerThunk.rejected, (state: any, action) => {
+        state.error = true;
+        state.errorMessage = action.payload;
         state.isLoading = false;
       });
   },

@@ -1,34 +1,23 @@
 import { Error } from 'mongoose';
+import axios from 'axios';
 import express, { NextFunction, Request, Response } from 'express';
 import { auth, isAdmin } from '../../middleware/auth';
 import { NotFoundError } from '../../errors/not-found-error';
 import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
-import axios from 'axios';
+
 import Bottleneck from 'bottleneck';
-import { Books, IBook } from '../../models/Books';
+import { Books } from '../../models/Books';
+import { BooksData, Item } from './books.types';
+import {
+  getUserSubscriptionsExcludingUser,
+  removeSubscription,
+} from '../../web-push';
+import * as webpush from 'web-push';
+
 const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
-
-interface VolumeInfo {
-  categories: string[];
-}
-
-interface Item {
-  volumeInfo: VolumeInfo;
-}
-export interface BooksData {
-  results: IBook[];
-  total: number;
-  page: number;
-  next?: {
-    page: number;
-  };
-  previous?: {
-    page: number;
-  };
-}
 
 router.get('/allBooks', async (req: Request, res: Response) => {
   try {
@@ -184,6 +173,34 @@ router.post(
     }
 
     await books.save();
+
+    const user = req.body.user;
+
+    const payload = JSON.stringify({
+      title: 'New Book Added',
+      body: `A new book "${req.body.name}" has been added!`,
+    });
+
+    const subscriptions = await getUserSubscriptionsExcludingUser(user.id);
+
+    subscriptions.forEach((subscription) => {
+      if (subscription?.subscription?.endpoint) {
+        webpush
+          .sendNotification(
+            subscription.subscription as webpush.PushSubscription,
+            payload
+          )
+          .catch((error) => {
+            if (error.statusCode === 410) {
+              removeSubscription(subscription.subscription);
+            } else {
+              console.error('Error sending push notification:', error);
+            }
+          });
+      } else {
+        console.error('Invalid subscription endpoint:', subscription);
+      }
+    });
 
     res.status(201).json(books);
   }

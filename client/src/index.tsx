@@ -5,10 +5,10 @@ import App from './App';
 import './App.css';
 
 import AllBooks from './pages/AllBooks';
-import Login from './pages/Login';
+import Login from './pages/login/Login';
 import RecentlyAdded from './pages/RecentlyAdded';
 import { store } from './redux/store';
-import Register from './pages/Register';
+import Register from './pages/register/Register';
 import UploadNewBook from './pages/UploadNewBook';
 
 import ShelfSpace from './pages/ShelfSpace';
