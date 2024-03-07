@@ -50,6 +50,7 @@ This project comprises 5000 Turkish books available for free. I used Cloudinary 
 
 The project is primarily built using ReactJS for the frontend, NodeJS for the backend, and is deployed on a Kubernetes cluster within Rancher. Additionally, I have deployed the app on Vercel, making it accessible from both the Kubernetes cluster and Vercel. When you open a pull request, automated tests will run, and your pull request will be awaiting approval. After the pull request is merged, the app will be built and simultaneously pushed to Docker Hub and Vercel. Following the completion of the app's building process in GitHub Actions, the Kubernetes cluster will be triggered to run the new image we pushed to Docker Hub, ensuring it uses the latest version. You can also run the app locally using Docker, but you'll need to obtain your own MongoDB,Cloudinary secrets and add it to the environment file.
 For updating the npm package, i used as a bot renovate. It opens pr for the outdated package periodically
+If new book added to library user get a notification
 
 This project is my side project, where I mostly implement new concepts and technologies I've learned. It covers most of the technologies required for a real-world application. Currently, there are 300 active users registered with and using this app.
 ![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/e7913605-ef0a-429e-a166-166dd10c0869)
@@ -57,6 +58,9 @@ This project is my side project, where I mostly implement new concepts and techn
 ![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/b8f621b1-c6ac-4756-b7ab-cae86ba33391)
 
 ![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/ab7ea536-c764-4556-9167-9d554393b164)
+
+<img width="452" alt="image" src="https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/716a4150-0451-4933-839f-611d17efc4c4">
+
 
 
 ## :sparkles: Features
@@ -85,6 +89,7 @@ The following tools were used in this project:
 - [x] Docker
 - [x] Cronjob
 - [x] Caching(Node Cache)
+- [x] Service Workers
 
 
 ## :white_check_mark: Requirements
