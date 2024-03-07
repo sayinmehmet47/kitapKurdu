@@ -9,34 +9,15 @@ import { validateRequest } from '../../middleware/validate-request';
 import Bottleneck from 'bottleneck';
 import { Books } from '../../models/Books';
 import { BooksData, Item } from './books.types';
+import {
+  getUserSubscriptionsExcludingUser,
+  removeSubscription,
+} from '../../web-push';
+import * as webpush from 'web-push';
+
 const router = express.Router();
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
-import * as webpush from 'web-push';
-import { User } from '../../models/User';
-
-const publicVapidKey =
-  'BCrScCgFJml1t1UsPNfsgd6562aSzuyRB_qQw79KrAfaALzpxkYPaLxavkP2s_P1OP3kWXuvhiK2T1ZJNmhhCiE';
-
-const privateVapidKey = 'yHYRAaCqdtMCmSJrmUz248yriRJC6hqbcmzhM0NBEwM';
-webpush.setVapidDetails(
-  'https://yourwebsite.com', // Valid URL should be provided here
-  publicVapidKey,
-  privateVapidKey
-);
-
-const getUserSubscriptionsExcludingUser = async (userIdToExclude: string) => {
-  try {
-    const subscriptions = await User.find({
-      _id: { $ne: userIdToExclude },
-      'subscription.endpoint': { $exists: true }, // Only select users with valid subscription endpoints
-    }).select('subscription');
-    return subscriptions;
-  } catch (error) {
-    console.error('Error fetching user subscriptions:', error);
-    throw error;
-  }
-};
 
 router.get('/allBooks', async (req: Request, res: Response) => {
   try {
@@ -209,9 +190,13 @@ router.post(
             subscription.subscription as webpush.PushSubscription,
             payload
           )
-          .catch((error) =>
-            console.error('Error sending push notification:', error)
-          );
+          .catch((error) => {
+            if (error.statusCode === 410) {
+              removeSubscription(subscription.subscription);
+            } else {
+              console.error('Error sending push notification:', error);
+            }
+          });
       } else {
         console.error('Invalid subscription endpoint:', subscription);
       }

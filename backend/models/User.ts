@@ -42,16 +42,16 @@ const userSchema = new Schema(
     subscription: {
       endpoint: {
         type: String,
-        required: true,
+        required: false,
       },
       keys: {
         auth: {
           type: String,
-          required: true,
+          required: false,
         },
         p256dh: {
           type: String,
-          required: true,
+          required: false,
         },
       },
     },

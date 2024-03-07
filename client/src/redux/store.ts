@@ -3,10 +3,10 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import authSlice from './authSlice';
 import { bookApi } from './services/book.api';
 import { messagesApi } from './services/messages.api';
+import { commonApi } from './common.api';
 
 const rootReducer = combineReducers({
-  [bookApi.reducerPath]: bookApi.reducer,
-  [messagesApi.reducerPath]: messagesApi.reducer,
+  [commonApi.reducerPath]: commonApi.reducer,
   authSlice: authSlice,
 });
 

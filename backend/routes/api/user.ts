@@ -55,7 +55,7 @@ router.post(
       .withMessage('Email must be valid'),
     body('password', 'Please enter a valid password')
       .trim()
-      .isLength({ min: 4, max: 20 })
+      .isLength({ min: 6, max: 20 })
       .withMessage('Password must be between 4 and 20 characters'),
     body('isAdmin', 'Please enter a valid isAdmin').isBoolean().optional(),
   ],
@@ -65,6 +65,11 @@ router.post(
 
     const user = await User.findOne({ email });
     if (user) throw new BadRequestError('User already exists');
+
+    const existingUserByUsername = await User.findOne({ username });
+    if (existingUserByUsername)
+      throw new BadRequestError('User with this username already exists');
+
     const salt = await bcrypt.genSalt(10);
     if (!salt) throw new Error('Something went wrong with bcrypt');
 
@@ -78,22 +83,26 @@ router.post(
       isAdmin,
     });
 
-    const savedUser = await newUser.save();
-    if (!savedUser) throw new Error('Something went wrong saving the user');
+    try {
+      const savedUser = await newUser.save();
 
-    const token = jwt.sign(
-      { id: savedUser._id, isAdmin: savedUser.isAdmin },
-      process.env.JWT_SECRET || '',
-      { expiresIn: '4h' }
-    );
-    res.status(201).json({
-      token,
-      user: {
-        id: savedUser.id,
-        username: savedUser.username,
-        email: savedUser.email,
-      },
-    });
+      if (!savedUser) throw new Error('Something went wrong saving the user');
+      const token = jwt.sign(
+        { id: savedUser._id, isAdmin: savedUser.isAdmin },
+        process.env.JWT_SECRET || '',
+        { expiresIn: '4h' }
+      );
+      res.status(201).json({
+        token,
+        user: {
+          id: savedUser.id,
+          username: savedUser.username,
+          email: savedUser.email,
+        },
+      });
+    } catch (error) {
+      console.log({ error });
+    }
   }
 );
 
@@ -118,6 +127,18 @@ router.get('/auth', auth, async (req: Request, res: Response) => {
   }
 });
 
+router.post('/logout', auth, async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.body.user.id);
+    if (user && user.subscription) {
+      user.subscription = undefined;
+      await user.save();
+    }
+    res.status(201).json({});
+  } catch (err: any) {
+    res.status(500).json({ message: 'User logged out successfully' });
+  }
+});
 // router.post('/updateUser', auth, async (req, res) => {
 //   Books.find({}).then((books) => {
 //     User.findOne({ username: 'mehmesayin' }).then((user) => {
