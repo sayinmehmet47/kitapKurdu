@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
+import { apiBaseUrl } from './redux/common.api';
 
 ReactGA.initialize('G-R54SYJD2B8');
 const publicVapidKey =
@@ -22,8 +23,8 @@ export async function regSw(user) {
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
       });
 
-      if (subscription) {
-        await axios.post('http://localhost:5000/api/subscription', {
+      if (subscription && apiBaseUrl) {
+        await axios.post(`${apiBaseUrl}/subscription`, {
           subscription,
           user,
         });
