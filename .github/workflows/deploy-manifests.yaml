@@ -32,7 +32,7 @@ jobs:
           clusters:
           - name: rancher
             cluster:
-              server: ""
+              server: "https://rancher.riwi.dev/k8s/clusters/c-m-cp898j4l"
 
           users:
           - name: rancher
