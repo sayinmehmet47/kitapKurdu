@@ -34,7 +34,7 @@ spec:
           image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
-              # value: ${{ secrets.MONGO_URI_VALUE }}
+              ## value: ${{ secrets.MONGO_URI_VALUE }}
               valueFrom:
                 secretKeyRef:
                   name: mongo-uri
