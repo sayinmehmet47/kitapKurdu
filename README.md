@@ -92,6 +92,7 @@ The following tools were used in this project:
 - [x] Cronjob
 - [x] Caching(Node Cache)
 - [x] Service Workers
+- [x] Google Analytics
 
 
 ## :white_check_mark: Requirements
