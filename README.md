@@ -27,7 +27,7 @@
 <!-- Status -->
 
 <!-- <h4 align="center">
-	🚧  Shorturl 🚀 Under construction...  🚧
+	🚧  Shorturl 🚀 Under construction....  🚧
 </h4>
 
 <hr> -->
