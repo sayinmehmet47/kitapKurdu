@@ -1,20 +1,18 @@
-import express, { Response, Request } from 'express';
+import express from 'express';
 import { auth } from '../../middleware/auth';
-import { Messages } from '../../models/Messages';
+
 import { body } from 'express-validator';
 import { validateRequest } from '../../middleware/validate-request';
-import { NotAuthorizedError } from '../../errors/not-authorized-error';
-import { NotFoundError } from '../../errors/not-found-error';
+
+import {
+  createUserMessageController,
+  deleteMessageController,
+  getUserMessagesController,
+} from '../../controllers/messages.controller';
 
 const router = express.Router();
 
-router.get('/userMessages', auth, async (req: Request, res: Response) => {
-  const userMessages = await Messages.find({}).populate(
-    'sender',
-    'username email _id isAdmin createdAt updatedAt messages'
-  );
-  res.json(userMessages);
-});
+router.get('/userMessages', auth, getUserMessagesController);
 
 router.post(
   '/userMessages',
@@ -24,21 +22,7 @@ router.post(
     body('sender').not().isEmpty().isString().withMessage('Sender is required'),
   ],
   validateRequest,
-  async (req: Request, res: Response) => {
-    const { text, sender } = req.body;
-
-    try {
-      const userMessages = new Messages({
-        text,
-        date: new Date(),
-        sender,
-      });
-      await userMessages.save();
-      res.status(201).json(userMessages);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  createUserMessageController
 );
 
 router.delete(
@@ -46,20 +30,7 @@ router.delete(
   auth,
   [body('id').not().isEmpty().withMessage('Id is required')],
   validateRequest,
-  async (req: Request, res: Response) => {
-    const { id } = req.body;
-    if (!req.body.user.isAdmin) {
-      throw new NotAuthorizedError();
-    }
-
-    const data = await Messages.findByIdAndRemove(id);
-
-    if (!data) {
-      throw new NotFoundError('Message not found');
-    }
-
-    res.status(201).json({ message: 'Message deleted!' });
-  }
+  deleteMessageController
 );
 
-module.exports = router;
+export { router as messagesRouter };

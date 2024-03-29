@@ -11,7 +11,7 @@ export const PrivateRoute = ({
   children,
 }: PrivateRouteProps) => {
   const isLoggedIn = useSelector((state: any) => state.authSlice.isLoggedIn);
-  console.log(isLoggedIn);
+
   if (!isLoggedIn) {
     return <Navigate to={redirectPath} replace />;
   }
