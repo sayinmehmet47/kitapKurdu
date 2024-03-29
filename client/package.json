@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@cyntler/react-doc-viewer": "^1.14.1",
-    "@emailjs/browser": "^3.11.0",
+    "@emailjs/browser": "^4.0.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.10.6",
     "@hookform/resolvers": "^3.3.2",
