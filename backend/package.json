@@ -42,7 +42,7 @@
     "node-cache": "^5.1.2",
     "node-cron": "^3.0.2",
     "node-url-shortener": "^2.0.3",
-    "prom-client": "^14.2.0",
+    "prom-client": "^15.0.0",
     "validator": "^13.7.0",
     "web-push": "^3.6.7"
   },
