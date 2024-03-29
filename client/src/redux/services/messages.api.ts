@@ -6,6 +6,7 @@ export const messagesApi = commonApi.injectEndpoints({
     getAllMessages: build.query<MessagesModel[], void>({
       query: () => ({
         url: '/messages/userMessages',
+        credentials: 'include',
       }),
       providesTags: (result) => [{ type: 'Messages', id: 'List' }],
     }),

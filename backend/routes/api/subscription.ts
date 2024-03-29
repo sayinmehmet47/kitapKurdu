@@ -20,4 +20,4 @@ router.post('/', async (req: Request, res: Response) => {
   res.status(201).json({ message: 'Subscription added successfully.' });
 });
 
-module.exports = router;
+export { router as subscriptionRouter };

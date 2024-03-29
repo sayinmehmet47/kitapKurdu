@@ -6,6 +6,7 @@ export const bookApi = commonApi.injectEndpoints({
     fetchAllBooks: build.query<BookModel, { page: number; language: string }>({
       query: ({ page, language }) => ({
         url: `/books/allBooks/`,
+        credentials: 'include',
         params: {
           page,
           language,

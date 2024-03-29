@@ -27,6 +27,4 @@ app.get(
   }
 );
 
-module.exports = {
-  updateMetrics,
-};
+export { app, updateMetrics };

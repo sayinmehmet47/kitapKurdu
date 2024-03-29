@@ -33,6 +33,7 @@ it('should not unauthorized users can upload new book', async () => {
 
 it('should  authorized users can upload new book', async () => {
   const { token, sender } = await global.signin();
+
   await request(app)
     .post('/api/books/addNewBook')
     .set('Authorization', `Bearer ${token}`)
@@ -114,9 +115,7 @@ it('should get all the books paginated', async () => {
   const allBooks = await request(app)
     .get(`/api/books/allBooks/?page=0&language=`)
     .set('Authorization', `Bearer ${token}`)
-    .expect(201);
-
-  console.log(allBooks.body);
+    .expect(200);
 
   expect(allBooks.body.total).toEqual(2);
   expect(allBooks.body.results[0].name).toEqual(book2.body.name);
