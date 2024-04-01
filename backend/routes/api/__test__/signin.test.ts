@@ -62,5 +62,11 @@ it('responds with a cookie when given valid credentials', async () => {
     })
     .expect(201);
 
-  expect(response.body.token).toBeDefined();
+  const cookies = response.get('Set-Cookie');
+  if (cookies) {
+    expect(cookies[1]).toMatch(/accessToken=/);
+    expect(cookies[0]).toMatch(/refreshToken=/);
+  } else {
+    throw new Error('Cookies are not set');
+  }
 });

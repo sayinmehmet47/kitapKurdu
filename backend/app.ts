@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import 'express-async-errors';
+const cookieParser = require('cookie-parser');
 
 import routes from './routes';
 import { json } from 'body-parser';
@@ -15,13 +16,14 @@ const app = express();
 
 app.set('trust proxy', true);
 app.use(json());
-
+app.use(cookieParser());
 app.use(express.json());
 
 app.use(
   cors({
     origin: ['http://localhost:3000', 'https://www.kitapkurdu.xyz'],
     credentials: true,
+    exposedHeaders: ['set-cookie'],
   })
 );
 

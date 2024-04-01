@@ -1,6 +1,6 @@
 import { User } from '../../models/User';
 
-export const authenticateUser = async (userId: string, token: string) => {
+export const authenticateUser = async (userId: string) => {
   const user = await User.findById(userId).select('-password');
 
   return {
@@ -12,6 +12,5 @@ export const authenticateUser = async (userId: string, token: string) => {
       createdAt: user?.createdAt,
       updatedAt: user?.updatedAt,
     },
-    token: token,
   };
 };
