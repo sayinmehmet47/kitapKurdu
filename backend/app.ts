@@ -23,7 +23,6 @@ app.use(
   cors({
     origin: ['http://localhost:3000', 'https://www.kitapkurdu.xyz'],
     credentials: true,
-    exposedHeaders: ['set-cookie'],
   })
 );
 

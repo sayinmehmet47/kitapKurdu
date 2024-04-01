@@ -22,7 +22,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     req.body.user = decoded;
     next();
   } catch (e) {
-    res.status(400).json({ msg: 'Token is not valid' });
+    res.status(401).json({ msg: 'Token is not valid' });
   }
 };
 
