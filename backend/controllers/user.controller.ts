@@ -69,10 +69,16 @@ export const authController = async (req: Request, res: Response) => {
 
 export const logoutController = async (req: Request, res: Response) => {
   try {
-    await logoutUser(req.body.user._id);
+    const userId = req.body.user?._id;
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
 
-    res.cookie('accessToken', '', { expires: new Date(0) });
-    res.cookie('refreshToken', '', { expires: new Date(0) });
+    await logoutUser(userId);
+
+    res.clearCookie('accessToken', { path: '/' });
+    res.clearCookie('refreshToken', { path: '/' });
+
     res.status(200).json({ message: 'Logged out successfully' });
   } catch (err) {
     if (err instanceof CustomError) {
@@ -80,6 +86,9 @@ export const logoutController = async (req: Request, res: Response) => {
         .status(err.statusCode)
         .json({ message: err.serializeErrors() });
     }
+
+    // Handle any other errors
+    return res.status(500).json({ message: 'An error occurred during logout' });
   }
 };
 
