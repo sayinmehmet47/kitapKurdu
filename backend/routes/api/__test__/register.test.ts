@@ -11,8 +11,13 @@ it('returns a 201 on successful register', async () => {
     })
     .expect(201);
 
-  expect(response.get('Set-Cookie')[1]).toMatch(/accessToken=/);
-  expect(response.get('Set-Cookie')[0]).toMatch(/refreshToken=/);
+  const cookies = response.get('Set-Cookie');
+  if (cookies) {
+    expect(cookies[1]).toMatch(/accessToken=/);
+    expect(cookies[0]).toMatch(/refreshToken=/);
+  } else {
+    throw new Error('Cookies are not set');
+  }
 });
 it('returns a 400 with an invalid username', async () => {
   return request(app)
@@ -81,7 +86,12 @@ it('sets a token successfully', async () => {
     })
     .expect(201);
 
-  expect(response.get('Set-Cookie')[1]).toMatch(/accessToken=/);
-  expect(response.get('Set-Cookie')[0]).toMatch(/refreshToken=/);
+  const cookies = response.get('Set-Cookie');
+  if (cookies) {
+    expect(cookies[1]).toMatch(/accessToken=/);
+    expect(cookies[0]).toMatch(/refreshToken=/);
+  } else {
+    throw new Error('Cookies are not set');
+  }
   expect(response.body.user).toBeDefined();
 });
