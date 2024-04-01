@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios, { AxiosError } from 'axios';
-import { setAuthorizationToken } from '../helpers/setAuthorizationToken';
 import { apiBaseUrl } from './common.api';
 
 export const loginThunk = createAsyncThunk(
@@ -10,10 +9,16 @@ export const loginThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post(`${apiBaseUrl}/user/login`, {
-        username,
-        password,
-      });
+      const res = await axios.post(
+        `${apiBaseUrl}/user/login`,
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
@@ -26,8 +31,14 @@ export const logoutThunk = createAsyncThunk(
   'authSlice/logout',
   async (_, { rejectWithValue }) => {
     try {
-      await axios.post(`${apiBaseUrl}/user/logout`);
-      return { status: true };
+      const res = await axios.post(
+        `${apiBaseUrl}/user/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      return res.data;
     } catch (error) {
       const err = error as AxiosError;
       return rejectWithValue(err.message);
@@ -39,10 +50,9 @@ export const loadUserThunk = createAsyncThunk(
   'authSlice/loadUser',
   async (_, { rejectWithValue }) => {
     try {
-      if (localStorage.jwtToken) {
-        setAuthorizationToken(localStorage.jwtToken);
-      }
-      const res = await axios.get(`${apiBaseUrl}/user/auth`);
+      const res = await axios.get(`${apiBaseUrl}/user/auth`, {
+        withCredentials: true,
+      });
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
@@ -74,11 +84,7 @@ export const registerThunk = createAsyncThunk(
         password,
         isAdmin,
       });
-      if (res.data.status) {
-        const { token } = res.data;
-        localStorage.setItem('jwtToken', token);
-        setAuthorizationToken(token);
-      }
+
       return res.data;
     } catch (error) {
       const err = error as any;
@@ -95,7 +101,6 @@ export const authSlice = createSlice({
     errorMessage: '',
     isLoading: false,
     user: {
-      token: '',
       user: {
         username: '',
         email: '',
@@ -110,7 +115,6 @@ export const authSlice = createSlice({
     logout: (state, action) => {
       state.isLoggedIn = false;
       state.user = {
-        token: '',
         user: {
           username: '',
           email: '',
@@ -122,7 +126,6 @@ export const authSlice = createSlice({
     loadUser: (state, action) => {
       state.isLoggedIn = true;
       state.user = {
-        token: action.payload.token,
         user: action.payload.user,
       };
     },
@@ -148,7 +151,6 @@ export const authSlice = createSlice({
         state.isLoggedIn = false;
         state.isLoading = false;
         state.user = {
-          token: '',
           user: {
             username: '',
             email: '',
