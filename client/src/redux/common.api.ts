@@ -15,7 +15,7 @@ export const commonApi = createApi({
       headers.set('Content-Type', 'application/json;charset=UTF-8');
       return headers;
     },
-    credentials: 'same-origin',
+    credentials: 'include',
   }),
   tagTypes: ['Book', 'Messages'],
   endpoints: (_) => ({}),
