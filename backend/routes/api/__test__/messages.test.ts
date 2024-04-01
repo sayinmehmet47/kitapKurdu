@@ -2,11 +2,11 @@ import request from 'supertest';
 import { app } from '../../../app';
 
 it('returns a 400 with a invalid sender', async () => {
-  const { token, sender } = await global.signin();
+  const { accessToken, sender } = await global.signin();
 
   return request(app)
     .post('/api/messages/userMessages')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       sender,
     })
@@ -14,11 +14,11 @@ it('returns a 400 with a invalid sender', async () => {
 });
 
 it('returns a 400 with a invalid text', async () => {
-  const { token, sender } = await global.signin();
+  const { accessToken, sender } = await global.signin();
 
   return request(app)
     .post('/api/messages/userMessages')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       sender,
     })
@@ -26,11 +26,11 @@ it('returns a 400 with a invalid text', async () => {
 });
 
 it('returns a 201 with a valid sender and text', async () => {
-  const { token, sender } = await global.signin();
+  const { accessToken, sender } = await global.signin();
 
   const response = await request(app)
     .post('/api/messages/userMessages')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       sender,
       text: 'test',
@@ -42,11 +42,11 @@ it('returns a 201 with a valid sender and text', async () => {
 });
 
 it('should not member delete message', async () => {
-  const { token, sender } = await global.signin();
+  const { accessToken, sender } = await global.signin();
 
   const response = await request(app)
     .post('/api/messages/userMessages')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       sender,
       text: 'test',
@@ -55,7 +55,7 @@ it('should not member delete message', async () => {
 
   await request(app)
     .delete('/api/messages/deleteMessage')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       id: response.body._id,
     })
@@ -63,11 +63,11 @@ it('should not member delete message', async () => {
 });
 
 it('should admin  delete message', async () => {
-  const { token, sender } = await global.signin(true);
+  const { accessToken, sender } = await global.signin(true);
 
   const response = await request(app)
     .post('/api/messages/userMessages')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       sender,
       text: 'test',
@@ -76,7 +76,7 @@ it('should admin  delete message', async () => {
 
   await request(app)
     .delete('/api/messages/deleteMessage')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       id: response.body._id,
     })

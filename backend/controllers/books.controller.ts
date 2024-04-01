@@ -71,7 +71,7 @@ export const deleteBookController = async (
     const book = await deleteBook(req);
     res.status(201).json(book);
   } catch (err) {
-    next(err);
+    res.status(500).json({ error: 'An unknown error occurred' });
   }
 };
 

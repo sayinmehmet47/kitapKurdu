@@ -1,7 +1,6 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { User } from '../../models/User';
 import { BadRequestError } from '../../errors/bad-request-error';
+import { hashPassword } from '../../utils/bcrypt.util';
 
 export const registerUser = async (
   username: string,
@@ -10,14 +9,14 @@ export const registerUser = async (
   isAdmin: boolean = false
 ) => {
   const user = await User.findOne({ email });
+
   if (user) throw new BadRequestError('User already exists');
 
   const existingUserByUsername = await User.findOne({ username });
   if (existingUserByUsername)
     throw new BadRequestError('User with this username already exists');
 
-  const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(password, salt);
+  const hash = await hashPassword(password);
 
   const newUser = new User({
     username,
@@ -28,14 +27,7 @@ export const registerUser = async (
 
   const savedUser = await newUser.save();
 
-  const token = jwt.sign(
-    { id: savedUser._id, isAdmin: savedUser.isAdmin },
-    process.env.JWT_SECRET || '',
-    { expiresIn: '4h' }
-  );
-
   return {
-    token,
     user: {
       id: savedUser.id,
       username: savedUser.username,

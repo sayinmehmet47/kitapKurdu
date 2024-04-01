@@ -14,9 +14,6 @@ export const loginThunk = createAsyncThunk(
         username,
         password,
       });
-      const { token } = res.data;
-      localStorage.setItem('jwtToken', token);
-      setAuthorizationToken(token);
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
@@ -29,12 +26,8 @@ export const logoutThunk = createAsyncThunk(
   'authSlice/logout',
   async (_, { rejectWithValue }) => {
     try {
-      if (localStorage.jwtToken) {
-        setAuthorizationToken(localStorage.jwtToken);
-      }
       await axios.post(`${apiBaseUrl}/user/logout`);
-      localStorage.removeItem('jwtToken');
-      setAuthorizationToken(false);
+
       return { status: true };
     } catch (error) {
       const err = error as AxiosError;

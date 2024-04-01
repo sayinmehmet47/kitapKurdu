@@ -2,7 +2,7 @@ import request from 'supertest';
 import { app } from '../../../app';
 
 it('returns a 201 on successful register', async () => {
-  return request(app)
+  const response = await request(app)
     .post('/api/user/register')
     .send({
       username: 'test',
@@ -10,8 +10,10 @@ it('returns a 201 on successful register', async () => {
       email: 'example@gmail.com',
     })
     .expect(201);
-});
 
+  expect(response.get('Set-Cookie')[1]).toMatch(/accessToken=/);
+  expect(response.get('Set-Cookie')[0]).toMatch(/refreshToken=/);
+});
 it('returns a 400 with an invalid username', async () => {
   return request(app)
     .post('/api/user/register')
@@ -69,7 +71,7 @@ it('disallows duplicate emails', async () => {
     .expect(400);
 });
 
-it('sets a token succesfully', async () => {
+it('sets a token successfully', async () => {
   const response = await request(app)
     .post('/api/user/register')
     .send({
@@ -78,6 +80,8 @@ it('sets a token succesfully', async () => {
       username: 'test',
     })
     .expect(201);
-  expect(response.body.token).toBeDefined();
+
+  expect(response.get('Set-Cookie')[1]).toMatch(/accessToken=/);
+  expect(response.get('Set-Cookie')[0]).toMatch(/refreshToken=/);
   expect(response.body.user).toBeDefined();
 });

@@ -8,7 +8,8 @@ import { User } from '../models/User';
 let mongo: MongoMemoryServer;
 
 beforeAll(async () => {
-  process.env.JWT_SECRET = 'asdfasdf';
+  process.env.ACCESS_TOKEN_SECRET_KEY = 'access';
+  process.env.REFRESH_TOKEN_SECRET_KEY = 'refresh';
 
   mongo = await MongoMemoryServer.create();
   const mongoUri = mongo.getUri();
@@ -55,7 +56,14 @@ global.signin = async (isAdmin: boolean = false) => {
     isAdmin: savedUser.isAdmin,
   };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET!);
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_KEY!, {
+    expiresIn: '85m',
+  });
+  const refreshToken = jwt.sign(
+    payload,
+    process.env.REFRESH_TOKEN_SECRET_KEY!,
+    { expiresIn: '12d' }
+  );
 
-  return { token, sender: savedUser._id };
+  return { accessToken, refreshToken, sender: savedUser._id };
 };

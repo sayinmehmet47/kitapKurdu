@@ -1,12 +1,13 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { auth } from '../../middleware/auth';
+import { auth, refreshToken } from '../../middleware/auth';
 import { validateRequest } from '../../middleware/validate-request';
 
 import {
   authController,
   loginController,
   logoutController,
+  refreshTokenController,
   registerController,
 } from '../../controllers/user.controller';
 const router = express.Router();
@@ -41,5 +42,7 @@ router.post(
 router.get('/auth', auth, authController);
 
 router.post('/logout', auth, logoutController);
+
+router.post('/refresh-token', refreshToken, refreshTokenController);
 
 export { router as userRouter };

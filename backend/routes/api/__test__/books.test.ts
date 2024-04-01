@@ -2,11 +2,11 @@ import request from 'supertest';
 import { app } from '../../../app';
 
 it('return 400 with invalid body', async () => {
-  const { token } = await global.signin();
+  const { accessToken } = await global.signin();
 
   await request(app)
     .post('/api/books/addNewBook')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       title: 'test',
     })
@@ -31,12 +31,12 @@ it('should not unauthorized users can upload new book', async () => {
     .expect(401);
 });
 
-it('should  authorized users can upload new book', async () => {
-  const { token, sender } = await global.signin();
+it('should authorized users can upload new book', async () => {
+  const { accessToken, sender } = await global.signin();
 
   await request(app)
     .post('/api/books/addNewBook')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       name: 'test',
       url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
@@ -47,10 +47,11 @@ it('should  authorized users can upload new book', async () => {
 });
 
 it('should not member delete book', async () => {
-  const { token, sender } = await global.signin();
+  const { accessToken, sender } = await global.signin();
+
   const book = await request(app)
     .post('/api/books/addNewBook')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       name: 'test',
       url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
@@ -61,7 +62,7 @@ it('should not member delete book', async () => {
 
   await request(app)
     .post(`/api/books/deleteBook/${book.body._id}`)
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       id: book.body._id,
     })
@@ -69,10 +70,10 @@ it('should not member delete book', async () => {
 });
 
 it('should admin delete book', async () => {
-  const { token, sender } = await global.signin(true);
+  const { accessToken, sender } = await global.signin(true);
   const book = await request(app)
     .post('/api/books/addNewBook')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       name: 'test',
       url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
@@ -83,15 +84,15 @@ it('should admin delete book', async () => {
 
   await request(app)
     .post(`/api/books/deleteBook/${book.body._id}`)
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .expect(201);
 });
 
 it('should get all the books paginated', async () => {
-  const { token, sender } = await global.signin(true);
+  const { accessToken, sender } = await global.signin();
   const book1 = await request(app)
     .post('/api/books/addNewBook')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       name: 'test-1',
       url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
@@ -102,7 +103,7 @@ it('should get all the books paginated', async () => {
 
   const book2 = await request(app)
     .post('/api/books/addNewBook')
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .send({
       name: 'test-2',
       url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
@@ -114,7 +115,7 @@ it('should get all the books paginated', async () => {
 
   const allBooks = await request(app)
     .get(`/api/books/allBooks/?page=0&language=`)
-    .set('Authorization', `Bearer ${token}`)
+    .set('Cookie', `accessToken=${accessToken}`)
     .expect(200);
 
   expect(allBooks.body.total).toEqual(2);
