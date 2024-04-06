@@ -1,5 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
+
 const generateAccessToken = (payload: JwtPayload) => {
   const { _id, username, email } = payload;
   return jwt.sign(

@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { app } from './app';
 import { DatabaseConnectionError } from './errors/database-connection-error';
 import { myCronJob } from './cronJob';
+import { checkEnvVariables } from './checkvariables';
 
 require('dotenv').config();
 
@@ -26,6 +27,7 @@ const start = async () => {
   myCronJob(); // Start the cron job
 
   app.listen(process.env.PORT || 5000, () => {
+    checkEnvVariables();
     console.log(`Server started on port` + process.env.PORT || 5000);
   });
 };

@@ -11,9 +11,10 @@ beforeAll(async () => {
   process.env.ACCESS_TOKEN_SECRET_KEY = 'access';
   process.env.REFRESH_TOKEN_SECRET_KEY = 'refresh';
 
+
   mongo = await MongoMemoryServer.create();
   const mongoUri = mongo.getUri();
-  const connection = await mongoose.connect(mongoUri, {});
+  await mongoose.connect(mongoUri, {});
 });
 
 beforeEach(async () => {

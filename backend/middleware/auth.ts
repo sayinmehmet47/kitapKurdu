@@ -5,6 +5,7 @@ import { apiResponse } from '../utils/apiResponse.utils';
 import { verifyAccessToken, verifyRefreshToken } from '../utils/jwt.utils';
 import { CustomError } from '../errors/custom-error';
 import cookie from 'cookie';
+import { logger } from '../logger';
 
 export interface AuthRequest extends Request {
   user?: string | jwt.JwtPayload;
@@ -14,8 +15,10 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   const cookies = cookie.parse(req.headers.cookie || '');
   const accessToken = cookies.accessToken;
 
-  if (!accessToken)
+  if (!accessToken){
+    logger.error('No token, authorization denied');
     return res.status(401).json({ msg: 'No token, authorization denied' });
+  }
 
   try {
     const decoded = verifyAccessToken(accessToken);
@@ -30,8 +33,10 @@ export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   const cookies = cookie.parse(req.headers.cookie || '');
   const accessToken = cookies.accessToken;
 
-  if (!accessToken)
+  if (!accessToken){
+    logger.error('No token, authorization denied');
     return res.status(401).json({ msg: 'No token, authorization denied' });
+  }
 
   try {
     const decoded = verifyAccessToken(accessToken);

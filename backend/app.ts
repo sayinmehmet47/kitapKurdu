@@ -15,8 +15,11 @@ import { updateMetrics } from './metrics';
 import { logger } from './logger';
 import winston from 'winston';
 
-const app = express();
 
+
+
+
+const app = express();
 app.set('trust proxy', true);
 app.use(json());
 app.use(cookieParser());
@@ -29,30 +32,32 @@ app.use(
     origin: ['http://localhost:3000', 'https://www.kitapkurdu.xyz'],
     credentials: true,
   })
-);
-
-app.use('/api', routes);
-
-app.use(updateMetrics);
-
-app.all('*', (req: Request, res: Response) => {
-  throw new NotFoundError();
-});
-
-app.use(errorHandler);
-
-if (process.env.NODE_ENV === 'production') {
-  // Set static folder
-  app.use(express.static('client/build'));
-
-  app.get('*', (req: Request, res: Response) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  );
+  
+  app.use('/api', routes);
+  
+  app.use(updateMetrics);
+  
+  app.all('*', (req: Request, res: Response) => {
+    throw new NotFoundError();
   });
-}
+  
+  app.use(errorHandler);
+  
+  
+  if (process.env.NODE_ENV === 'production') {
+    // Set static folder
+    app.use(express.static('client/build'));
+    
+    app.get('*', (req: Request, res: Response) => {
+      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+  }
+  
+  if (process.env.NODE_ENV !== 'production') {
+    logger.add(new winston.transports.Console({
+      format: winston.format.simple(),
+    }));
 
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple(),
-  }));
 }
 export { app };
