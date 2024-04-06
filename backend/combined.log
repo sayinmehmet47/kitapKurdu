@@ -8,3 +8,5 @@
 {"level":"error","statusCode":400}
 {"level":"error","message":"Login attempt failed for username: fdsd"}
 {"level":"error","message":"Missing environment variables: REFRESH_TOKEN_SECRET_KEY, ACCESS_TOKEN_SECRET_KEY"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-04-06 13:20:38"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-04-06 13:20:40"}
