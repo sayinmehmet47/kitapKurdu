@@ -8,27 +8,30 @@ import {
 import { CustomError } from '../errors/custom-error';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt.utils';
 import { refreshToken } from '../services/user/auth-v2.service';
+import { logger } from '../logger';
 
 export const loginController = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
-  const result = await loginUser(username, password);
-  const accessToken = generateAccessToken(result.user);
 
-  const refreshToken = generateRefreshToken(result.user);
+    const { username, password } = req.body;
+    const result = await loginUser(username, password);
+    const accessToken = generateAccessToken(result.user);
 
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-  });
+    const refreshToken = generateRefreshToken(result.user);
 
-  res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-  });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
 
-  res.status(201).json(result);
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+
+    res.status(201).json(result);
+
 };
 
 export const registerController = async (req: Request, res: Response) => {
