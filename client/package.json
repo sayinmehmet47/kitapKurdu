@@ -49,7 +49,6 @@
     "styled-components": "^6.0.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.1.6",
     "uuid": "^9.0.0",
     "zod": "^3.22.4"
   },
@@ -57,7 +56,8 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "craco eject"
+    "eject": "craco eject",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": [
@@ -80,11 +80,24 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "^7.1.0",
+    "@eslint/eslintrc": "^3.0.2",
+    "@eslint/js": "^9.0.0",
     "@playwright/test": "^1.31.1",
     "@types/node": "^20.0.0",
     "@types/react-table": "^7.7.14",
     "@types/styled-components": "^5.1.26",
-    "tailwindcss": "^3.3.5"
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "eslint": "^8.57.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.34.1",
+    "globals": "^15.0.0",
+    "husky": "^9.0.11",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.4.4",
+    "typescript-eslint": "^7.5.0"
   },
   "overrides": {
     "react-scripts": {
