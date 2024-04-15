@@ -14,6 +14,7 @@ spec:
   tls:
     - hosts:
         - kitapkurdu.xyz
+        - www.kitapkurdu.xyz
       secretName: kitapkurdu-tls
   rules:
     - host: kitapkurdu.xyz
@@ -32,4 +33,21 @@ spec:
                 name: backend-service
                 port:
                   number: 80
+            pathType: Prefix
+    - host: www.kitapkurdu.xyz
+      http:
+        paths:
+          - backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+          - backend:
+              service:
+                name: backend-service
+                port:
+                  number: 80
+            path: /api
             pathType: Prefix
