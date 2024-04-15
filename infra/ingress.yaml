@@ -13,7 +13,7 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - kitapkurdu.xyz
+        - kitapkurdu
       secretName: kitapkurdu-tls
   rules:
     - host: kitapkurdu.xyz
