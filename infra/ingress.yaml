@@ -13,10 +13,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - kitapkurdu.alphaworld.ch
+        - kitapkurdu.xyz
       secretName: kitapkurdu-tls
   rules:
-    - host: kitapkurdu.alphaworld.ch
+    - host: kitapkurdu.xyz
       http:
         paths:
           - path: /
