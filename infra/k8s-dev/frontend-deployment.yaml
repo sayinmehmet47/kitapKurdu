@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: sayinmehmet47/client-kitapkurdu-1:latest
+          image: sayinmehmet47/client-kitapkurdu-1:dev
           env:
             - name: REACT_APP_LOCAL_API
               value: https://dev.kitapkurdu.xyz/api

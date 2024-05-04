@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: kitapkurdu
-          image: sayinmehmet47/backend-kitapkurdu-1:latest
+          image: sayinmehmet47/backend-kitapkurdu-1:dev
           env:
             - name: MONGO_URI
               value: ${{ secrets.MONGO_URI_VALUE }}
