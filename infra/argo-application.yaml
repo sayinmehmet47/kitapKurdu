@@ -2,15 +2,16 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: kitapkurdu
+  namespace: argo-cd
 spec:
   destination:
     name: public
     namespace: kitapkurdu
   source:
-    path: kustomize
-    repoURL: 'https://github.com/sayinmehmet47/kitapkurdu.git'
+    path: infra
+    repoURL: 'https://github.com/sayinmehmet47/kitapKurdu.git'
     targetRevision: HEAD
-  project: kitapkurdu
+  project: mehmet
   syncPolicy:
     automated:
       prune: false
