@@ -22,7 +22,7 @@ spec:
           image: sayinmehmet47/client-kitapkurdu-1:latest
           env:
             - name: REACT_APP_LOCAL_API
-              value: https://kitapkurdu.xyz/api
+              value: https://dev.kitapkurdu.xyz/api
             - name: REACT_APP_CLOUDINARY_URL
               value: https://api.cloudinary.com/v1_1/dsequsn4l/upload?upload_preset=uploads
           ports:
