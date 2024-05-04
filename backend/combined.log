@@ -10,12 +10,5 @@
 {"level":"error","message":"Missing environment variables: REFRESH_TOKEN_SECRET_KEY, ACCESS_TOKEN_SECRET_KEY"}
 {"level":"error","message":"No token, authorization denied","timestamp":"2024-04-06 13:20:38"}
 {"level":"error","message":"No token, authorization denied","timestamp":"2024-04-06 13:20:40"}
-{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 11:07:36"}
-{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 11:10:18"}
-{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 11:10:34"}
-{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 11:10:36"}
-{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 11:39:41"}
-{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 11:51:22"}
-{"level":"info","message":"User Mehmet sayin logged in successfully","timestamp":"2024-05-04 11:51:36"}
-{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 11:51:52"}
-{"level":"info","message":"User Mehmet sayin logged in successfully","timestamp":"2024-05-04 11:52:06"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 20:37:04"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 20:39:03"}
