@@ -1,0 +1,47 @@
+name: Client Build & Deploy
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'client/**'
+
+jobs:
+  client:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: set version
+        run: echo "TAG_VERSION=dev.$(date +'%y-%m-%d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push client
+        uses: docker/build-push-action@v2
+        with:
+          context: ./client
+          file: ./client/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            sayinmehmet47/client-kitapkurdu-1:dev
+            sayinmehmet47/client-kitapkurdu-1:${{ env.TAG_VERSION }}
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl config set-cluster kubernetes \
+          --server="https://rancher.riwi.dev/k8s/clusters/c-m-cp898j4l"
+           kubectl config set-credentials github-action \
+          --token=${{ secrets.KUBE_CONFIG_TOKEN }}
+           kubectl config set-context default \
+           --cluster=kubernetes \
+           --user=github-action
+           kubectl config use-context default
+          set image deployment/client-deployment client=sayinmehmet47/client-kitapkurdu-1:${{ env.TAG_VERSION }}
+    env:
+      KUBECONFIG: kubeconfig

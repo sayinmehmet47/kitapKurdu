@@ -10,7 +10,6 @@ const Wrapper = styled.div`
   left: 0;
   width: 100%;
   height: 50px;
-
   box-shadow: 0px -1px 1px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease-in-out;
   background-color: #f5f5f6;
