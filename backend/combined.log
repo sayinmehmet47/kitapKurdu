@@ -10,3 +10,4 @@
 {"level":"error","message":"Missing environment variables: REFRESH_TOKEN_SECRET_KEY, ACCESS_TOKEN_SECRET_KEY"}
 {"level":"error","message":"No token, authorization denied","timestamp":"2024-04-06 13:20:38"}
 {"level":"error","message":"No token, authorization denied","timestamp":"2024-04-06 13:20:40"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-05-04 20:37:04"}
