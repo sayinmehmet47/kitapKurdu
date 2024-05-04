@@ -14,7 +14,6 @@ export async function regSw(user) {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     const permission = await window.Notification.requestPermission();
 
-    // If permission is granted
     if (permission === 'granted') {
       const register = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
