@@ -26,9 +26,12 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
+      'https://kitapkurdu.xyz',
       'https://www.kitapkurdu.xyz',
       'https://dev.kitapkurdu.xyz',
+      'https://www.dev.kitapkurdu.xyz',
       'https://staging.kitapkurdu.xyz',
+      'https://www.staging.kitapkurdu.xyz',
     ],
     credentials: true,
   })
