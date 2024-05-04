@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kitapkurdu
+spec:
+  destination:
+    name: public
+    namespace: kitapkurdu
+  source:
+    path: kustomize
+    repoURL: 'https://github.com/sayinmehmet47/kitapkurdu.git'
+    targetRevision: HEAD
+  project: kitapkurdu
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    retry:
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m0s
+      limit: 2

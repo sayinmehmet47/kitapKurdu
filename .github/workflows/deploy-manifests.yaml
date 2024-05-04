@@ -54,3 +54,4 @@ jobs:
           kubectl apply -f infra/k8s/ -n kitapkurdu
           kubectl apply -f infra/secrets/ -n kitapkurdu
           kubectl apply -f infra/ingress.yaml -n kitapkurdu
+          kubectl apply -f infra/argo-application.yaml -n kitapkurdu
