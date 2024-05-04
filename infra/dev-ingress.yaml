@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dev-kitapkurdu-ingress
+  namespace: kitapkurdu
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+  labels:
+    app: kitapkurdu
+spec:
+  tls:
+    - hosts:
+        - dev.kitapkurdu.xyz
+      secretName: kitapkurdu-dev-tls
+  rules:
+    - host: dev.kitapkurdu.xyz
+      http:
+        paths:
+          - path: /
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
+            pathType: Prefix
+          - path: /api
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 80
+            pathType: Prefix
+    - host: www.dev.kitapkurdu.xyz
+      http:
+        paths:
+          - backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+          - backend:
+              service:
+                name: backend-service
+                port:
+                  number: 80
+            path: /api
+            pathType: Prefix

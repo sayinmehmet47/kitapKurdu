@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment-staging
+  namespace: kitapkurdu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kitapkurdu
+      tier: backend
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: kitapkurdu
+        tier: backend
+        track: stable
+    spec:
+      containers:
+        - name: kitapkurdu
+          image: sayinmehmet47/backend-kitapkurdu-1:latest
+          env:
+            - name: MONGO_URI
+              value: ${{ secrets.MONGO_URI_VALUE }}
+            - name: JWT_SECRET
+              value: 'fsafdafdasfdk'
+            - name: PORT
+              value: '5000'
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '300Mi'
+            limits:
+              cpu: '200m'
+              memory: '512Mi'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service-staging
+  namespace: kitapkurdu
+spec:
+  selector:
+    app: kitapkurdu
+    tier: backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000

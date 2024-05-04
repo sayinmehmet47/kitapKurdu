@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kitapkurdu-staging-tls
+  namespace: kitapkurdu
+spec:
+  secretName: kitapkurdu-staging-tls
+  issuerRef:
+    name: letsencrypt-http
+    kind: ClusterIssuer
+  dnsNames:
+    - staging.kitapkurdu.xyz
+    - www.staging.kitapkurdu.xyz

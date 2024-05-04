@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
+  name: frontend-deployment-dev
   namespace: kitapkurdu
 spec:
   replicas: 1
@@ -29,21 +29,21 @@ spec:
             - containerPort: 3000
           resources:
             requests:
-              cpu: "100m" 
-              memory: "900Mi" 
+              cpu: '100m'
+              memory: '900Mi'
             limits:
-                    cpu: "500m" 
-                    memory: "1600Mi"  
+              cpu: '500m'
+              memory: '1600Mi'
 ---
-apiVersion: v1 
+apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-service
+  name: frontend-service-dev
   namespace: kitapkurdu
-spec: 
+spec:
   selector:
-      app: kitapkurdu
-      tier: frontend 
+    app: kitapkurdu
+    tier: frontend
   ports:
     - protocol: TCP
       port: 80
