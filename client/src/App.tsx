@@ -12,7 +12,6 @@ const publicVapidKey =
 
 export async function regSw(user) {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
-    // Asking for permission
     const permission = await window.Notification.requestPermission();
 
     // If permission is granted
