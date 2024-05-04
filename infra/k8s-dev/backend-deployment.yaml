@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-deployment
+  name: backend-deployment-dev
   namespace: kitapkurdu
 spec:
   replicas: 1
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: kitapkurdu
-          image: sayinmehmet47/backend-kitapkurdu-1:latest
+          image: sayinmehmet47/backend-kitapkurdu-1:dev
           env:
             - name: MONGO_URI
               value: ${{ secrets.MONGO_URI_VALUE }}
@@ -31,16 +31,16 @@ spec:
             - containerPort: 5000
           resources:
             requests:
-              cpu: "100m" 
-              memory: "300Mi" 
+              cpu: '100m'
+              memory: '300Mi'
             limits:
-                    cpu: "200m" 
-                    memory: "512Mi" 
---- 
+              cpu: '200m'
+              memory: '512Mi'
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-service
+  name: backend-service-dev
   namespace: kitapkurdu
 spec:
   selector:
@@ -49,4 +49,4 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 5000 
+      targetPort: 5000

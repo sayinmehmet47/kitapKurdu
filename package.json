@@ -1,0 +1,15 @@
+{
+  "name": "kitapkurdu",
+  "version": "1.0.0",
+  "description": "<div align=\"center\" id=\"top\">    <img src=\"./.github/app.gif\" alt=\"Shorturl\" />",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "local": "forego start -f Procfile.local",
+    "local:frontend": "PORT=3000 npm --prefix ./client start",
+    "local:backend": "PORT=5000 npm --prefix  ./backend start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

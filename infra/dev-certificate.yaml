@@ -1,0 +1,14 @@
+# dev-certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kitapkurdu-dev-tls
+  namespace: kitapkurdu
+spec:
+  secretName: kitapkurdu-dev-tls
+  issuerRef:
+    name: letsencrypt-http
+    kind: ClusterIssuer
+  dnsNames:
+    - dev.kitapkurdu.xyz
+    - www.dev.kitapkurdu.xyz
