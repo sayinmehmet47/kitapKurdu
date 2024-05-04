@@ -45,7 +45,7 @@ const Anchor = styled.a`
 export default function Footer() {
   return (
     <Wrapper>
-      <Title>Made with ❤️ by Mehmet Sayin </Title>
+      <Title>Made with ❤️ by Mehmet Sayin</Title>
       <IconGroup>
         <Anchor href="https://github.com/sayinmehmet47">
           <Icon>
