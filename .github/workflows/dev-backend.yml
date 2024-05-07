@@ -45,4 +45,4 @@ jobs:
             --cluster=kubernetes \
             --user=github-action
           kubectl config use-context default
-          kubectl set image deployment/backend-deployment-dev backend=sayinmehmet47/backend-kitapkurdu-1:${{ env.TAG_VERSION }} -n kitapkurdu
+          kubectl set image deployment/backend-deployment-dev kitapkurdu=sayinmehmet47/backend-kitapkurdu-1:${{ env.TAG_VERSION }} -n kitapkurdu
