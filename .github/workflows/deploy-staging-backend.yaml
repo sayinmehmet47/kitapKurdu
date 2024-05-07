@@ -47,6 +47,6 @@ jobs:
           kubectl config set-credentials github-action --token=${{ secrets.KUBE_CONFIG_TOKEN }}
           kubectl config set-context default --cluster=kubernetes --user=github-action
           kubectl config use-context default
-          kubectl set image deployment/backend-deployment-dev backend=sayinmehmet47/backend-kitapkurdu-1:staging.${{ github.event.inputs.version }} -n kitapkurdu
+          kubectl set image deployment/backend-deployment-dev kitapkurdu=sayinmehmet47/backend-kitapkurdu-1:staging.${{ github.event.inputs.version }} -n kitapkurdu
         env:
           KUBECONFIG: kubeconfig
