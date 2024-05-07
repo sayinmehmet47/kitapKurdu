@@ -1,4 +1,4 @@
-import axios from 'axios'; // You might need to install axios if it's not already installed
+import axios from 'axios';
 const cron = require('node-cron');
 
 const allBooksURL = 'https://kitapkurdu.onrender.com/api/books/allBooks?page=1';

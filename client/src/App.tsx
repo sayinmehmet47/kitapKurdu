@@ -42,7 +42,7 @@ export async function regSw(user) {
     }
   } else {
     console.log(
-      'Service workers or Push notifications are not supported by the browser'
+      'Service workers or Push notifications are not supported by the browser!!'
     );
   }
 }
@@ -70,6 +70,7 @@ function App() {
   }, [location]);
   return (
     <Layout>
+      <div>test1</div>
       <Search />
     </Layout>
   );
