@@ -37,7 +37,7 @@ jobs:
       - name: Push staging image
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./client
           push: true
           tags: sayinmehmet47/client-kitapkurdu-1:staging.${{ github.event.inputs.version }}
 
