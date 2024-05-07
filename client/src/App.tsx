@@ -70,7 +70,7 @@ function App() {
   }, [location]);
   return (
     <Layout>
-      <div>test</div>
+      <div>test1</div>
       <Search />
     </Layout>
   );
