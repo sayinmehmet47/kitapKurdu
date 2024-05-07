@@ -18,7 +18,7 @@ spec:
         track: stable
     spec:
       containers:
-        - name: kitapkurdu
+        - name: backend
           image: sayinmehmet47/backend-kitapkurdu-1:dev
           env:
             - name: MONGO_URI

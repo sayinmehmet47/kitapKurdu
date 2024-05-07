@@ -30,7 +30,7 @@ spec:
         tier: backend
     spec:
       containers:
-        - name: kitapkurdu
+        - name: backend
           image: sayinmehmet47/backend-kitapkurdu-1:latest
           env:
             - name: MONGO_URI
