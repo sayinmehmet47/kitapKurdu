@@ -45,6 +45,6 @@ jobs:
            --cluster=kubernetes \
            --user=github-action
            kubectl config use-context default
-          set image deployment/client-deployment client=sayinmehmet47/client-kitapkurdu-1:${{ env.TAG_VERSION }}
+           kubectl set image deployment/frontend-deployment-dev client=sayinmehmet47/client-kitapkurdu-1:${{ env.TAG_VERSION }}
     env:
       KUBECONFIG: kubeconfig
