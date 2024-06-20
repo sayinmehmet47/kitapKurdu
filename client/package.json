@@ -29,7 +29,7 @@
     "cloudinary-react": "^1.8.1",
     "clsx": "^2.0.0",
     "flowbite": "^2.1.0",
-    "flowbite-react": "^0.4.3",
+    "flowbite-react": "^0.10.0",
     "lucide-react": "^0.390.0",
     "node-url-shortener": "^2.0.0",
     "nodejs-box": "^0.1.3",
