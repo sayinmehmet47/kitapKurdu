@@ -15,7 +15,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   const cookies = cookie.parse(req.headers.cookie || '');
   const accessToken = cookies.accessToken;
 
-  if (!accessToken){
+  if (!accessToken) {
     logger.error('No token, authorization denied');
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }
@@ -23,6 +23,9 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
     const decoded = verifyAccessToken(accessToken);
     req.body.user = decoded;
+    if (!req.body.user.isAdmin) {
+      req.body.user.isAdmin = false;
+    }
     next();
   } catch (e) {
     res.status(401).json({ msg: 'Token is not valid' });
@@ -33,7 +36,7 @@ export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   const cookies = cookie.parse(req.headers.cookie || '');
   const accessToken = cookies.accessToken;
 
-  if (!accessToken){
+  if (!accessToken) {
     logger.error('No token, authorization denied');
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }

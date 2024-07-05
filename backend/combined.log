@@ -22,3 +22,15 @@
 {"level":"error","message":"No token, authorization denied","timestamp":"2024-05-07 21:36:23"}
 >>>>>>> Stashed changes
 {"level":"error","message":"No token, authorization denied","timestamp":"2024-05-07 21:42:05"}
+{"level":"error","message":"Login attempt failed for username: test","timestamp":"2024-07-05 18:34:41"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-07-05 18:34:41"}
+{"level":"error","message":"Login attempt failed for username: test@test.com","timestamp":"2024-07-05 18:34:41"}
+{"level":"info","message":"User test logged in successfully","timestamp":"2024-07-05 18:34:41"}
+{"level":"error","message":"Login attempt failed for username: test","timestamp":"2024-07-05 18:35:00"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-07-05 18:35:00"}
+{"level":"error","message":"Login attempt failed for username: test@test.com","timestamp":"2024-07-05 18:35:00"}
+{"level":"info","message":"User test logged in successfully","timestamp":"2024-07-05 18:35:00"}
+{"level":"error","message":"Login attempt failed for username: test","timestamp":"2024-07-05 18:35:34"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-07-05 18:35:35"}
+{"level":"error","message":"Login attempt failed for username: test@test.com","timestamp":"2024-07-05 18:35:35"}
+{"level":"info","message":"User test logged in successfully","timestamp":"2024-07-05 18:35:35"}

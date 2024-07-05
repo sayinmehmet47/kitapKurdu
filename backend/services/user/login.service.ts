@@ -12,7 +12,7 @@ const loginUser = async (username: string, password: string) => {
     if (!user) {
       logger.error(`Login attempt failed for username: ${username}`);
       throw new BadRequestError('Invalid credentials');
-    } 
+    }
 
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
@@ -37,7 +37,11 @@ const loginUser = async (username: string, password: string) => {
       throw error;
     }
 
-    logger.error(`Unexpected error during login for username: ${username}: ${util.inspect(error)}`);;
+    logger.error(
+      `Unexpected error during login for username: ${username}: ${util.inspect(
+        error
+      )}`
+    );
     throw new Error('Unexpected error occurred during login');
   }
 };

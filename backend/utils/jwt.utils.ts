@@ -1,10 +1,9 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-
 const generateAccessToken = (payload: JwtPayload) => {
-  const { _id, username, email } = payload;
+  const { _id, username, email, isAdmin = false } = payload;
   return jwt.sign(
-    { _id, username, email },
+    { _id, username, email, isAdmin },
     process.env.ACCESS_TOKEN_SECRET_KEY || '',
     {
       expiresIn: '15m',
@@ -13,9 +12,9 @@ const generateAccessToken = (payload: JwtPayload) => {
 };
 
 const generateRefreshToken = (payload: JwtPayload) => {
-  const { _id, username, email } = payload;
+  const { _id, username, email, isAdmin = false } = payload;
   return jwt.sign(
-    { _id, username, email },
+    { _id, username, email, isAdmin },
     process.env.REFRESH_TOKEN_SECRET_KEY || '',
     {
       expiresIn: '7d',
