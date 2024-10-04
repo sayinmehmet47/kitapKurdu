@@ -126,29 +126,6 @@ $ cd ..
 
 
 
-
-# The server will initialize in the <http://localhost:3000>
-```
-
-- to run graphana and prometheus
-
-```bash
-$ docker-compose up -d
-
-Graphana will run on <http://localhost:4000>
-Prometheus will run on <http://localhost:9090>
-
-```
-
-
-- This is how it shows the metrics from prometheus in graphana dashboard
-
-![image](https://github.com/sayinmehmet47/kitapKurdu/assets/75525090/9ead309b-e96b-4306-88e9-61608b20f736)
-
-
-- Renovate bot is working to update the dependecies authomatically
-
-
 ## :memo: License
 
 This project is under license from MIT. For more details, see the [LICENSE](LICENSE.md) file.
