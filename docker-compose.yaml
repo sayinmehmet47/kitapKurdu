@@ -11,7 +11,6 @@ services:
     # image: sayinmehmet47/backend-kitapkurdu-1:latest
     volumes:
       - ./backend/:/app
-      - /app/node_modules
     ports:
       - '5000:5000'
     env_file:
@@ -24,7 +23,6 @@ services:
     # image: sayinmehmet47/client-kitapkurdu-1:latest
     volumes:
       - ./client/:/app
-      - /app/node_modules
     depends_on:
       - backend
     ports:
@@ -32,42 +30,3 @@ services:
 
     env_file:
       - client/.env
-  grafana:
-    image: grafana/grafana-enterprise
-    ports:
-      - '4000:3000'
-    volumes:
-      - ./data/grafana:/var/lib/grafana
-      - ./data/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./data/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-    networks:
-      - monitoring
-
-  prometheus:
-    image: prom/prometheus
-    volumes:
-      # - prometheus_data:/prometheus
-      - ./data/prometheus:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - '9090:9090'
-    networks:
-      - monitoring
-
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node-exporter
-    restart: unless-stopped
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    expose:
-      - 9100
-    networks:
-      - monitoring

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import 'express-async-errors';
-const cookieParser = require('cookie-parser');
+import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 
 import routes from './routes';
@@ -32,6 +32,7 @@ app.use(
       'https://www.dev.kitapkurdu.xyz',
       'https://staging.kitapkurdu.xyz',
       'https://www.staging.kitapkurdu.xyz',
+      'https://kitapkurdu.onrender.com',
     ],
     credentials: true,
   })
