@@ -8,9 +8,9 @@ volumes:
 services:
   backend:
     build: ./backend/
-    # image: sayinmehmet47/backend-kitapkurdu-1:latest
     volumes:
-      - ./backend/:/app
+      - ./backend:/app
+      - /app/node_modules
     ports:
       - '5000:5000'
     env_file:
@@ -19,14 +19,12 @@ services:
 
   client:
     build: ./client/
-
-    # image: sayinmehmet47/client-kitapkurdu-1:latest
     volumes:
-      - ./client/:/app
+      - ./client:/app
+      - /app/node_modules
     depends_on:
       - backend
     ports:
       - '3000:3000'
-
     env_file:
       - client/.env

@@ -32,7 +32,7 @@ app.use(
       'https://staging.kitapkurdu.xyz',
       'https://www.staging.kitapkurdu.xyz',
       'https://kitapkurdu.onrender.com',
-      'https://kitap-kurdu-bx87.vercel.app', // Add your Vercel domain here
+      'https://kitap-kurdu-bx87.vercel.app',
     ],
     allowedHeaders: ['Content-Type'],
     credentials: true,
