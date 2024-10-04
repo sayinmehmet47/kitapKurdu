@@ -17,9 +17,8 @@ import winston from 'winston';
 
 const app = express();
 app.set('trust proxy', true);
-app.use(json());
-app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgan('dev'));
 
 app.use(
@@ -33,7 +32,9 @@ app.use(
       'https://staging.kitapkurdu.xyz',
       'https://www.staging.kitapkurdu.xyz',
       'https://kitapkurdu.onrender.com',
+      'https://kitap-kurdu-bx87.vercel.app', // Add your Vercel domain here
     ],
+    allowedHeaders: ['Content-Type'],
     credentials: true,
   })
 );
