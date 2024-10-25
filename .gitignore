@@ -6,3 +6,5 @@ node_modules/
 /playwright-report/
 /playwright/.cache/
 ./data
+./backend/combined.log
+./backend/error.log
