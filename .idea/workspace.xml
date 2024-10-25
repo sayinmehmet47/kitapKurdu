@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="de69290c-bfd8-449e-8e52-2111914dc0e8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/client/src/components/BookPreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/components/BookPreview.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2nvdmldcjkMqZFlYgrPtgyJNGEG" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "actions.on.save",
+    "ts.external.directory.path": "/Users/sayinmehmet47/Desktop/projeler✅/kitapKurdu/backend/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="ReactDesignerToolWindowState">
+    <option name="myId2Visible">
+      <map>
+        <entry key="com.intellij.reactbuddy.reactComponents" value="false" />
+        <entry key="com.intellij.reactbuddy.reactInspector" value="false" />
+        <entry key="com.intellij.reactbuddy.storybook" value="false" />
+      </map>
+    </option>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-WS-242.23726.96" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="de69290c-bfd8-449e-8e52-2111914dc0e8" name="Changes" comment="" />
+      <created>1729857645069</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1729857645069</updated>
+      <workItem from="1729857646668" duration="215000" />
+      <workItem from="1729857869968" duration="270000" />
+      <workItem from="1729858152213" duration="783000" />
+      <workItem from="1729859038181" duration="1479000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fix: docker compose not sync the node modules" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: docker compose not sync the node modules" />
+  </component>
+</project>

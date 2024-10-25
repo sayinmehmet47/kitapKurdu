@@ -34,3 +34,4 @@
 {"level":"error","message":"No token, authorization denied","timestamp":"2024-07-05 18:35:35"}
 {"level":"error","message":"Login attempt failed for username: test@test.com","timestamp":"2024-07-05 18:35:35"}
 {"level":"info","message":"User test logged in successfully","timestamp":"2024-07-05 18:35:35"}
+{"level":"error","message":"No token, authorization denied","timestamp":"2024-10-25 14:37:22"}

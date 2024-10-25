@@ -1,0 +1,25 @@
+Index: infra/a.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/infra/a.tsx b/infra/a.tsx
+new file mode 100644
+--- /dev/null	(date 1729858271512)
++++ b/infra/a.tsx	(date 1729858271512)
+@@ -0,0 +1,14 @@
++import {Component} from "react";
++
++class MyComponent extends Component {
++    render() {
++        return (
++            <div>
++                <h1>Hello, World!</h1>
++                <p>This is a simple React component.</p>
++            </div>
++        );
++    }
++}
++
++export default MyComponent;
+\ No newline at end of file

@@ -1,0 +1,18 @@
+Index: client/src/components/BookPreview.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { ArrowLeftIcon } from 'lucide-react';\nimport { useState } from 'react';\nimport { ReactReader } from 'react-reader';\nimport { useNavigate } from 'react-router-dom';\n\ninterface BookPreviewProps {\n  bookUrl: string;\n  fileType: string;\n  bookName: string;\n}\n\nexport const BookPreview = ({\n  bookUrl,\n  fileType,\n  bookName,\n}: BookPreviewProps) => {\n  const [location, setLocation] = useState<string | number>(0);\n  const navigate = useNavigate();\n\n  if (fileType === 'pdf') {\n    return (\n      <>\n        <ArrowLeftIcon\n          size={32}\n          className=\"cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2 my-2\"\n          onClick={() => navigate(-1)}\n        />\n        <embed\n          src={bookUrl}\n          type=\"application/pdf\"\n          className=\"w-full h-[calc(100vh-44px)]\"\n        />\n      </>\n    );\n  } else if (fileType === 'epub') {\n    return (\n      <div className=\"h-screen\">\n        <ArrowLeftIcon\n          size={32}\n          className=\"cursor-pointer border border-gray-400 rounded-full hover:bg-gray-200 hover:shadow-md relative left-2  my-2\"\n          onClick={() => navigate(-1)}\n        />\n        <ReactReader\n          url={bookUrl}\n          location={location}\n          locationChanged={(epubcfi: string) => setLocation(epubcfi)}\n          title={bookName}\n          showToc={true}\n        />\n      </div>\n    );\n  }\n};\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/src/components/BookPreview.tsx b/client/src/components/BookPreview.tsx
+--- a/client/src/components/BookPreview.tsx	(revision e2076ac95ddf567114fb91077868afb11271d378)
++++ b/client/src/components/BookPreview.tsx	(date 1729859104889)
+@@ -18,6 +18,7 @@
+   const navigate = useNavigate();
+ 
+   if (fileType === 'pdf') {
++      // just a commnet
+     return (
+       <>
+         <ArrowLeftIcon
