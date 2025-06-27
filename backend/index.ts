@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 import { app } from './app';
 import { DatabaseConnectionError } from './errors/database-connection-error';
 import { myCronJob } from './cronJob';
 import { checkEnvVariables } from './checkvariables';
-
-require('dotenv').config();
+import { logger } from './logger';
+import { updateCategories } from './services/book';
 
 const start = async () => {
   if (!process.env.JWT_SECRET) {

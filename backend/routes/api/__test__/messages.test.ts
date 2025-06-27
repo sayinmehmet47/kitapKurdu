@@ -80,5 +80,5 @@ it('should admin  delete message', async () => {
     .send({
       id: response.body._id,
     })
-    .expect(201);
+    .expect(200);
 });

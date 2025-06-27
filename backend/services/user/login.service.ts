@@ -5,19 +5,23 @@ import { NotFoundError } from '../../errors/not-found-error';
 import { comparePassword } from '../../utils/bcrypt.util';
 import { logger } from '../../logger';
 
-const loginUser = async (username: string, password: string) => {
+const loginUser = async (username: string, password?: string) => {
   try {
     const user = await User.findOne({ username });
 
-    if (!user) {
+    if (!user || !user.password) {
       logger.error(`Login attempt failed for username: ${username}`);
+      throw new BadRequestError('Invalid credentials');
+    }
+
+    if (!password) {
       throw new BadRequestError('Invalid credentials');
     }
 
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
       logger.error(`Invalid password for username: ${username}`);
-      throw new NotFoundError('Invalid credentials');
+      throw new BadRequestError('Invalid credentials');
     }
 
     logger.info(`User ${username} logged in successfully`);

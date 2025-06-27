@@ -50,7 +50,7 @@ const addNewBook = async (req: Request) => {
 
   await books.save();
 
-  const user = req.body.user;
+  const user = req.user as any;
 
   const payload = JSON.stringify({
     title: 'New Book Added',

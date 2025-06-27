@@ -1,16 +1,15 @@
-import axios from 'axios'; // You might need to install axios if it's not already installed
-const cron = require('node-cron');
-
-const allBooksURL = 'https://kitapkurdu.onrender.com/api/books/allBooks?page=1';
+import { schedule } from 'node-cron';
+import { updateCategories } from './services/book';
+import { logger } from './logger';
 
 export const myCronJob = () => {
-  // This function will run every 5 minutes
-  cron.schedule('*/5 * * * *', async () => {
+  schedule('0 0 * * *', async () => {
     try {
-      const response = await axios.get(allBooksURL);
-      console.log('cron job started');
+      logger.info('Running cron job to update categories');
+      await updateCategories();
+      logger.info('Categories updated successfully');
     } catch (error) {
-      console.error(error);
+      logger.error('Error updating categories:', error);
     }
   });
 };

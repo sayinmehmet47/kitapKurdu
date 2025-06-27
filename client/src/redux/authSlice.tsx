@@ -97,6 +97,7 @@ export const authSlice = createSlice({
   name: 'loginSlice',
   initialState: {
     isLoggedIn: false,
+    loginSuccess: false,
     error: false,
     errorMessage: '',
     isLoading: false,
@@ -114,6 +115,7 @@ export const authSlice = createSlice({
     },
     logout: (state, action) => {
       state.isLoggedIn = false;
+      state.loginSuccess = false;
       state.user = {
         user: {
           username: '',
@@ -136,11 +138,13 @@ export const authSlice = createSlice({
         state.error = false;
         state.errorMessage = '';
         state.isLoading = true;
+        state.loginSuccess = false;
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.user = action.payload;
         state.isLoading = false;
+        state.loginSuccess = true;
       })
       .addCase(loginThunk.rejected, (state: any, action) => {
         state.error = true;
@@ -150,6 +154,7 @@ export const authSlice = createSlice({
       .addCase(logoutThunk.fulfilled, (state, action) => {
         state.isLoggedIn = false;
         state.isLoading = false;
+        state.loginSuccess = false;
         state.user = {
           user: {
             username: '',
@@ -182,6 +187,7 @@ export const authSlice = createSlice({
         state.isLoggedIn = true;
         state.user = action.payload;
         state.isLoading = false;
+        state.loginSuccess = false;
       })
       .addCase(registerThunk.rejected, (state: any, action) => {
         state.error = true;

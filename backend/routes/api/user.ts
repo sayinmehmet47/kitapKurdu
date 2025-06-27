@@ -1,7 +1,13 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { auth, refreshToken } from '../../middleware/auth';
+import { auth } from '../../middleware/auth';
+import { refreshToken } from '../../middleware/refreshToken';
 import { validateRequest } from '../../middleware/validate-request';
+import passport from 'passport';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from '../../utils/jwt.utils';
 
 import {
   authController,
@@ -37,6 +43,38 @@ router.post(
   ],
   validateRequest,
   registerController
+);
+
+router.get(
+  '/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get(
+  '/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: '/login',
+    session: false,
+  }),
+  (req: Request, res: Response) => {
+    const user = req.user as any;
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+
+    res.redirect('http://localhost:3000');
+  }
 );
 
 router.get('/auth', auth, authController);

@@ -55,29 +55,31 @@ export const registerController = async (req: Request, res: Response) => {
 };
 
 export const authController = async (req: Request, res: Response) => {
-  try {
-    const result = await authenticateUser(req.body.user._id);
-    res.json(result);
-  } catch (err) {
-    if (err instanceof CustomError) {
-      return res
-        .status(err.statusCode)
-        .json({ message: err.serializeErrors() });
-    }
-  }
+  res.status(200).json({ user: req.user });
 };
 
 export const logoutController = async (req: Request, res: Response) => {
   try {
-    const userId = req.body.user?._id;
+    const user = req.user as any;
+    const userId = user?._id;
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
 
     await logoutUser(userId);
 
-    res.clearCookie('accessToken', { path: '/' });
-    res.clearCookie('refreshToken', { path: '/' });
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+    });
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+    });
 
     res.status(200).json({ message: 'Logged out successfully' });
   } catch (err) {

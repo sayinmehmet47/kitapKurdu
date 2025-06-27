@@ -21,7 +21,7 @@ import {
 
 export default function Login() {
   const dispatch = useDispatch<any>();
-  const { isLoggedIn, isLoading, user } = useSelector(
+  const { isLoggedIn, isLoading, user, loginSuccess } = useSelector(
     (state: any) => state.authSlice
   );
 
@@ -36,11 +36,11 @@ export default function Login() {
     }
   };
   useEffect(() => {
-    if (isLoggedIn) {
+    if (loginSuccess) {
       toast.success('Login successful');
       regSw(user.user);
     }
-  }, [isLoggedIn, user.user]);
+  }, [loginSuccess, user.user]);
   return (
     <Layout>
       <Container>
@@ -63,6 +63,14 @@ export default function Login() {
                 required
               />
               <Button type="submit">LOGIN</Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  window.location.href = `${process.env.REACT_APP_LOCAL_API}/user/auth/google`;
+                }}
+              >
+                LOGIN WITH GOOGLE
+              </Button>
               <NavLink to="/register">CREATE A NEW ACCOUNT</NavLink>
             </Form>
           </Wrapper>
