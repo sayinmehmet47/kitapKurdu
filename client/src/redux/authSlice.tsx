@@ -4,6 +4,7 @@ import { apiBaseUrl } from './common.api';
 
 // Define proper interfaces
 interface User {
+  id?: string;
   username: string;
   email: string;
   isAdmin: boolean;
@@ -19,6 +20,7 @@ interface AuthState {
   error: boolean;
   errorMessage: string;
   isLoading: boolean;
+  isAuthLoaded: boolean;
   user: AuthResponse;
 }
 
@@ -120,8 +122,10 @@ const initialState: AuthState = {
   error: false,
   errorMessage: '',
   isLoading: false,
+  isAuthLoaded: false,
   user: {
     user: {
+      id: '',
       username: '',
       email: '',
       isAdmin: false,
@@ -139,8 +143,10 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.isLoggedIn = false;
       state.loginSuccess = false;
+      state.isAuthLoaded = true;
       state.user = {
         user: {
+          id: '',
           username: '',
           email: '',
           isAdmin: false,
@@ -149,9 +155,7 @@ export const authSlice = createSlice({
     },
     loadUser: (state, action: PayloadAction<AuthResponse>) => {
       state.isLoggedIn = true;
-      state.user = {
-        user: action.payload.user,
-      };
+      state.user = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -167,18 +171,22 @@ export const authSlice = createSlice({
         state.user = action.payload;
         state.isLoading = false;
         state.loginSuccess = true;
+        state.isAuthLoaded = true; // Auth check completed
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.error = true;
         state.errorMessage = action.payload as string;
         state.isLoading = false;
+        state.isAuthLoaded = true; // Auth check completed
       })
       .addCase(logoutThunk.fulfilled, (state) => {
         state.isLoggedIn = false;
         state.isLoading = false;
         state.loginSuccess = false;
+        state.isAuthLoaded = true;
         state.user = {
           user: {
+            id: '',
             username: '',
             email: '',
             isAdmin: false,
@@ -189,6 +197,7 @@ export const authSlice = createSlice({
         state.error = true;
         state.isLoading = false;
         state.errorMessage = action.payload as string;
+        state.isAuthLoaded = true; // Auth check completed
       })
       .addCase(logoutThunk.pending, (state) => {
         state.error = false;
@@ -204,17 +213,33 @@ export const authSlice = createSlice({
         state.error = true;
         state.errorMessage = action.payload as string;
         state.isLoading = false;
+        state.isAuthLoaded = true; // Auth check completed
+        state.isLoggedIn = false;
       })
       .addCase(loadUserThunk.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.user = action.payload;
         state.isLoading = false;
         state.loginSuccess = false;
+        state.isAuthLoaded = true; // Auth check completed
+      })
+      .addCase(registerThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.loginSuccess = true;
+        state.error = false;
+        state.errorMessage = '';
+        state.isAuthLoaded = true; // Auth check completed
+      })
+      .addCase(registerThunk.pending, (state) => {
+        state.error = false;
+        state.errorMessage = '';
+        state.isLoading = true;
       })
       .addCase(registerThunk.rejected, (state, action) => {
         state.error = true;
         state.errorMessage = action.payload as string;
         state.isLoading = false;
+        state.isAuthLoaded = true; // Auth check completed
       });
   },
 });

@@ -5,3 +5,4 @@ export * from './Navbar';
 export * from './Search';
 export * from './User';
 export * from './ui';
+export * from './shelf-space';

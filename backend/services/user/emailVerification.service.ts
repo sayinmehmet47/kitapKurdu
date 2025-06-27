@@ -26,7 +26,7 @@ export const verifyEmail = async (token: string) => {
     return {
       message: 'Email verified successfully',
       user: {
-        id: user._id,
+        id: user._id.toString(),
         username: user.username,
         email: user.email,
         isEmailVerified: user.isEmailVerified,

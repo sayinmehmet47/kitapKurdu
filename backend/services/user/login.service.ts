@@ -38,7 +38,7 @@ const loginUser = async (usernameOrEmail: string, password?: string) => {
 
     return {
       user: {
-        _id: user._id,
+        id: user._id.toString(),
         username: user.username,
         isAdmin: user.isAdmin,
         email: user.email,

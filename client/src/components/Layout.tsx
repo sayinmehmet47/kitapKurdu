@@ -1,11 +1,11 @@
-import { useEffect, ReactNode } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { Toaster } from 'sonner';
 
-import { loadUserThunk } from '../redux/authSlice';
 import NavbarComponent from './Navbar';
 import { Flowbite } from 'flowbite-react';
 import { customTheme } from './ui/theme';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { loadUserThunk } from '@/redux/authSlice';
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,19 +13,26 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const dispatch = useAppDispatch();
+  const { isAuthLoaded, isLoading } = useAppSelector(
+    (state) => state.authSlice
+  );
+  const authInitialized = useRef(false);
 
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        await dispatch(loadUserThunk()).unwrap();
-      } catch (error) {
-        // Silently handle authentication errors
-        console.log('Authentication check failed:', error);
-      }
-    };
+    if (!authInitialized.current && !isAuthLoaded && !isLoading) {
+      authInitialized.current = true;
 
-    loadUser();
-  }, [dispatch]);
+      const initializeAuth = async () => {
+        try {
+          await dispatch(loadUserThunk()).unwrap();
+        } catch (error) {
+          console.log('Authentication initialization failed:', error);
+        }
+      };
+
+      initializeAuth();
+    }
+  }, [dispatch, isAuthLoaded, isLoading]);
 
   return (
     <div>

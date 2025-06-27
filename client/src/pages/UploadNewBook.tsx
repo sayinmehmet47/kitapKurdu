@@ -19,7 +19,7 @@ export default function UploadNewBook() {
   const [addNewBook] = useAddNewBookMutation();
 
   const user = useAppSelector((state) => state.authSlice.user.user);
-  const userId = user.username; // Use username as identifier for now
+  const userId = user.id || user.username; // Use id if available, fallback to username
 
   const addBook = async (response: {
     original_filename: string;

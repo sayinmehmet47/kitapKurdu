@@ -5,7 +5,7 @@ import App from './App';
 import './App.css';
 
 import AllBooks from './pages/AllBooks';
-import RecentlyAdded from './pages/RecentlyAdded';
+import RecentlyAdded from './pages/RecentlyAdded/index';
 import { store } from './redux/store';
 import AuthPage from './pages/AuthPage';
 import EmailVerificationPage from './pages/EmailVerificationPage';
@@ -15,7 +15,7 @@ import Layout from './components/Layout';
 
 import ShelfSpace from './pages/ShelfSpace';
 import { PrivateRoute } from './components/privateRoute';
-import { BookPreviewPage } from './pages/BookPreviewPage';
+import BookPreviewPage from './pages/BookPreview';
 import { BookEditPage } from './pages/BookEditPage';
 import { ContactUs } from './pages/ContactPage';
 

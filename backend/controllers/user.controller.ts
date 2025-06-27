@@ -55,7 +55,17 @@ export const registerController = async (req: Request, res: Response) => {
 };
 
 export const authController = async (req: Request, res: Response) => {
-  res.status(200).json({ user: req.user });
+  const user = req.user as any;
+  res.status(200).json({
+    user: {
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    },
+  });
 };
 
 export const logoutController = async (req: Request, res: Response) => {

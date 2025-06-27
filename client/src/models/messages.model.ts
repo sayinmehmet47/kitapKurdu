@@ -4,4 +4,5 @@ export interface MessagesModel {
   _id: string;
   text: string;
   sender: UserModel;
+  date?: Date | string;
 }

@@ -5,8 +5,6 @@ import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { apiBaseUrl } from './redux/common.api';
-import { loadUserThunk } from './redux/authSlice';
-import { useAppDispatch } from './redux/store';
 
 ReactGA.initialize('G-R54SYJD2B8');
 const publicVapidKey =
@@ -70,24 +68,10 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 
 function App() {
   const location = useLocation();
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     ReactGA.send('pageview');
   }, [location]);
-
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        await dispatch(loadUserThunk()).unwrap();
-      } catch (error) {
-        // Silently handle authentication errors
-        console.log('Authentication initialization failed:', error);
-      }
-    };
-
-    initializeAuth();
-  }, [dispatch]);
 
   return (
     <Layout>

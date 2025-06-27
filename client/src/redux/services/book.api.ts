@@ -98,14 +98,51 @@ export const bookApi = commonApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: 'Book', id }],
     }),
 
-    fetchRecentlyAdded: build.query<Book[], number | void>({
-      query: (page: number) => ({
-        url: '/books/recently-added',
-        params: {
-          page,
-        },
-      }),
+    fetchRecentlyAdded: build.query<
+      {
+        data: {
+          books: Book[];
+          pagination: {
+            currentPage: number;
+            totalPages: number;
+            totalBooks: number;
+            hasMore: boolean;
+            limit: number;
+          };
+        };
+      },
+      { page?: number; limit?: number } | void
+    >({
+      query: (params) => {
+        const { page = 1, limit = 16 } = params || {};
+        return {
+          url: '/books/recently-added',
+          params: { page, limit },
+        };
+      },
       providesTags: (result) => [{ type: 'Book', id: 'RecentlyAdded' }],
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItem, { arg }) => {
+        const { page = 1 } = arg || {};
+        if (page === 1) {
+          // Reset cache for first page
+          return newItem;
+        } else {
+          // Merge new books with existing ones
+          return {
+            ...newItem,
+            data: {
+              ...newItem.data,
+              books: [...currentCache.data.books, ...newItem.data.books],
+            },
+          };
+        }
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
     }),
   }),
 });
@@ -116,6 +153,7 @@ export const {
   useLazySearchBooksQuery,
   useAddNewBookMutation,
   useFetchRecentlyAddedQuery,
+  useLazyFetchRecentlyAddedQuery,
   useGetBookByIdQuery,
   useUpdateBookMutation,
 } = bookApi;

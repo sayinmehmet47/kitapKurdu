@@ -54,8 +54,11 @@ export const recentlyAddedBooksController = async (
   res: Response
 ) => {
   try {
-    const books = await getRecentlyAddedBooks();
-    res.json(books);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 16;
+
+    const result = await getRecentlyAddedBooks({ page, limit });
+    res.json(result);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: 'An unknown error occurred' });
