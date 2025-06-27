@@ -16,6 +16,10 @@ import {
   refreshTokenController,
   registerController,
 } from '../../controllers/user.controller';
+import {
+  verifyEmailController,
+  resendVerificationController,
+} from '../../controllers/emailVerification.controller';
 const router = express.Router();
 
 router.post(
@@ -82,5 +86,18 @@ router.get('/auth', auth, authController);
 router.post('/logout', auth, logoutController);
 
 router.post('/refresh-token', refreshToken, refreshTokenController);
+
+// Email verification routes
+router.get('/verify-email/:token', verifyEmailController);
+router.post(
+  '/resend-verification',
+  [
+    body('email', 'Please enter a valid email')
+      .isEmail()
+      .withMessage('Email must be valid'),
+  ],
+  validateRequest,
+  resendVerificationController
+);
 
 export { router as userRouter };

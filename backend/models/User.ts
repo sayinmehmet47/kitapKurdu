@@ -27,6 +27,18 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+      required: false,
+    },
+    emailVerificationExpires: {
+      type: Date,
+      required: false,
+    },
     googleId: {
       type: String,
       required: false,

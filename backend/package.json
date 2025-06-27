@@ -23,6 +23,7 @@
   "dependencies": {
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.0.0",
+    "@types/nodemailer": "^6.4.17",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-jwt": "^4.0.1",
@@ -48,6 +49,7 @@
     "node-cache": "^5.1.2",
     "node-cron": "^3.0.2",
     "node-url-shortener": "^2.0.3",
+    "nodemailer": "^7.0.3",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",

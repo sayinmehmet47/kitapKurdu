@@ -5,12 +5,15 @@ import { NotFoundError } from '../../errors/not-found-error';
 import { comparePassword } from '../../utils/bcrypt.util';
 import { logger } from '../../logger';
 
-const loginUser = async (username: string, password?: string) => {
+const loginUser = async (usernameOrEmail: string, password?: string) => {
   try {
-    const user = await User.findOne({ username });
+    // Allow login with either username or email
+    const user = await User.findOne({
+      $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+    });
 
     if (!user || !user.password) {
-      logger.error(`Login attempt failed for username: ${username}`);
+      logger.error(`Login attempt failed for: ${usernameOrEmail}`);
       throw new BadRequestError('Invalid credentials');
     }
 
@@ -20,11 +23,18 @@ const loginUser = async (username: string, password?: string) => {
 
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
-      logger.error(`Invalid password for username: ${username}`);
+      logger.error(`Invalid password for: ${usernameOrEmail}`);
       throw new BadRequestError('Invalid credentials');
     }
 
-    logger.info(`User ${username} logged in successfully`);
+    // Check if email is verified (only for users with passwords, not OAuth users)
+    if (!user.isEmailVerified && user.password && !user.googleId) {
+      throw new BadRequestError(
+        'Please verify your email address before signing in'
+      );
+    }
+
+    logger.info(`User ${usernameOrEmail} logged in successfully`);
 
     return {
       user: {
@@ -42,7 +52,7 @@ const loginUser = async (username: string, password?: string) => {
     }
 
     logger.error(
-      `Unexpected error during login for username: ${username}: ${util.inspect(
+      `Unexpected error during login for: ${usernameOrEmail}: ${util.inspect(
         error
       )}`
     );

@@ -57,7 +57,12 @@ passport.use(
             googleId: profile.id,
             username: profile.displayName,
             email: profile.emails?.[0].value,
+            isEmailVerified: true, // Google has already verified the email
           });
+          await user.save();
+        } else if (!user.isEmailVerified) {
+          // If user exists but email not verified, verify it now since Google confirmed it
+          user.isEmailVerified = true;
           await user.save();
         }
 
