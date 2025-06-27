@@ -1,20 +1,21 @@
-import { PropsWithChildren } from 'react';
-import { useSelector } from 'react-redux';
+import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAppSelector } from '@/redux/store';
 
-interface PrivateRouteProps extends PropsWithChildren<any> {
+interface PrivateRouteProps {
   redirectPath?: string;
+  children: ReactNode;
 }
 
 export const PrivateRoute = ({
   redirectPath = '/login',
   children,
 }: PrivateRouteProps) => {
-  const isLoggedIn = useSelector((state: any) => state.authSlice.isLoggedIn);
+  const isLoggedIn = useAppSelector((state) => state.authSlice.isLoggedIn);
 
   if (!isLoggedIn) {
     return <Navigate to={redirectPath} replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };

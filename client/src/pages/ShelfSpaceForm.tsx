@@ -16,11 +16,11 @@ import { BiSend } from 'react-icons/bi';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import { RootState } from '@/redux/store';
 
 export const ShelfSpaceForm: FC = () => {
-  const { _id: userId } = useSelector(
-    (state: any) => state.authSlice.user.user
-  );
+  const user = useSelector((state: RootState) => state.authSlice.user.user);
+  const userId = user.username; // Use username as identifier
 
   const [addMessage] = useAddMessageMutation();
 

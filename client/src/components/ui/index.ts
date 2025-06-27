@@ -12,3 +12,4 @@ export * from './skeleton';
 export * from './select';
 export * from './theme';
 export * from './loading';
+export * from './separator';

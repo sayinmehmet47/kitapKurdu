@@ -5,12 +5,20 @@ import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { apiBaseUrl } from './redux/common.api';
+import { loadUserThunk } from './redux/authSlice';
+import { useAppDispatch } from './redux/store';
 
 ReactGA.initialize('G-R54SYJD2B8');
 const publicVapidKey =
-  'BCrScCgFJml1t1UsPNfsgd6562aSzuyRB_qQw79KrAfaALzpxkYPaLxavkP2s_P1OP3kWXuvhiK2T1ZJNmhhCiE'; //
+  'BCrScCgFJml1t1UsPNfsgd6562aSzuyRB_qQw79KrAfaALzpxkYPaLxavkP2s_P1OP3kWXuvhiK2T1ZJNmhhCiE';
 
-export async function regSw(user) {
+interface User {
+  id: string;
+  username: string;
+  email: string;
+}
+
+export async function regSw(user: User): Promise<void> {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     const permission = await window.Notification.requestPermission();
 
@@ -47,11 +55,9 @@ export async function regSw(user) {
   }
 }
 
-function urlBase64ToUint8Array(base64String) {
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -64,10 +70,25 @@ function urlBase64ToUint8Array(base64String) {
 
 function App() {
   const location = useLocation();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     ReactGA.send('pageview');
   }, [location]);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        await dispatch(loadUserThunk()).unwrap();
+      } catch (error) {
+        // Silently handle authentication errors
+        console.log('Authentication initialization failed:', error);
+      }
+    };
+
+    initializeAuth();
+  }, [dispatch]);
+
   return (
     <Layout>
       <Search />

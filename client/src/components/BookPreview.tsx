@@ -31,6 +31,7 @@ export const BookPreview = ({
           )}`}
           className="w-full h-[calc(100vh-44px)]"
           frameBorder="0"
+          title={`PDF viewer for ${bookName}`}
         />
       </>
     );

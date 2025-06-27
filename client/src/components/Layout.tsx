@@ -1,18 +1,32 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
 import { loadUserThunk } from '../redux/authSlice';
 import NavbarComponent from './Navbar';
 import { Flowbite } from 'flowbite-react';
 import { customTheme } from './ui/theme';
-import { Dispatch } from '@reduxjs/toolkit';
+import { useAppDispatch } from '@/redux/store';
 
-export default function Layout({ children }: any) {
-  const dispatch = useDispatch<Dispatch<any>>();
+interface LayoutProps {
+  children: ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
-    dispatch(loadUserThunk());
+    const loadUser = async () => {
+      try {
+        await dispatch(loadUserThunk()).unwrap();
+      } catch (error) {
+        // Silently handle authentication errors
+        console.log('Authentication check failed:', error);
+      }
+    };
+
+    loadUser();
   }, [dispatch]);
+
   return (
     <div>
       <Toaster />

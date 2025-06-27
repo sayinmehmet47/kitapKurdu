@@ -1,6 +1,7 @@
 import { AiFillDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import Layout from '../components/Layout';
+import { RootState } from '@/redux/store';
 import { toast } from 'sonner';
 import {
   useDeleteMessageMutation,
@@ -11,7 +12,9 @@ import { Card, LoadingSpinner } from '@/components';
 import { ShelfSpaceForm } from './ShelfSpaceForm';
 
 export default function ShelfSpace() {
-  const { isAdmin } = useSelector((state: any) => state.authSlice.user.user);
+  const { isAdmin } = useSelector(
+    (state: RootState) => state.authSlice.user.user
+  );
   const { data: messages, isLoading, isError } = useGetAllMessagesQuery();
   const [deleteMessage] = useDeleteMessageMutation();
 

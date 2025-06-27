@@ -1,13 +1,42 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosError } from 'axios';
 import { apiBaseUrl } from './common.api';
 
+// Define proper interfaces
+interface User {
+  username: string;
+  email: string;
+  isAdmin: boolean;
+}
+
+interface AuthResponse {
+  user: User;
+}
+
+interface AuthState {
+  isLoggedIn: boolean;
+  loginSuccess: boolean;
+  error: boolean;
+  errorMessage: string;
+  isLoading: boolean;
+  user: AuthResponse;
+}
+
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
+interface RegisterCredentials {
+  username: string;
+  email: string;
+  password: string;
+  isAdmin?: boolean;
+}
+
 export const loginThunk = createAsyncThunk(
   'authSlice/login',
-  async (
-    { username, password }: { username: any; password: any },
-    { rejectWithValue }
-  ) => {
+  async ({ username, password }: LoginCredentials, { rejectWithValue }) => {
     try {
       const res = await axios.post(
         `${apiBaseUrl}/user/login`,
@@ -64,17 +93,7 @@ export const loadUserThunk = createAsyncThunk(
 export const registerThunk = createAsyncThunk(
   'authSlice/register',
   async (
-    {
-      username,
-      email,
-      password,
-      isAdmin = false,
-    }: {
-      username: any;
-      email: any;
-      password: any;
-      isAdmin?: any;
-    },
+    { username, email, password, isAdmin = false }: RegisterCredentials,
     { rejectWithValue }
   ) => {
     try {
@@ -87,33 +106,37 @@ export const registerThunk = createAsyncThunk(
 
       return res.data;
     } catch (error) {
-      const err = error as any;
-      return rejectWithValue(err.response?.data.errors[0].message);
+      const err = error as AxiosError<{ errors: Array<{ message: string }> }>;
+      return rejectWithValue(
+        err.response?.data.errors?.[0]?.message || 'Registration failed'
+      );
     }
   }
 );
 
-export const authSlice = createSlice({
-  name: 'loginSlice',
-  initialState: {
-    isLoggedIn: false,
-    loginSuccess: false,
-    error: false,
-    errorMessage: '',
-    isLoading: false,
+const initialState: AuthState = {
+  isLoggedIn: false,
+  loginSuccess: false,
+  error: false,
+  errorMessage: '',
+  isLoading: false,
+  user: {
     user: {
-      user: {
-        username: '',
-        email: '',
-        isAdmin: false,
-      },
+      username: '',
+      email: '',
+      isAdmin: false,
     },
   },
+};
+
+export const authSlice = createSlice({
+  name: 'loginSlice',
+  initialState,
   reducers: {
-    login: (state, action) => {
+    login: (state, action: PayloadAction<AuthResponse>) => {
       state.user = action.payload;
     },
-    logout: (state, action) => {
+    logout: (state) => {
       state.isLoggedIn = false;
       state.loginSuccess = false;
       state.user = {
@@ -124,8 +147,7 @@ export const authSlice = createSlice({
         },
       };
     },
-
-    loadUser: (state, action) => {
+    loadUser: (state, action: PayloadAction<AuthResponse>) => {
       state.isLoggedIn = true;
       state.user = {
         user: action.payload.user,
@@ -134,7 +156,7 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginThunk.pending, (state, action) => {
+      .addCase(loginThunk.pending, (state) => {
         state.error = false;
         state.errorMessage = '';
         state.isLoading = true;
@@ -146,12 +168,12 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.loginSuccess = true;
       })
-      .addCase(loginThunk.rejected, (state: any, action) => {
+      .addCase(loginThunk.rejected, (state, action) => {
         state.error = true;
-        state.errorMessage = action.payload;
+        state.errorMessage = action.payload as string;
         state.isLoading = false;
       })
-      .addCase(logoutThunk.fulfilled, (state, action) => {
+      .addCase(logoutThunk.fulfilled, (state) => {
         state.isLoggedIn = false;
         state.isLoading = false;
         state.loginSuccess = false;
@@ -163,24 +185,24 @@ export const authSlice = createSlice({
           },
         };
       })
-      .addCase(logoutThunk.rejected, (state: any, action) => {
+      .addCase(logoutThunk.rejected, (state, action) => {
         state.error = true;
         state.isLoading = false;
-        state.errorMessage = action.payload;
+        state.errorMessage = action.payload as string;
       })
-      .addCase(logoutThunk.pending, (state, action) => {
+      .addCase(logoutThunk.pending, (state) => {
         state.error = false;
         state.isLoading = true;
         state.errorMessage = '';
       })
-      .addCase(loadUserThunk.pending, (state, action) => {
+      .addCase(loadUserThunk.pending, (state) => {
         state.error = false;
         state.errorMessage = '';
         state.isLoading = true;
       })
-      .addCase(loadUserThunk.rejected, (state: any, action) => {
+      .addCase(loadUserThunk.rejected, (state, action) => {
         state.error = true;
-        state.errorMessage = action.payload;
+        state.errorMessage = action.payload as string;
         state.isLoading = false;
       })
       .addCase(loadUserThunk.fulfilled, (state, action) => {
@@ -189,9 +211,9 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.loginSuccess = false;
       })
-      .addCase(registerThunk.rejected, (state: any, action) => {
+      .addCase(registerThunk.rejected, (state, action) => {
         state.error = true;
-        state.errorMessage = action.payload;
+        state.errorMessage = action.payload as string;
         state.isLoading = false;
       });
   },

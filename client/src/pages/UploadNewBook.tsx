@@ -4,7 +4,7 @@ import Dropzone from 'react-dropzone-uploader';
 
 import Layout from '../components/Layout';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/store';
 import { useAddNewBookMutation } from '../redux/services/book.api';
 
 const Container = styled.div`
@@ -18,9 +18,8 @@ const Container = styled.div`
 export default function UploadNewBook() {
   const [addNewBook] = useAddNewBookMutation();
 
-  const { _id: userId } = useSelector(
-    (state: any) => state.authSlice.user.user
-  );
+  const user = useAppSelector((state) => state.authSlice.user.user);
+  const userId = user.username; // Use username as identifier for now
 
   const addBook = async (response: {
     original_filename: string;
@@ -36,8 +35,10 @@ export default function UploadNewBook() {
     try {
       await addNewBook(book);
       toast.success(book.name + ' has been uploaded!');
-    } catch (error: any) {
-      toast.error(error.message + ' Please try again.');
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      toast.error(errorMessage + ' Please try again.');
     }
   };
 

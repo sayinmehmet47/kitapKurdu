@@ -5,11 +5,13 @@ import App from './App';
 import './App.css';
 
 import AllBooks from './pages/AllBooks';
-import Login from './pages/login/Login';
 import RecentlyAdded from './pages/RecentlyAdded';
 import { store } from './redux/store';
-import Register from './pages/register/Register';
+import AuthPage from './pages/AuthPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
 import UploadNewBook from './pages/UploadNewBook';
+import UserProfile from './components/User';
+import Layout from './components/Layout';
 
 import ShelfSpace from './pages/ShelfSpace';
 import { PrivateRoute } from './components/privateRoute';
@@ -26,14 +28,25 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/register" element={<AuthPage />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/verify-email" element={<EmailVerificationPage />} />
         <Route path="/recently-added" element={<RecentlyAdded />} />
         <Route path="/all-books" element={<AllBooks />} />
         <Route path="book/:bookId" element={<BookPreviewPage />} />
         <Route path="book/edit/:bookId" element={<BookEditPage />} />
-
         <Route path="contact-us" element={<ContactUs />} />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <UserProfile />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
         <Route
           path="upload"
           element={
