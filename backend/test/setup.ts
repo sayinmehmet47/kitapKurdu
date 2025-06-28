@@ -8,6 +8,9 @@ import { User } from '../models/User';
 process.env.ACCESS_TOKEN_SECRET_KEY = 'access';
 process.env.REFRESH_TOKEN_SECRET_KEY = 'refresh';
 
+// Fix mongoose deprecation warning
+mongoose.set('strictQuery', false);
+
 let mongo: MongoMemoryServer;
 
 beforeAll(async () => {
