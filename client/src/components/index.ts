@@ -1,4 +1,3 @@
-export * from './BookPreview';
 export * from './Footer';
 export * from './Layout';
 export * from './Navbar';

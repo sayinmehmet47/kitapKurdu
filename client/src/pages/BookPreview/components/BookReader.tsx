@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
-import {
-  ArrowLeft,
-  Download,
-  FileText,
-  Maximize,
-  Minimize,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
-import { Button, Separator } from '@/components/ui';
+import { ArrowLeft, Download, FileText } from 'lucide-react';
+import { ReactReader } from 'react-reader';
+import { Button } from '@/components/ui';
 import { downloadBook } from '@/helpers/downloadBook';
 
 interface BookReaderProps {
@@ -24,20 +17,7 @@ export const BookReader: React.FC<BookReaderProps> = ({
   bookName,
   onBack,
 }) => {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [zoom, setZoom] = useState(100);
-
-  const handleZoomIn = () => {
-    if (zoom < 200) setZoom((prev) => prev + 25);
-  };
-
-  const handleZoomOut = () => {
-    if (zoom > 50) setZoom((prev) => prev - 25);
-  };
-
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-  };
+  const [location, setLocation] = useState<string | number>(0);
 
   const handleDownload = () => {
     downloadBook(bookUrl, bookName);
@@ -45,12 +25,7 @@ export const BookReader: React.FC<BookReaderProps> = ({
 
   if (fileType === 'pdf') {
     return (
-      <div
-        className={`relative ${
-          isFullscreen ? 'fixed inset-0 z-50 bg-white' : ''
-        }`}
-      >
-        {/* Reader Controls */}
+      <div className={`relative fixed inset-0 z-50 bg-white`}>
         <div className="flex items-center justify-between p-4 bg-white border-b shadow-sm">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" onClick={onBack}>
@@ -66,42 +41,13 @@ export const BookReader: React.FC<BookReaderProps> = ({
             <Button variant="outline" size="sm" onClick={handleDownload}>
               <Download className="h-4 w-4" />
             </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleZoomOut}
-              disabled={zoom <= 50}
-            >
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-            <span className="text-sm font-medium min-w-[60px] text-center">
-              {zoom}%
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleZoomIn}
-              disabled={zoom >= 200}
-            >
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <Button variant="outline" size="sm" onClick={toggleFullscreen}>
-              {isFullscreen ? (
-                <Minimize className="h-4 w-4" />
-              ) : (
-                <Maximize className="h-4 w-4" />
-              )}
-            </Button>
           </div>
         </div>
 
-        {/* PDF Viewer */}
         <div
           className="relative"
           style={{
-            height: isFullscreen ? 'calc(100vh - 73px)' : 'calc(100vh - 200px)',
+            height: 'calc(100vh - 100px)',
           }}
         >
           <iframe
@@ -111,7 +57,7 @@ export const BookReader: React.FC<BookReaderProps> = ({
             className="w-full h-full border-0"
             title={`PDF reader for ${bookName}`}
             style={{
-              transform: `scale(${zoom / 100})`,
+              transform: `scale(1)`,
               transformOrigin: 'top left',
             }}
           />
@@ -120,7 +66,45 @@ export const BookReader: React.FC<BookReaderProps> = ({
     );
   }
 
-  // Fallback for non-PDF files
+  if (fileType === 'epub') {
+    return (
+      <div className="fixed inset-0 z-50 bg-white">
+        <div className="flex items-center justify-between p-4 bg-white border-b shadow-sm">
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" size="sm" onClick={onBack}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <h3 className="font-semibold text-gray-900 truncate max-w-md">
+              {bookName}
+            </h3>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div
+          className="relative"
+          style={{
+            height: 'calc(100vh - 100px)',
+          }}
+        >
+          <ReactReader
+            url={bookUrl}
+            location={location}
+            locationChanged={(epubcfi: string) => setLocation(epubcfi)}
+            title={bookName}
+            showToc={true}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
       <div className="text-center max-w-md">
