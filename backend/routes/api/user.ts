@@ -1,7 +1,11 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { auth } from '../../middleware/auth';
-import { refreshToken } from '../../middleware/refreshToken';
+import {
+  auth,
+  localAuth,
+  refreshTokenAuth,
+  handlePassportAuth,
+} from '../../middleware/auth';
 import { validateRequest } from '../../middleware/validate-request';
 import passport from 'passport';
 import {
@@ -29,6 +33,7 @@ router.post(
     body('password', 'Please enter a valid password').isLength({ min: 6 }),
   ],
   validateRequest,
+  handlePassportAuth('local'),
   loginController
 );
 
@@ -67,14 +72,16 @@ router.get(
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
+      maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     res.redirect('http://localhost:3000');
@@ -85,7 +92,11 @@ router.get('/auth', auth, authController);
 
 router.post('/logout', auth, logoutController);
 
-router.post('/refresh-token', refreshToken, refreshTokenController);
+router.post(
+  '/refresh-token',
+  handlePassportAuth('refresh-token'),
+  refreshTokenController
+);
 
 // Email verification routes
 router.get('/verify-email/:token', verifyEmailController);
