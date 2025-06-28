@@ -70,21 +70,33 @@ router.get(
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    const isSecure =
+      process.env.NODE_ENV === 'production' ||
+      req.secure ||
+      req.get('x-forwarded-proto') === 'https';
+
+    const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: isSecure,
+      sameSite: isSecure ? ('none' as const) : ('lax' as const),
+      domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
+    };
+
+    res.cookie('refreshToken', refreshToken, {
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      ...cookieOptions,
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    res.redirect(process.env.CLIENT_URL || 'http://localhost:3000');
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+
+    const redirectUrl = `${clientUrl}?auth=success`;
+
+    res.redirect(redirectUrl);
   }
 );
 

@@ -147,7 +147,6 @@ const AuthPage: FC = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Use the same environment-aware API base URL from redux configuration
     const apiBaseUrl =
       process.env.REACT_APP_ENVIRONMENT === 'production'
         ? process.env.REACT_APP_PROD_API
