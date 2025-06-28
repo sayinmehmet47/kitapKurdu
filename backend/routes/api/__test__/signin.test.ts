@@ -1,14 +1,15 @@
 import request from 'supertest';
 import { app } from '../../../app';
+import { User } from '../../../models/User';
 
-it('returns a 400 with an invalid email', async () => {
+it('returns a 401 with an invalid email', async () => {
   return request(app)
     .post('/api/user/login')
     .send({
       username: 'test',
       password: 'password',
     })
-    .expect(400);
+    .expect(401);
 });
 
 it('returns a 400 with missing email and password', async () => {
@@ -19,10 +20,10 @@ it('fail when a email that does not exist is supplied', async () => {
   await request(app)
     .post('/api/user/login')
     .send({
-      email: 'test@test.com',
+      username: 'test@test.com',
       password: 'password',
     })
-    .expect(400);
+    .expect(401);
 });
 
 it('fail when an incorrect password is supplied', async () => {
@@ -35,13 +36,34 @@ it('fail when an incorrect password is supplied', async () => {
     })
     .expect(201);
 
+  await User.updateOne({ email: 'test@test.com' }, { isEmailVerified: true });
+
   await request(app)
     .post('/api/user/login')
     .send({
-      username: 'test@test.com',
+      username: 'test',
       password: 'passwor',
     })
-    .expect(400);
+    .expect(401);
+});
+
+it('fails when email is not verified', async () => {
+  await request(app)
+    .post('/api/user/register')
+    .send({
+      username: 'test',
+      email: 'test@test.com',
+      password: 'password',
+    })
+    .expect(201);
+
+  await request(app)
+    .post('/api/user/login')
+    .send({
+      username: 'test',
+      password: 'password',
+    })
+    .expect(401);
 });
 
 it('responds with a cookie when given valid credentials', async () => {
@@ -54,13 +76,15 @@ it('responds with a cookie when given valid credentials', async () => {
     })
     .expect(201);
 
+  await User.updateOne({ email: 'test@test.com' }, { isEmailVerified: true });
+
   const response = await request(app)
     .post('/api/user/login')
     .send({
       username: 'test',
       password: 'password',
     })
-    .expect(201);
+    .expect(200);
 
   const cookies = response.get('Set-Cookie');
   if (cookies) {
@@ -69,4 +93,9 @@ it('responds with a cookie when given valid credentials', async () => {
   } else {
     throw new Error('Cookies are not set');
   }
+
+  expect(response.body.success).toBe(true);
+  expect(response.body.message).toBe('Login successful');
+  expect(response.body.user).toBeDefined();
+  expect(response.body.user.email).toBe('test@test.com');
 });

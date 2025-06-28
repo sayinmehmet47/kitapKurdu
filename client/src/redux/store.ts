@@ -10,15 +10,18 @@ const rootReducer = combineReducers({
   authSlice: authSlice,
 });
 
-const middleware = (getDefaultMiddleware) =>
-  getDefaultMiddleware()
-    .concat(bookApi.middleware)
-    .concat(messagesApi.middleware);
-
 export const store = configureStore({
   reducer: rootReducer,
   devTools: process.env.NODE_ENV !== 'production',
-  middleware: middleware,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    })
+      .concat(commonApi.middleware)
+      .concat(bookApi.middleware)
+      .concat(messagesApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

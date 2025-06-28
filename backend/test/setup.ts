@@ -5,13 +5,15 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import { User } from '../models/User';
 
+process.env.ACCESS_TOKEN_SECRET_KEY = 'access';
+process.env.REFRESH_TOKEN_SECRET_KEY = 'refresh';
+
+// Fix mongoose deprecation warning
+mongoose.set('strictQuery', false);
+
 let mongo: MongoMemoryServer;
 
 beforeAll(async () => {
-  process.env.ACCESS_TOKEN_SECRET_KEY = 'access';
-  process.env.REFRESH_TOKEN_SECRET_KEY = 'refresh';
-
-
   mongo = await MongoMemoryServer.create();
   const mongoUri = mongo.getUri();
   await mongoose.connect(mongoUri, {});
@@ -53,7 +55,7 @@ global.signin = async (isAdmin: boolean = false) => {
   if (!savedUser) throw new Error('Something went wrong saving the user');
 
   const payload = {
-    id: savedUser._id,
+    _id: savedUser._id,
     isAdmin: savedUser.isAdmin,
   };
 

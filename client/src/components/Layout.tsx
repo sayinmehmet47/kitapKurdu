@@ -1,18 +1,39 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { ReactNode, useEffect, useRef } from 'react';
 import { Toaster } from 'sonner';
 
-import { loadUserThunk } from '../redux/authSlice';
 import NavbarComponent from './Navbar';
 import { Flowbite } from 'flowbite-react';
 import { customTheme } from './ui/theme';
-import { Dispatch } from '@reduxjs/toolkit';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { loadUserThunk } from '@/redux/authSlice';
 
-export default function Layout({ children }: any) {
-  const dispatch = useDispatch<Dispatch<any>>();
+interface LayoutProps {
+  children: ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
+  const dispatch = useAppDispatch();
+  const { isAuthLoaded, isLoading } = useAppSelector(
+    (state) => state.authSlice
+  );
+  const authInitialized = useRef(false);
+
   useEffect(() => {
-    dispatch(loadUserThunk());
-  }, [dispatch]);
+    if (!authInitialized.current && !isAuthLoaded && !isLoading) {
+      authInitialized.current = true;
+
+      const initializeAuth = async () => {
+        try {
+          await dispatch(loadUserThunk()).unwrap();
+        } catch (error) {
+          console.log('Authentication initialization failed:', error);
+        }
+      };
+
+      initializeAuth();
+    }
+  }, [dispatch, isAuthLoaded, isLoading]);
+
   return (
     <div>
       <Toaster />

@@ -14,11 +14,13 @@ import { errorHandler } from './middleware/error-handler';
 import { updateMetrics } from './metrics';
 import { logger } from './logger';
 import winston from 'winston';
+import passport from './src/config/passport';
 
 const app = express();
 app.set('trust proxy', true);
 app.use(express.json());
 app.use(cookieParser());
+app.use(passport.initialize());
 app.use(morgan('dev'));
 
 app.use(

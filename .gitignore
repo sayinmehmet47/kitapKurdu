@@ -8,3 +8,13 @@ node_modules/
 ./data
 ./backend/combined.log
 ./backend/error.log
+.cursor
+./backend/combined.log
+./backend/error.log
+client/build/
+
+# Log files
+*.log
+backend/*.log
+backend/combined.log
+backend/error.log

@@ -11,14 +11,14 @@ it('returns a 201 on successful register', async () => {
     })
     .expect(201);
 
-  const cookies = response.get('Set-Cookie');
-  if (cookies) {
-    expect(cookies[1]).toMatch(/accessToken=/);
-    expect(cookies[0]).toMatch(/refreshToken=/);
-  } else {
-    throw new Error('Cookies are not set');
-  }
+  // Registration no longer sets cookies - users need email verification first
+  expect(response.body.success).toBe(true);
+  expect(response.body.message).toMatch(/registration successful/i);
+  expect(response.body.user).toBeDefined();
+  expect(response.body.user.email).toBe('example@gmail.com');
+  expect(response.body.user.username).toBe('test');
 });
+
 it('returns a 400 with an invalid username', async () => {
   return request(app)
     .post('/api/user/register')
@@ -69,14 +69,33 @@ it('disallows duplicate emails', async () => {
   await request(app)
     .post('/api/user/register')
     .send({
-      email: 'test@test',
+      email: 'test@test.com', // Same email
       password: 'password',
-      username: 'test',
+      username: 'test2', // Different username
     })
     .expect(400);
 });
 
-it('sets a token successfully', async () => {
+it('disallows duplicate usernames', async () => {
+  await request(app)
+    .post('/api/user/register')
+    .send({
+      email: 'test1@test.com',
+      password: 'password',
+      username: 'test',
+    })
+    .expect(201);
+  await request(app)
+    .post('/api/user/register')
+    .send({
+      email: 'test2@test.com', // Different email
+      password: 'password',
+      username: 'test', // Same username
+    })
+    .expect(400);
+});
+
+it('returns user data on successful registration', async () => {
   const response = await request(app)
     .post('/api/user/register')
     .send({
@@ -86,12 +105,11 @@ it('sets a token successfully', async () => {
     })
     .expect(201);
 
-  const cookies = response.get('Set-Cookie');
-  if (cookies) {
-    expect(cookies[1]).toMatch(/accessToken=/);
-    expect(cookies[0]).toMatch(/refreshToken=/);
-  } else {
-    throw new Error('Cookies are not set');
-  }
+  // Check response structure
+  expect(response.body.success).toBe(true);
   expect(response.body.user).toBeDefined();
+  expect(response.body.user.id).toBeDefined();
+  expect(response.body.user.email).toBe('test@test.com');
+  expect(response.body.user.username).toBe('test');
+  expect(response.body.user.isEmailVerified).toBe(false); // Should be false initially
 });

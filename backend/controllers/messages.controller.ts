@@ -28,6 +28,7 @@ export const createUserMessageController = async (
 
 export const deleteMessageController = async (req: Request, res: Response) => {
   const { id } = req.body;
-  const result = await deleteMessage(id, req.body.user.isAdmin);
-  res.status(201).json(result);
+  const user = req.user as any;
+  const result = await deleteMessage(id, user.isAdmin);
+  res.status(200).json(result);
 };

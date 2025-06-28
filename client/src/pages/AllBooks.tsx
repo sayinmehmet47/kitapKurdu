@@ -39,7 +39,7 @@ const AllBooks = () => {
     isLoading,
     isFetching,
   } = useFetchAllBooksQuery({
-    page: Number(searchParams.get('page' || 1)),
+    page: Number(searchParams.get('page') || '1'),
     language: searchParams.get('language') || '',
   });
 
@@ -120,11 +120,8 @@ const AllBooks = () => {
       </div>
       <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1 w-3/4 mx-auto">
         {bookData?.results.map((book) => (
-          <Link to={`/book/${book._id}`} key={book._id}>
-            <Card
-              className="h-full w-full p-12 pb-20 relative bg-gray-100 hover:scale-105 transform transition-all duration-300 ease-in-out shadow-lg rounded-lg"
-              key={book._id}
-            >
+          <Link key={book._id} to={`/book/${book._id}`}>
+            <Card className="h-full w-full p-12 pb-20 relative bg-gray-100 hover:scale-105 transform transition-all duration-300 ease-in-out shadow-lg rounded-lg">
               <img
                 src={
                   book.url?.includes('pdf')
@@ -213,7 +210,7 @@ const AllBooks = () => {
       {bookData && (
         <div className="flex w-full justify-center py-3">
           <Pagination
-            currentPage={Number(searchParams.get('page' || 1))}
+            currentPage={Number(searchParams.get('page') || '1')}
             totalPages={Math.ceil(bookData?.total / 10)}
             onPageChange={handlePageChange}
             layout="pagination"

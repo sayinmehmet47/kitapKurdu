@@ -5,26 +5,40 @@ import { NotFoundError } from '../../errors/not-found-error';
 import { comparePassword } from '../../utils/bcrypt.util';
 import { logger } from '../../logger';
 
-const loginUser = async (username: string, password: string) => {
+const loginUser = async (usernameOrEmail: string, password?: string) => {
   try {
-    const user = await User.findOne({ username });
+    // Allow login with either username or email
+    const user = await User.findOne({
+      $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+    });
 
-    if (!user) {
-      logger.error(`Login attempt failed for username: ${username}`);
+    if (!user || !user.password) {
+      logger.error(`Login attempt failed for: ${usernameOrEmail}`);
+      throw new BadRequestError('Invalid credentials');
+    }
+
+    if (!password) {
       throw new BadRequestError('Invalid credentials');
     }
 
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
-      logger.error(`Invalid password for username: ${username}`);
-      throw new NotFoundError('Invalid credentials');
+      logger.error(`Invalid password for: ${usernameOrEmail}`);
+      throw new BadRequestError('Invalid credentials');
     }
 
-    logger.info(`User ${username} logged in successfully`);
+    // Check if email is verified (only for users with passwords, not OAuth users)
+    if (!user.isEmailVerified && user.password && !user.googleId) {
+      throw new BadRequestError(
+        'Please verify your email address before signing in'
+      );
+    }
+
+    logger.info(`User ${usernameOrEmail} logged in successfully`);
 
     return {
       user: {
-        _id: user._id,
+        id: user._id.toString(),
         username: user.username,
         isAdmin: user.isAdmin,
         email: user.email,
@@ -38,7 +52,7 @@ const loginUser = async (username: string, password: string) => {
     }
 
     logger.error(
-      `Unexpected error during login for username: ${username}: ${util.inspect(
+      `Unexpected error during login for: ${usernameOrEmail}: ${util.inspect(
         error
       )}`
     );

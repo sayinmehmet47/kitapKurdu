@@ -8,6 +8,20 @@ export default function NavbarComponent() {
   const { username, email } = useSelector(
     (state: RootState) => state.authSlice.user.user
   );
+  const { isAuthLoaded, isLoading } = useSelector(
+    (state: RootState) => state.authSlice
+  );
+
+  // Debug logging
+  console.log('Navbar auth state:', {
+    isAuthLoaded,
+    isLoading,
+    username,
+    email,
+  });
+
+  // Show loading only if currently loading and auth hasn't been loaded yet
+  const showLoading = isLoading && !isAuthLoaded;
 
   return (
     <Navbar className="py-6">
@@ -55,11 +69,17 @@ export default function NavbarComponent() {
           Contact Us
         </Navbar.Link>
         <Navbar.Link className="h-full md:h-4 flex items-center cursor-pointer">
-          <UserNav
-            username={username}
-            email={email}
-            avatarUrl="/avatars/01.png"
-          />
+          {showLoading ? (
+            <div className="flex items-center justify-center h-10 w-10">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <UserNav
+              username={username}
+              email={email}
+              avatarUrl="/avatars/01.png"
+            />
+          )}
         </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>

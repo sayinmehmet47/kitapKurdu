@@ -66,7 +66,7 @@ it('should not member delete book', async () => {
     .send({
       id: book.body._id,
     })
-    .expect(401);
+    .expect(403);
 });
 
 it('should admin delete book', async () => {
