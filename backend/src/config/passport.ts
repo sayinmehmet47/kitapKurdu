@@ -74,8 +74,7 @@ passport.use(
           return done(null, false, { message: 'Invalid credentials' });
         }
 
-        // Check if email is verified (only for users with passwords, not OAuth users)
-        if (!user.isEmailVerified && user.password && !user.googleId) {
+        if (user.isEmailVerified === false && user.password && !user.googleId) {
           return done(null, false, {
             message: 'Please verify your email address before signing in',
           });

@@ -27,8 +27,7 @@ const loginUser = async (usernameOrEmail: string, password?: string) => {
       throw new BadRequestError('Invalid credentials');
     }
 
-    // Check if email is verified (only for users with passwords, not OAuth users)
-    if (!user.isEmailVerified && user.password && !user.googleId) {
+    if (user.isEmailVerified === false && user.password && !user.googleId) {
       throw new BadRequestError(
         'Please verify your email address before signing in'
       );
