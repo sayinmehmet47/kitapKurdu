@@ -147,7 +147,15 @@ const AuthPage: FC = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${process.env.REACT_APP_LOCAL_API}/user/auth/google`;
+    // Use the same environment-aware API base URL from redux configuration
+    const apiBaseUrl =
+      process.env.REACT_APP_ENVIRONMENT === 'production'
+        ? process.env.REACT_APP_PROD_API
+        : process.env.REACT_APP_ENVIRONMENT === 'development'
+        ? process.env.REACT_APP_DEV_API
+        : process.env.REACT_APP_LOCAL_API;
+
+    window.location.href = `${apiBaseUrl}/user/auth/google`;
   };
 
   const handleResendVerification = async () => {
@@ -159,16 +167,21 @@ const AuthPage: FC = () => {
         return;
       }
 
-      const response = await fetch(
-        `${process.env.REACT_APP_LOCAL_API}/user/resend-verification`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: emailToUse }),
-        }
-      );
+      // Use the same environment-aware API base URL
+      const apiBaseUrl =
+        process.env.REACT_APP_ENVIRONMENT === 'production'
+          ? process.env.REACT_APP_PROD_API
+          : process.env.REACT_APP_ENVIRONMENT === 'development'
+          ? process.env.REACT_APP_DEV_API
+          : process.env.REACT_APP_LOCAL_API;
+
+      const response = await fetch(`${apiBaseUrl}/user/resend-verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: emailToUse }),
+      });
 
       if (response.ok) {
         toast.success('Verification email sent! Please check your inbox.');

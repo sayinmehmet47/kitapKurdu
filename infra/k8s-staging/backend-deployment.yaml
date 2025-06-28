@@ -27,6 +27,16 @@ spec:
               value: 'fsafdafdasfdk'
             - name: PORT
               value: '5000'
+            - name: REFRESH_TOKEN_SECRET_KEY
+              value: 'staging-refresh-token-secret'
+            - name: ACCESS_TOKEN_SECRET_KEY
+              value: 'staging-access-token-secret'
+            - name: GOOGLE_CLIENT_ID
+              value: 'staging-google-client-id'
+            - name: GOOGLE_CLIENT_SECRET
+              value: 'staging-google-client-secret'
+            - name: CLIENT_URL
+              value: 'https://staging.kitapkurdu.xyz'
           ports:
             - containerPort: 5000
           resources:

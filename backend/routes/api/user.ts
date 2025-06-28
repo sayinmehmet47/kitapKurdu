@@ -84,7 +84,7 @@ router.get(
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    res.redirect('http://localhost:3000');
+    res.redirect(process.env.CLIENT_URL || 'http://localhost:3000');
   }
 );
 

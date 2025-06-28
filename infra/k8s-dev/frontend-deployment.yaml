@@ -21,6 +21,10 @@ spec:
         - name: frontend
           image: sayinmehmet47/client-kitapkurdu-1:dev
           env:
+            - name: REACT_APP_ENVIRONMENT
+              value: development
+            - name: REACT_APP_DEV_API
+              value: https://dev.kitapkurdu.xyz/api
             - name: REACT_APP_LOCAL_API
               value: https://dev.kitapkurdu.xyz/api
             - name: REACT_APP_CLOUDINARY_URL

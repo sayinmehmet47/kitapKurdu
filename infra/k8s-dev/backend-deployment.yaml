@@ -27,6 +27,16 @@ spec:
               value: 'fsafdafdasfdk'
             - name: PORT
               value: '5000'
+            - name: REFRESH_TOKEN_SECRET_KEY
+              value: 'dev-refresh-token-secret'
+            - name: ACCESS_TOKEN_SECRET_KEY
+              value: 'dev-access-token-secret'
+            - name: GOOGLE_CLIENT_ID
+              value: 'dev-google-client-id'
+            - name: GOOGLE_CLIENT_SECRET
+              value: 'dev-google-client-secret'
+            - name: CLIENT_URL
+              value: 'https://dev.kitapkurdu.xyz'
           ports:
             - containerPort: 5000
           resources:

@@ -9,6 +9,7 @@ export const checkEnvVariables = () => {
     'PORT',
     'GOOGLE_CLIENT_ID',
     'GOOGLE_CLIENT_SECRET',
+    'CLIENT_URL',
   ];
   const missingVariables = requiredVariables.filter(
     (variable) => !process.env[variable]

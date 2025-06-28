@@ -33,6 +33,10 @@ spec:
         - name: frontend
           image: sayinmehmet47/client-kitapkurdu-1:latest
           env:
+            - name: REACT_APP_ENVIRONMENT
+              value: production
+            - name: REACT_APP_PROD_API
+              value: https://kitapkurdu.xyz/api
             - name: REACT_APP_LOCAL_API
               value: https://kitapkurdu.xyz/api
             - name: REACT_APP_CLOUDINARY_URL
