@@ -56,7 +56,11 @@ router.post(
 
 router.get(
   '/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    // Force account selection to prevent rapid redirects
+    prompt: 'select_account',
+  })
 );
 
 router.get(
@@ -78,7 +82,8 @@ router.get(
     const cookieOptions = {
       httpOnly: true,
       secure: isSecure,
-      sameSite: isSecure ? ('none' as const) : ('lax' as const),
+      // Use 'lax' for OAuth redirects - more compatible with fast redirects
+      sameSite: 'lax' as const,
       domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
     };
 
