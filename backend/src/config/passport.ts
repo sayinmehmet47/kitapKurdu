@@ -111,16 +111,23 @@ passport.use(
 );
 
 // Google OAuth Strategy
+const callbackURL =
+  process.env.NODE_ENV === 'production'
+    ? (process.env.CLIENT_URL || 'https://kitap-kurdu-bx87.vercel.app') +
+      '/api/user/auth/google/callback'
+    : '/api/user/auth/google/callback';
+
+console.log('Google OAuth Callback URL:', callbackURL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('CLIENT_URL:', process.env.CLIENT_URL);
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
       clientSecret:
         process.env.GOOGLE_CLIENT_SECRET || 'YOUR_GOOGLE_CLIENT_SECRET',
-      callbackURL:
-        process.env.NODE_ENV === 'production'
-          ? `${process.env.CLIENT_URL}/api/user/auth/google/callback`
-          : '/api/user/auth/google/callback',
+      callbackURL: callbackURL,
       scope: ['profile', 'email'],
     },
     async (accessToken, refreshToken, profile, done) => {

@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://kitapkurdu.onrender.com/api/:path*"
+      "source": "/api/(.*)",
+      "destination": "https://kitapkurdu.onrender.com/api/$1"
     }
   ],
   "build": {
