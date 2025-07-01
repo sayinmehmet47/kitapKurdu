@@ -4,7 +4,8 @@
   "description": "Book searching engine",
   "scripts": {
     "build": "npm install && tsc",
-    "start": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules index.ts",
+    "start": "node ./dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules index.ts",
     "deploy": "node ./dist/index.js",
     "test": "jest --no-cache",
     "serve": "pm2 start index.ts --watch",
