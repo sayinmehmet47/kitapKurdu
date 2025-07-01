@@ -2,6 +2,7 @@
 import { Request } from 'express';
 import { Books } from '../../models/Books';
 import { BooksData } from '../../routes/api/books.types';
+import { apiResponse } from '../../utils/apiResponse.utils';
 
 const getAllBooksService = async (req: Request) => {
   try {
@@ -35,7 +36,7 @@ const getAllBooksService = async (req: Request) => {
       previous: startIndex > 0 ? { page: page - 1 } : undefined,
     };
 
-    return results;
+    return apiResponse(200, 'success', 'Books fetched successfully', results);
   } catch (err) {
     if (err instanceof Error) {
       throw new Error(err.message);

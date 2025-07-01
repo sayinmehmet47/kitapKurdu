@@ -11,6 +11,10 @@ export const bookApi = commonApi.injectEndpoints({
           language,
         },
       }),
+      transformResponse: (response: any) => {
+        // Extract data from apiResponse structure
+        return response.data || response;
+      },
       providesTags: (result) => [{ type: 'Book', id: 'List' }],
     }),
     deleteBook: build.mutation<BookModel, { id: string }>({

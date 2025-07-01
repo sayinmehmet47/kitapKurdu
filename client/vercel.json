@@ -4,5 +4,11 @@
       "source": "/api/:path*",
       "destination": "https://kitapkurdu.onrender.com/api/:path*"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "REACT_APP_ENVIRONMENT": "production",
+      "REACT_APP_PROD_API": "https://kitapkurdu.onrender.com/api"
+    }
+  }
 }

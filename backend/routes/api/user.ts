@@ -77,21 +77,21 @@ router.get(
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    const isSecure = true;
-
     const cookieOptions = {
       httpOnly: true,
-      path: '/', // Set cookie path to the root
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      path: '/',
     };
 
     res.cookie('refreshToken', refreshToken, {
       ...cookieOptions,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.cookie('accessToken', accessToken, {
       ...cookieOptions,
-      maxAge: 15 * 60 * 1000,
+      maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';

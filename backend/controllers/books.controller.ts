@@ -35,6 +35,7 @@ export const searchBooksController = async (req: Request, res: Response) => {
     }
   }
 };
+
 export const addBookController = async (req: Request, res: Response) => {
   try {
     const books = await addNewBook(req);
