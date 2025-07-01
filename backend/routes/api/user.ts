@@ -65,36 +65,37 @@ router.get(
 
 router.get(
   '/auth/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: '/login',
-    session: false,
-  }),
+  (req, res, next) => {
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    passport.authenticate('google', {
+      failureRedirect: `${clientUrl}/login`, // Use full client URL for failure
+      session: false,
+    })(req, res, next);
+  },
   (req: Request, res: Response) => {
     const user = req.user as any;
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    const isSecure =
-      process.env.NODE_ENV === 'production' ||
-      req.secure ||
-      req.get('x-forwarded-proto') === 'https';
+    const isSecure = true;
 
     const cookieOptions = {
       httpOnly: true,
       secure: isSecure,
-      // Use 'lax' for OAuth redirects - more compatible with fast redirects
-      sameSite: 'lax' as const,
-      domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
+      sameSite: 'none' as const,
+      path: '/',
+      domain:
+        process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined,
     };
 
     res.cookie('refreshToken', refreshToken, {
       ...cookieOptions,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie('accessToken', accessToken, {
       ...cookieOptions,
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000,
     });
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';

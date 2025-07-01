@@ -99,12 +99,18 @@ export const registerThunk = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.post(`${apiBaseUrl}/user/register`, {
-        username,
-        email,
-        password,
-        isAdmin,
-      });
+      const res = await axios.post(
+        `${apiBaseUrl}/user/register`,
+        {
+          username,
+          email,
+          password,
+          isAdmin,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       return res.data;
     } catch (error) {
