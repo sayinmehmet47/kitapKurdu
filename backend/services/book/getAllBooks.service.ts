@@ -27,9 +27,7 @@ const getAllBooksService = async (req: Request) => {
         .sort({ date: -1 })
         .skip(startIndex)
         .limit(limit)
-        .lean()
-        .skip(startIndex)
-        .limit(limit),
+        .lean(),
       total: total,
       page: page,
       next: total > startIndex + limit ? { page: page + 1 } : undefined,

@@ -149,7 +149,7 @@ const AuthPage: FC = () => {
   const handleGoogleLogin = () => {
     const apiBaseUrl =
       process.env.REACT_APP_ENVIRONMENT === 'production'
-        ? process.env.REACT_APP_PROD_API
+        ? '/api' // Use relative path in production to go through Vercel proxy
         : process.env.REACT_APP_ENVIRONMENT === 'development'
         ? process.env.REACT_APP_DEV_API
         : process.env.REACT_APP_LOCAL_API;
