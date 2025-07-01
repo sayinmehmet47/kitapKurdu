@@ -36,8 +36,15 @@ app.use(
       'https://kitapkurdu.onrender.com',
       'https://kitap-kurdu-bx87.vercel.app',
     ],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   })
 );
 
