@@ -82,10 +82,9 @@ router.get(
     const cookieOptions = {
       httpOnly: true,
       secure: isSecure,
+      // Use 'none' for cross-domain cookies
       sameSite: 'none' as const,
-      path: '/',
-      domain:
-        process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined,
+      path: '/', // Set cookie path to the root
     };
 
     res.cookie('refreshToken', refreshToken, {
