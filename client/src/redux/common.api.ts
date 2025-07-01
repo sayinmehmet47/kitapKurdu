@@ -1,11 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 
-export const apiBaseUrl =
-  process.env.REACT_APP_ENVIRONMENT === 'production'
-    ? process.env.REACT_APP_PROD_API
-    : process.env.REACT_APP_ENVIRONMENT === 'development'
-    ? process.env.REACT_APP_DEV_API
-    : process.env.REACT_APP_LOCAL_API;
+export const apiBaseUrl = '/api';
 
 export const commonApi = createApi({
   reducerPath: 'api',

@@ -81,9 +81,6 @@ router.get(
 
     const cookieOptions = {
       httpOnly: true,
-      secure: isSecure,
-      // Use 'none' for cross-domain cookies
-      sameSite: 'none' as const,
       path: '/', // Set cookie path to the root
     };
 
