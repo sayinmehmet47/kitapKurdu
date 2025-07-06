@@ -14,10 +14,10 @@ export const BookDetails: React.FC<BookDetailsProps> = ({ book, fileType }) => {
       <CardHeader>
         <div className="space-y-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               {book.name}
             </h1>
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               {book.uploader?.username && (
                 <div className="flex items-center">
                   <User className="h-4 w-4 mr-1" />
@@ -41,13 +41,15 @@ export const BookDetails: React.FC<BookDetailsProps> = ({ book, fileType }) => {
           <div className="flex items-center space-x-2">
             <div className="flex items-center">
               {[1, 2, 3, 4, 5].map((star) => (
-                <Star 
-                  key={star} 
-                  className="h-4 w-4 fill-yellow-400 text-yellow-400" 
+                <Star
+                  key={star}
+                  className="h-4 w-4 fill-yellow-400 text-yellow-400"
                 />
               ))}
             </div>
-            <span className="text-sm text-gray-600">4.8 (124 reviews)</span>
+            <span className="text-sm text-muted-foreground">
+              4.8 (124 reviews)
+            </span>
           </div>
         </div>
       </CardHeader>

@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { LoadingSpinner } from '@/components/ui/loading';
 import Layout from '@/components/Layout';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -122,7 +123,7 @@ const EmailVerificationPage: FC = () => {
       case VERIFICATION_STATUS.VERIFYING:
         return (
           <div className="text-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <LoadingSpinner size={48} className="mx-auto" />
             <p className="text-muted-foreground">Verifying your email...</p>
           </div>
         );

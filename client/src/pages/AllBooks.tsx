@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components';
+import { Pagination } from '@/components/ui/pagination';
 import { DownloadIcon, Edit, Eye, MoreHorizontal } from 'lucide-react';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { downloadBook } from '@/helpers/downloadBook';
@@ -29,7 +30,6 @@ import ReactGA from 'react-ga4';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { RootState } from '@/redux/store';
-import { Pagination } from 'flowbite-react';
 
 const AllBooks = () => {
   const [searchParams, setSearchParams] = useSearchParams();

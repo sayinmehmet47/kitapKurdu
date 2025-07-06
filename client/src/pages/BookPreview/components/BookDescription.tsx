@@ -5,7 +5,9 @@ interface BookDescriptionProps {
   description: string;
 }
 
-export const BookDescription: React.FC<BookDescriptionProps> = ({ description }) => {
+export const BookDescription: React.FC<BookDescriptionProps> = ({
+  description,
+}) => {
   if (!description) return null;
 
   return (
@@ -14,9 +16,7 @@ export const BookDescription: React.FC<BookDescriptionProps> = ({ description })
         <h3 className="text-lg font-semibold">Description</h3>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-700 leading-relaxed">
-          {description}
-        </p>
+        <p className="text-foreground leading-relaxed">{description}</p>
       </CardContent>
     </Card>
   );

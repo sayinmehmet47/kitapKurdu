@@ -69,7 +69,7 @@ const BookPreviewPage: React.FC = () => {
   // Main Book Details Page
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50/30">
+      <div className="min-h-screen bg-gray-50/30 dark:bg-gray-900/30">
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           {/* Back Button */}
           <Button variant="ghost" className="mb-6" onClick={handleGoBack}>

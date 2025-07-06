@@ -27,7 +27,7 @@ export const ShelfSpaceHeader = ({
       {isAdmin && (
         <Badge
           variant="outline"
-          className="text-xs text-blue-600 border-blue-200"
+          className="text-xs text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-600"
         >
           Admin
         </Badge>

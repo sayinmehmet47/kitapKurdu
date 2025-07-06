@@ -54,7 +54,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   return (
     <div className="group">
       <Link to={`/book/${book._id}`} className="block">
-        <Card className="overflow-hidden bg-white hover:shadow-xl transition-all duration-500 border-0 shadow-sm hover:shadow-2xl hover:-translate-y-1">
+        <Card className="overflow-hidden bg-white dark:bg-gray-800 hover:shadow-xl transition-all duration-500 border-0 shadow-sm hover:shadow-2xl hover:-translate-y-1">
           <div className="aspect-[2/3] relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
             <img
               src={getBookCoverUrl()}
@@ -73,10 +73,10 @@ export const BookCard: React.FC<BookCardProps> = ({
                   <Button
                     variant="secondary"
                     size="sm"
-                    className="h-10 w-10 p-0 bg-white/95 backdrop-blur-sm hover:bg-white shadow-lg border-0 rounded-full"
+                    className="h-10 w-10 p-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-700 shadow-lg border-0 rounded-full"
                     onClick={(e) => e.preventDefault()}
                   >
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className="h-4 w-4 text-gray-700 dark:text-gray-200" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -143,15 +143,17 @@ export const BookCard: React.FC<BookCardProps> = ({
 
       {/* Book Title - Clean and minimal */}
       <div className="mt-4 px-1">
-        <h3 className="font-medium text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200">
+        <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200">
           {book.name}
         </h3>
         <div className="flex items-center justify-between mt-2">
-          <span className="text-xs text-gray-500">Recently added</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Recently added
+          </span>
           {book.language && (
             <Badge
               variant="outline"
-              className="text-xs px-2 py-0.5 border-gray-200 text-gray-600"
+              className="text-xs px-2 py-0.5 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300"
             >
               {book.language}
             </Badge>

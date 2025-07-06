@@ -2,8 +2,6 @@ import { ReactNode, useEffect, useRef } from 'react';
 import { Toaster } from 'sonner';
 
 import NavbarComponent from './Navbar';
-import { Flowbite } from 'flowbite-react';
-import { customTheme } from './ui/theme';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { loadUserThunk } from '@/redux/authSlice';
 
@@ -35,14 +33,10 @@ export default function Layout({ children }: LayoutProps) {
   }, [dispatch, isAuthLoaded, isLoading]);
 
   return (
-    <div>
+    <div className="min-h-screen bg-background">
       <Toaster />
-      <Flowbite theme={{ theme: customTheme }}>
-        <div className="flex flex-col min-h-screen bg-gradient-to-r from-gray-50 to-gray-200">
-          <NavbarComponent />
-          <div>{children}</div>
-        </div>
-      </Flowbite>
+      <NavbarComponent />
+      <main className="flex-1">{children}</main>
     </div>
   );
 }

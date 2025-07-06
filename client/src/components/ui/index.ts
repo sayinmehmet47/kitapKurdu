@@ -1,3 +1,4 @@
+export * from './alert';
 export * from './avatar';
 export * from './badge';
 export * from './button';
@@ -9,6 +10,7 @@ export * from './input';
 export * from './label';
 export * from './loading';
 export * from './pagination';
+export * from './progress';
 export * from './select';
 export * from './separator';
 export * from './skeleton';
@@ -16,3 +18,4 @@ export * from './table';
 export * from './tabs';
 export * from './textarea';
 export * from './user-avatar';
+export * from './theme-toggle';

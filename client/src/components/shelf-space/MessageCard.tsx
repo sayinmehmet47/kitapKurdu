@@ -57,7 +57,7 @@ export const MessageCard = ({
               )}
             </div>
           </div>
-          <p className="text-sm text-gray-700 leading-relaxed break-words">
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed break-words">
             {message.text}
           </p>
         </div>

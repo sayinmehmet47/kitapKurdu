@@ -7,6 +7,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  LoadingSpinner,
   Select,
   SelectContent,
   SelectItem,
@@ -20,7 +21,6 @@ import {
 } from '@/redux/services/book.api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UpdateIcon } from '@radix-ui/react-icons';
-import { Spinner } from 'flowbite-react';
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -43,7 +43,6 @@ export const BookEditPage: FC = () => {
     }),
   });
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -82,7 +81,7 @@ export const BookEditPage: FC = () => {
     <Layout>
       {isLoading ? (
         <div className="h-screen w-full grid place-items-center">
-          <Spinner />
+          <LoadingSpinner />
         </div>
       ) : (
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
