@@ -23,7 +23,7 @@ export const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({
         onClick={onLoadMore}
         disabled={isLoading}
         size="lg"
-        className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 px-8 py-4 rounded-2xl font-medium"
+        className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-300 px-8 py-4 rounded-2xl font-medium"
       >
         {isLoading ? (
           <>

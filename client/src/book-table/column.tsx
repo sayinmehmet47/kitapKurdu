@@ -84,11 +84,13 @@ export const columns: ColumnDef<Book>[] = [
   {
     accessorKey: 'name',
     header: () => (
-      <div className="text-green-800 font-bold text-base">Name</div>
+      <div className="text-green-800 dark:text-green-400 font-bold text-base">
+        Name
+      </div>
     ),
     cell: ({ row }) => (
       <Link
-        className="text-gray-700 hover:text-blue-400 cursor-pointer"
+        className="text-gray-700 dark:text-gray-200 hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer"
         to={`/book/${row.original._id}`}
       >
         {row.original.name}
@@ -99,14 +101,23 @@ export const columns: ColumnDef<Book>[] = [
   {
     accessorKey: 'category',
     header: () => (
-      <div className="text-green-800 font-bold text-base hidden md:flex">
+      <div className="text-green-800 dark:text-green-400 font-bold text-base hidden md:flex">
         Category
       </div>
     ),
     cell: ({ row }) =>
       row.original.category.length > 1 &&
-      row.original.category.map((category) => (
+      row.original.category.map((category, index) => (
         <Badge
+          variant={
+            index % 4 === 0
+              ? 'default'
+              : index % 4 === 1
+              ? 'success'
+              : index % 4 === 2
+              ? 'info'
+              : 'warning'
+          }
           className="text-xs max-w-36 truncate hidden md:inline-flex m-1"
           key={category}
         >
@@ -118,13 +129,13 @@ export const columns: ColumnDef<Book>[] = [
   {
     accessorKey: 'date',
     header: () => (
-      <div className="text-green-800 font-bold text-base  hidden md:flex">
+      <div className="text-green-800 dark:text-green-400 font-bold text-base hidden md:flex">
         Date
       </div>
     ),
     cell: ({ row }) => {
       return (
-        <div className="text-sm text-gray-500 hidden md:flex">
+        <div className="text-sm text-gray-500 dark:text-gray-300 hidden md:flex">
           {new Date(row.original.date).toLocaleDateString()}
         </div>
       );
@@ -133,13 +144,13 @@ export const columns: ColumnDef<Book>[] = [
 
   {
     header: () => (
-      <div className="text-green-800 font-bold text-base hidden md:flex">
+      <div className="text-green-800 dark:text-green-400 font-bold text-base hidden md:flex">
         Uploader
       </div>
     ),
     accessorKey: 'uploader',
     cell: ({ row }) => (
-      <div className="text-gray-500 hidden md:flex">
+      <div className="text-gray-500 dark:text-gray-300 hidden md:flex">
         {row.original.uploader.username}
       </div>
     ),

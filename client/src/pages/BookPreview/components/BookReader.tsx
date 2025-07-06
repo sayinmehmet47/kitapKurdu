@@ -25,14 +25,14 @@ export const BookReader: React.FC<BookReaderProps> = ({
 
   if (fileType === 'pdf') {
     return (
-      <div className={`relative fixed inset-0 z-50 bg-white`}>
-        <div className="flex items-center justify-between p-4 bg-white border-b shadow-sm">
+      <div className={`relative fixed inset-0 z-50 bg-background`}>
+        <div className="flex items-center justify-between p-4 bg-background border-b shadow-sm">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" onClick={onBack}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <h3 className="font-semibold text-gray-900 truncate max-w-md">
+            <h3 className="font-semibold text-foreground truncate max-w-md">
               {bookName}
             </h3>
           </div>
@@ -68,14 +68,14 @@ export const BookReader: React.FC<BookReaderProps> = ({
 
   if (fileType === 'epub') {
     return (
-      <div className="fixed inset-0 z-50 bg-white">
-        <div className="flex items-center justify-between p-4 bg-white border-b shadow-sm">
+      <div className="fixed inset-0 z-50 bg-background">
+        <div className="flex items-center justify-between p-4 bg-background border-b shadow-sm">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" onClick={onBack}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <h3 className="font-semibold text-gray-900 truncate max-w-md">
+            <h3 className="font-semibold text-foreground truncate max-w-md">
               {bookName}
             </h3>
           </div>
@@ -106,18 +106,18 @@ export const BookReader: React.FC<BookReaderProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-muted/30 flex items-center justify-center p-8">
       <div className="text-center max-w-md">
         <Button variant="outline" className="mb-8" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Book Details
         </Button>
 
-        <FileText className="h-16 w-16 mx-auto text-gray-400 mb-6" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
+        <h2 className="text-2xl font-bold text-foreground mb-4">
           Preview Not Available
         </h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-muted-foreground mb-6">
           This file type ({fileType?.toUpperCase()}) can't be previewed in the
           browser.
         </p>

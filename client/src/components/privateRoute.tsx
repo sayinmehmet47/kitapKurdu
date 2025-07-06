@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/redux/store';
 import { loadUserThunk } from '@/redux/authSlice';
+import { LoadingSpinner } from '@/components/ui/loading';
 
 interface PrivateRouteProps {
   redirectPath?: string;
@@ -40,7 +41,7 @@ export const PrivateRoute = ({
   if (!isAuthLoaded || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        <LoadingSpinner size={48} />
       </div>
     );
   }

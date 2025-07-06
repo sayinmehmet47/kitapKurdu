@@ -29,8 +29,10 @@ export const BookMetadata: React.FC<BookMetadataProps> = ({ book }) => {
                 <FileText className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">File Size</p>
-                <p className="font-semibold">{formatFileSize(book.size)}</p>
+                <p className="text-sm text-muted-foreground">File Size</p>
+                <p className="font-semibold text-foreground">
+                  {formatFileSize(book.size)}
+                </p>
               </div>
             </div>
           )}
@@ -41,15 +43,17 @@ export const BookMetadata: React.FC<BookMetadataProps> = ({ book }) => {
                 <Calendar className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Added</p>
-                <p className="font-semibold">{formatDate(book.date)}</p>
+                <p className="text-sm text-muted-foreground">Added</p>
+                <p className="font-semibold text-foreground">
+                  {formatDate(book.date)}
+                </p>
               </div>
             </div>
           )}
 
           {book.category && book.category.length > 0 && (
             <div className="md:col-span-2">
-              <p className="text-sm text-gray-600 mb-2">Categories</p>
+              <p className="text-sm text-muted-foreground mb-2">Categories</p>
               <div className="flex flex-wrap gap-2">
                 {book.category.map((category, index) => (
                   <Badge key={index} variant="secondary">

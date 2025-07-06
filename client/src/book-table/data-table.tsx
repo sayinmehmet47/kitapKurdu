@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { Pagination } from '../components/ui/pagination';
+import { LegacyPagination } from '../components/ui/pagination';
 
 import {
   Table,
@@ -88,7 +88,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <Pagination previous={previous} next={next} setPage={setPage} />
+      <LegacyPagination previous={previous} next={next} setPage={setPage} />
     </div>
   );
 }
