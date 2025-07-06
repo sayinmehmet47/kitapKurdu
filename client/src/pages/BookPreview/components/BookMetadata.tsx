@@ -52,7 +52,7 @@ export const BookMetadata: React.FC<BookMetadataProps> = ({ book }) => {
           )}
 
           {book.category && book.category.length > 0 && (
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 hidden md:block">
               <p className="text-sm text-muted-foreground mb-2">Categories</p>
               <div className="flex flex-wrap gap-2">
                 {book.category.map((category, index) => (

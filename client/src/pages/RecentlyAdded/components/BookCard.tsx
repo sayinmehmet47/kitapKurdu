@@ -153,7 +153,7 @@ export const BookCard: React.FC<BookCardProps> = ({
           {book.language && (
             <Badge
               variant="outline"
-              className="text-xs px-2 py-0.5 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300"
+              className="text-xs px-2 py-0.5 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hidden md:inline-flex"
             >
               {book.language}
             </Badge>

@@ -25,12 +25,12 @@ export const BookDetails: React.FC<BookDetailsProps> = ({ book, fileType }) => {
                 </div>
               )}
               {book.language && (
-                <Badge variant="outline">
+                <Badge variant="outline" className="hidden md:flex">
                   <Languages className="h-3 w-3 mr-1" />
                   {book.language}
                 </Badge>
               )}
-              <Badge variant="outline">
+              <Badge variant="outline" className="hidden md:flex">
                 <FileText className="h-3 w-3 mr-1" />
                 {fileType?.toUpperCase()}
               </Badge>

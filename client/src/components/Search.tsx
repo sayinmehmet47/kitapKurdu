@@ -217,7 +217,7 @@ export const Search = () => {
                         key={book._id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-900/50"
                       >
-                        <TableCell>
+                        <TableCell className="max-w-0 w-full">
                           <div className="flex items-center space-x-3">
                             <div className="flex-shrink-0">
                               <img
@@ -231,11 +231,11 @@ export const Search = () => {
                                 className="h-12 w-8 object-cover rounded"
                               />
                             </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            <div className="min-w-0 flex-1 overflow-hidden">
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px] md:max-w-none">
                                 {book.name}
                               </p>
-                              <div className="mt-1 flex flex-wrap gap-1">
+                              <div className="mt-1 flex flex-wrap gap-1 hidden md:flex">
                                 {book.language && (
                                   <Badge
                                     variant="secondary"
