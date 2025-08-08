@@ -19,11 +19,9 @@ const cookieExtractor = (req: Request): string | null => {
 };
 
 const refreshTokenExtractor = (req: Request): string | null => {
-  let token = null;
-  if (req && req.cookies) {
-    token = req.cookies['refreshToken'];
-  }
-  return token;
+  if (req?.cookies?.['refreshToken']) return req.cookies['refreshToken'];
+  const rtParam = (req.query?.rt as string) || undefined; // optional fallback
+  return rtParam || null;
 };
 
 // Also allow Authorization: Bearer <token> as a fallback (helps Safari flows)

@@ -62,11 +62,16 @@ export const logoutThunk = createAsyncThunk(
   'authSlice/logout',
   async (_, { rejectWithValue }) => {
     try {
+      const at =
+        typeof window !== 'undefined'
+          ? sessionStorage.getItem('auth_at')
+          : null;
       const res = await axios.post(
         `${apiBaseUrl}/user/logout`,
         {},
         {
           withCredentials: true,
+          headers: at ? { Authorization: `Bearer ${at}` } : undefined,
         }
       );
       return res.data;
@@ -81,8 +86,13 @@ export const loadUserThunk = createAsyncThunk(
   'authSlice/loadUser',
   async (_, { rejectWithValue }) => {
     try {
+      const at =
+        typeof window !== 'undefined'
+          ? sessionStorage.getItem('auth_at')
+          : null;
       const res = await axios.get(`${apiBaseUrl}/user/auth`, {
         withCredentials: true,
+        headers: at ? { Authorization: `Bearer ${at}` } : undefined,
       });
       return res.data;
     } catch (error) {
