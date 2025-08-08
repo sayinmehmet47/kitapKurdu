@@ -9,10 +9,6 @@ const cookieBaseOptions: CookieOptions = {
   secure: process.env.NODE_ENV === 'production',
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   path: '/',
-  // Allow third-party cookies in modern Chromium via CHIPS (Partitioned Cookies)
-  partitioned: process.env.NODE_ENV === 'production' ? true : undefined,
-  // If you serve backend under a subdomain of your apex, set COOKIE_DOMAIN to the apex (e.g., .kitapkurdu.xyz)
-  domain: process.env.COOKIE_DOMAIN || undefined,
 };
 
 // Login controller using Passport Local Strategy

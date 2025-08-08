@@ -145,12 +145,23 @@ const AllBooks = () => {
               >
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
                       <span className="sr-only">Open menu</span>
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent
+                    align="end"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem className="cursor-pointer">
                       <Link
@@ -163,7 +174,12 @@ const AllBooks = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="cursor-pointer"
-                      onClick={() => downloadBook(book.url, book.name)}
+                      onClick={(e) => {
+                        // Prevent navigation to preview when downloading
+                        e.preventDefault();
+                        e.stopPropagation();
+                        downloadBook(book.url, book.name);
+                      }}
                     >
                       <DownloadIcon className="h-4 w-4 mr-2 " />
                       Download Book

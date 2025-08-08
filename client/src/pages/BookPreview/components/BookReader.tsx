@@ -3,6 +3,7 @@ import { ArrowLeft, Download, FileText } from 'lucide-react';
 import { ReactReader } from 'react-reader';
 import { Button } from '@/components/ui';
 import { downloadBook } from '@/helpers/downloadBook';
+import { PdfReader } from './PdfReader';
 
 interface BookReaderProps {
   bookUrl: string;
@@ -24,46 +25,7 @@ export const BookReader: React.FC<BookReaderProps> = ({
   };
 
   if (fileType === 'pdf') {
-    return (
-      <div className={`relative fixed inset-0 z-50 bg-background`}>
-        <div className="flex items-center justify-between p-4 bg-background border-b shadow-sm">
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <h3 className="font-semibold text-foreground truncate max-w-md">
-              {bookName}
-            </h3>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" onClick={handleDownload}>
-              <Download className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div
-          className="relative"
-          style={{
-            height: 'calc(100vh - 100px)',
-          }}
-        >
-          <iframe
-            src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(
-              bookUrl
-            )}`}
-            className="w-full h-full border-0"
-            title={`PDF reader for ${bookName}`}
-            style={{
-              transform: `scale(1)`,
-              transformOrigin: 'top left',
-            }}
-          />
-        </div>
-      </div>
-    );
+    return <PdfReader bookUrl={bookUrl} bookName={bookName} onBack={onBack} />;
   }
 
   if (fileType === 'epub') {

@@ -6,3 +6,4 @@ export { BookDescription } from './BookDescription';
 export { AdminActions } from './AdminActions';
 export { ErrorState } from './ErrorState';
 export { LoadingState } from './LoadingState';
+export { PdfReader } from './PdfReader';
