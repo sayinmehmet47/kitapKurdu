@@ -11,14 +11,7 @@ import {
 import { downloadBook } from '@/helpers/downloadBook';
 import { Document, Page, pdfjs } from 'react-pdf';
 
-// Configure pdf.js worker to use the locally installed worker (avoids CDN/ESM fetch errors)
-// pdfjs-dist@5 uses ESM workers with .mjs extension
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore import.meta is available in bundlers used by CRA
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 interface PdfReaderProps {
   bookUrl: string;

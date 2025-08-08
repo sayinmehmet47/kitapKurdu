@@ -54,8 +54,8 @@
     "zod": "^3.22.4"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
+    "start": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.mjs && craco start",
+    "build": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.mjs && craco build",
     "test": "craco test",
     "eject": "craco eject"
   },
