@@ -1,4 +1,8 @@
-import { Strategy as JwtStrategy, StrategyOptions } from 'passport-jwt';
+import {
+  Strategy as JwtStrategy,
+  StrategyOptions,
+  ExtractJwt,
+} from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport';
@@ -22,8 +26,20 @@ const refreshTokenExtractor = (req: Request): string | null => {
   return token;
 };
 
+// Also allow Authorization: Bearer <token> as a fallback (helps Safari flows)
+const bearerExtractor = (req: Request): string | null => {
+  const authHeader = req.headers['authorization'];
+  if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+    return authHeader.slice(7);
+  }
+  return null;
+};
+
 const opts: StrategyOptions = {
-  jwtFromRequest: cookieExtractor,
+  jwtFromRequest: ExtractJwt.fromExtractors([
+    (req) => cookieExtractor(req as Request),
+    (req) => bearerExtractor(req as Request),
+  ]),
   secretOrKey: process.env.ACCESS_TOKEN_SECRET_KEY || '',
 };
 
