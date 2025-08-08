@@ -113,7 +113,7 @@ export const PdfReader: FC<PdfReaderProps> = ({
   const pinchStartZoom = useRef<number>(1);
   const lastTapRef = useRef<number>(0);
   const onTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
+    if (!isContinuous && e.touches.length === 1) {
       const t0 = e.touches.item(0);
       if (t0) touchStartX.current = t0.clientX;
     }
@@ -159,7 +159,7 @@ export const PdfReader: FC<PdfReaderProps> = ({
     }
     lastTapRef.current = now;
 
-    if (touchStartX.current != null) {
+    if (!isContinuous && touchStartX.current != null) {
       const dx = e.changedTouches[0]?.clientX - touchStartX.current;
       if (Math.abs(dx) > 50) {
         if (dx < 0) goNext();
@@ -169,6 +169,35 @@ export const PdfReader: FC<PdfReaderProps> = ({
     }
     pinchStartDist.current = null;
   };
+
+  // Observe page visibility in continuous mode to update current page number
+  useEffect(() => {
+    if (!isContinuous || !containerRef.current || numPages === 0) return;
+    const root = containerRef.current;
+    const options: IntersectionObserverInit = {
+      root,
+      rootMargin: '0px 0px -50% 0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    };
+    const handle: IntersectionObserverCallback = (entries) => {
+      let best: { page: number; ratio: number } | null = null;
+      for (const entry of entries) {
+        const id = (entry.target as HTMLElement).id; // pdf-page-N
+        const page = Number(id.replace('pdf-page-', ''));
+        const ratio = entry.intersectionRatio;
+        if (!best || ratio > best.ratio) best = { page, ratio };
+      }
+      if (best && best.page !== pageNumber) {
+        setPageNumber(best.page);
+      }
+    };
+    const observer = new IntersectionObserver(handle, options);
+    for (let i = 1; i <= numPages; i += 1) {
+      const el = document.getElementById(`pdf-page-${i}`);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, [isContinuous, numPages, pageNumber]);
 
   return (
     <div className="fixed inset-0 z-50 bg-background">
@@ -356,7 +385,7 @@ export const PdfReader: FC<PdfReaderProps> = ({
             onClick={() => setZoom(1)}
             title="Fit to width"
           >
-            100%
+            {Math.round(zoom * 100)}%
           </Button>
           <Button
             variant="outline"
