@@ -50,6 +50,12 @@ app.use(
 
 app.use('/api', routes);
 
+app.get('/healthz', (req: Request, res: Response) => {
+  res
+    .status(200)
+    .json({ status: 'ok', uptime: process.uptime(), timestamp: Date.now() });
+});
+
 app.use(updateMetrics);
 
 app.all('*', (req: Request, res: Response) => {

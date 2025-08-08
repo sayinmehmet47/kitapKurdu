@@ -1,7 +1,15 @@
-import { Request, Response } from 'express';
+import { Request, Response, CookieOptions } from 'express';
 import { logoutUser, registerUser } from '../services/user';
 import { CustomError } from '../errors/custom-error';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt.utils';
+
+// Base cookie options for auth cookies (cross-site friendly in production)
+const cookieBaseOptions: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  path: '/',
+};
 
 // Login controller using Passport Local Strategy
 export const loginController = async (req: Request, res: Response) => {
@@ -13,16 +21,12 @@ export const loginController = async (req: Request, res: Response) => {
     const refreshToken = generateRefreshToken(user);
 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      ...cookieBaseOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      ...cookieBaseOptions,
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
@@ -116,19 +120,9 @@ export const logoutController = async (req: Request, res: Response) => {
 
     await logoutUser(userId);
 
-    res.clearCookie('accessToken', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-    });
+    res.clearCookie('accessToken', cookieBaseOptions);
 
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-    });
+    res.clearCookie('refreshToken', cookieBaseOptions);
 
     res.status(200).json({
       success: true,
@@ -160,9 +154,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
     const newAccessToken = generateAccessToken(user);
 
     res.cookie('accessToken', newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      ...cookieBaseOptions,
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 

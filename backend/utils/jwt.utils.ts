@@ -26,13 +26,4 @@ const verifyAccessToken = (token: string) => {
   return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY!);
 };
 
-const verifyRefreshToken = (token: string) => {
-  return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET_KEY!);
-};
-
-export {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyAccessToken,
-  verifyRefreshToken,
-};
+export { generateAccessToken, generateRefreshToken, verifyAccessToken };

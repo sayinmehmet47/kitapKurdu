@@ -4,9 +4,6 @@ import { NextFunction, Request, Response } from 'express';
 // JWT authentication middleware using Passport
 export const auth = passport.authenticate('jwt', { session: false });
 
-// Local authentication middleware for login using Passport
-export const localAuth = passport.authenticate('local', { session: false });
-
 // Refresh token authentication middleware using Passport
 export const refreshTokenAuth = passport.authenticate('refresh-token', {
   session: false,

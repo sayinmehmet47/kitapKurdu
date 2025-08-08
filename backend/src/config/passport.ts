@@ -9,7 +9,6 @@ import passport from 'passport';
 import { Request } from 'express';
 import { User } from '../../models/User';
 import { comparePassword } from '../../utils/bcrypt.util';
-import { verifyRefreshToken } from '../../utils/jwt.utils';
 
 const cookieExtractor = (req: Request): string | null => {
   let token = null;
@@ -23,10 +22,6 @@ const refreshTokenExtractor = (req: Request): string | null => {
   let token = null;
   if (req && req.cookies) {
     token = req.cookies['refreshToken'];
-  }
-  // Also check body for refresh token (for API calls)
-  if (!token && req.body?.refreshToken) {
-    token = req.body.refreshToken;
   }
   return token;
 };
@@ -118,9 +113,10 @@ passport.use(
         process.env.GOOGLE_CLIENT_SECRET || 'YOUR_GOOGLE_CLIENT_SECRET',
 
       callbackURL:
-        process.env.NODE_ENV === 'production'
-          ? `${process.env.CLIENT_URL}/api/user/auth/google/callback`
-          : '/api/user/auth/google/callback',
+        process.env.GOOGLE_CALLBACK_URL ||
+        (process.env.NODE_ENV === 'production'
+          ? `${process.env.SERVER_URL}/api/user/auth/google/callback`
+          : 'http://localhost:5000/api/user/auth/google/callback'),
       scope: ['profile', 'email'],
     },
     async (accessToken, refreshToken, profile, done) => {

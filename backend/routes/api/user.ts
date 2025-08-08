@@ -1,11 +1,6 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, CookieOptions } from 'express';
 import { body } from 'express-validator';
-import {
-  auth,
-  localAuth,
-  refreshTokenAuth,
-  handlePassportAuth,
-} from '../../middleware/auth';
+import { auth, handlePassportAuth } from '../../middleware/auth';
 import { validateRequest } from '../../middleware/validate-request';
 import passport from 'passport';
 import {
@@ -77,10 +72,13 @@ router.get(
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    const cookieOptions = {
+    const cookieOptions: CookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+        | 'lax'
+        | 'strict'
+        | 'none',
       path: '/',
     };
 

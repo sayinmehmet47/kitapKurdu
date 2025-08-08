@@ -6,12 +6,14 @@ import { app } from './app';
 import { DatabaseConnectionError } from './errors/database-connection-error';
 import { myCronJob } from './cronJob';
 import { checkEnvVariables } from './checkvariables';
-import { logger } from './logger';
-import { updateCategories } from './services/book';
 
 const start = async () => {
-  if (!process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET must be defined');
+  // Ensure both access and refresh token secrets exist
+  if (!process.env.ACCESS_TOKEN_SECRET_KEY) {
+    throw new Error('ACCESS_TOKEN_SECRET_KEY must be defined');
+  }
+  if (!process.env.REFRESH_TOKEN_SECRET_KEY) {
+    throw new Error('REFRESH_TOKEN_SECRET_KEY must be defined');
   }
 
   if (!process.env.MONGO_URI) {

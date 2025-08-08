@@ -1,0 +1,20 @@
+name: Keep backend warm
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # every 5 minutes (UTC)
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        env:
+          HEALTH_URL: https://kitapkurdu.onrender.com/healthz
+        run: |
+          echo "Pinging $HEALTH_URL"
+          # Retry a few times; fail if not 200/204
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --retry 3 --retry-delay 5 --max-time 10 "$HEALTH_URL")
+          echo "HTTP $code"
+          echo "$code" | grep -qE '^(200|204)$'
