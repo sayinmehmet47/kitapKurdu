@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui';
 import { useBookPreview } from './hooks/useBookPreview';
+import { Helmet } from 'react-helmet-async';
 import {
   BookReader,
   BookCover,
@@ -69,6 +70,21 @@ const BookPreviewPage: React.FC = () => {
   // Main Book Details Page
   return (
     <Layout>
+      {book && (
+        <Helmet>
+          <title>{`${book.name} | Book-Worm`}</title>
+          <meta name="description" content={book.description} />
+          <meta property="og:title" content={`${book.name} | Book-Worm`} />
+          <meta property="og:description" content={book.description} />
+          <meta property="og:image" content={bookCoverUrl} />
+          <meta property="og:type" content="article" />
+          <meta property="og:url" content={window.location.href} />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={`${book.name} | Book-Worm`} />
+          <meta name="twitter:description" content={book.description} />
+          <meta name="twitter:image" content={bookCoverUrl} />
+        </Helmet>
+      )}
       <div className="min-h-screen bg-gray-50/30 dark:bg-gray-900/30">
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           {/* Back Button */}

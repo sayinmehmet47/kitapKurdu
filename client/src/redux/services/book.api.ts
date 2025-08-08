@@ -3,12 +3,24 @@ import { commonApi } from '../common.api';
 
 export const bookApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
-    fetchAllBooks: build.query<BookModel, { page: number; language: string }>({
-      query: ({ page, language }) => ({
+    fetchAllBooks: build.query<
+      BookModel,
+      {
+        page: number;
+        language?: string;
+        category?: string; // comma-separated
+        fileType?: 'pdf' | 'epub' | '' | string;
+        sort?: 'dateDesc' | 'dateAsc' | 'nameAsc' | 'nameDesc' | string;
+      }
+    >({
+      query: ({ page, language, category, fileType, sort }) => ({
         url: `/books/allBooks`,
         params: {
           page,
           language,
+          category,
+          fileType,
+          sort,
         },
       }),
       transformResponse: (response: any) => {

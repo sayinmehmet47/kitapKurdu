@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { useGetBookByIdQuery } from '@/redux/services/book.api';
 import { downloadBook } from '@/helpers/downloadBook';
+import { shareLink } from '@/helpers/shareLink';
 
 export const useBookPreview = () => {
   const { bookId } = useParams<{ bookId: string }>();
@@ -18,9 +19,9 @@ export const useBookPreview = () => {
 
   const { data: book, isLoading, isError } = useGetBookByIdQuery(bookId);
 
-  const fileType = book?.url
-    ? book.url.split('.').pop()?.toLowerCase() || ''
-    : '';
+  const fileType = useMemo(() => {
+    return book?.url ? book.url.split('.').pop()?.toLowerCase() || '' : '';
+  }, [book?.url]);
 
   const handleDownload = () => {
     if (book?.url && book?.name) {
@@ -30,16 +31,14 @@ export const useBookPreview = () => {
   };
 
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: book?.name,
-        text: `Check out this book: ${book?.name}`,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copied to clipboard');
-    }
+    if (!book) return;
+    const origin = window.location.origin;
+    const url = `${origin}/og/book/${book._id}`;
+    shareLink({
+      title: book.name,
+      text: book.description || `Check out this book: ${book.name}`,
+      url,
+    });
   };
 
   const handleStartReading = () => {

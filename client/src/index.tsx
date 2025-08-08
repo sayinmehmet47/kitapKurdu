@@ -18,54 +18,57 @@ import { PrivateRoute } from './components/privateRoute';
 import BookPreviewPage from './pages/BookPreview';
 import { BookEditPage } from './pages/BookEditPage';
 import { ContactUs } from './pages/ContactPage';
+import { HelmetProvider } from 'react-helmet-async';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
 root.render(
-  <Provider store={store}>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<AuthPage />} />
-        <Route path="/register" element={<AuthPage />} />
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="/verify-email" element={<EmailVerificationPage />} />
-        <Route path="/recently-added" element={<RecentlyAdded />} />
-        <Route path="/all-books" element={<AllBooks />} />
-        <Route path="book/:bookId" element={<BookPreviewPage />} />
-        <Route path="book/edit/:bookId" element={<BookEditPage />} />
-        <Route path="contact-us" element={<ContactUs />} />
-        <Route
-          path="/profile"
-          element={
-            <PrivateRoute>
-              <Layout>
-                <UserProfile />
-              </Layout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="upload"
-          element={
-            <PrivateRoute>
-              <UploadNewBook />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="shelf-space"
-          element={
-            <PrivateRoute>
-              <ShelfSpace />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
-  </Provider>
+  <HelmetProvider>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/verify-email" element={<EmailVerificationPage />} />
+          <Route path="/recently-added" element={<RecentlyAdded />} />
+          <Route path="/all-books" element={<AllBooks />} />
+          <Route path="book/:bookId" element={<BookPreviewPage />} />
+          <Route path="book/edit/:bookId" element={<BookEditPage />} />
+          <Route path="contact-us" element={<ContactUs />} />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <UserProfile />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="upload"
+            element={
+              <PrivateRoute>
+                <UploadNewBook />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="shelf-space"
+            element={
+              <PrivateRoute>
+                <ShelfSpace />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </Provider>
+  </HelmetProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
