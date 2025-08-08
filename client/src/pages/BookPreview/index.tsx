@@ -10,6 +10,7 @@ import {
   BookDetails,
   BookMetadata,
   BookDescription,
+  Reviews,
   AdminActions,
   ErrorState,
   LoadingState,
@@ -112,6 +113,9 @@ const BookPreviewPage: React.FC = () => {
               <BookMetadata book={book} />
 
               <BookDescription description={book.description} />
+
+              {/* Reviews */}
+              <Reviews bookId={book._id} />
 
               <AdminActions isAdmin={isAdmin} onEditBook={handleEditBook} />
             </div>

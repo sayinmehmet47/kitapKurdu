@@ -36,9 +36,9 @@ root.render(
           <Route path="/verify-email" element={<EmailVerificationPage />} />
           <Route path="/recently-added" element={<RecentlyAdded />} />
           <Route path="/all-books" element={<AllBooks />} />
-          <Route path="book/:bookId" element={<BookPreviewPage />} />
-          <Route path="book/edit/:bookId" element={<BookEditPage />} />
-          <Route path="contact-us" element={<ContactUs />} />
+          <Route path="/book/:bookId" element={<BookPreviewPage />} />
+          <Route path="/book/edit/:bookId" element={<BookEditPage />} />
+          <Route path="/contact-us" element={<ContactUs />} />
           <Route
             path="/profile"
             element={
@@ -50,7 +50,7 @@ root.render(
             }
           />
           <Route
-            path="upload"
+            path="/upload"
             element={
               <PrivateRoute>
                 <UploadNewBook />
@@ -58,7 +58,7 @@ root.render(
             }
           />
           <Route
-            path="shelf-space"
+            path="/shelf-space"
             element={
               <PrivateRoute>
                 <ShelfSpace />

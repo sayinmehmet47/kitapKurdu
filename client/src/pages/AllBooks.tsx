@@ -183,6 +183,8 @@ const AllBooks = () => {
                 <SelectItem value="dateAsc">Oldest</SelectItem>
                 <SelectItem value="nameAsc">Title A–Z</SelectItem>
                 <SelectItem value="nameDesc">Title Z–A</SelectItem>
+                <SelectItem value="ratingDesc">Top rated</SelectItem>
+                <SelectItem value="ratingAsc">Lowest rated</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

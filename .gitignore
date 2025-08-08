@@ -12,6 +12,7 @@ node_modules/
 ./backend/combined.log
 ./backend/error.log
 client/build/
+backend/dist/
 
 # Log files
 *.log

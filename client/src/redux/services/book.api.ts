@@ -13,20 +13,39 @@ export const bookApi = commonApi.injectEndpoints({
         sort?: 'dateDesc' | 'dateAsc' | 'nameAsc' | 'nameDesc' | string;
       }
     >({
-      query: ({ page, language, category, fileType, sort }) => ({
-        url: `/books/allBooks`,
-        params: {
-          page,
-          language,
-          category,
-          fileType,
-          sort,
-        },
-      }),
+      query: ({ page, language, category, fileType, sort }) => {
+        const params: Record<string, any> = { page };
+        if (language && language !== 'all') params.language = language;
+        if (category) params.category = category;
+        if (fileType && fileType !== 'all') params.fileType = fileType;
+        if (sort) params.sort = sort;
+        return {
+          url: `/books/allBooks`,
+          params,
+        };
+      },
       transformResponse: (response: any) => {
         return response.data || response;
       },
       providesTags: (result) => [{ type: 'Book', id: 'List' }],
+    }),
+    rateBook: build.mutation<
+      any,
+      { bookId: string; rating: number; review?: string }
+    >({
+      query: (body) => ({ url: `/ratings`, method: 'POST', body }),
+      invalidatesTags: (result, error, { bookId }) => [
+        { type: 'Book', id: bookId },
+      ],
+    }),
+    getBookRatingSummary: build.query<
+      { success: boolean; data: { avgRating: number; count: number } },
+      string
+    >({
+      query: (bookId) => ({ url: `/ratings/summary/${bookId}` }),
+    }),
+    getBookReviews: build.query<any, string>({
+      query: (bookId) => ({ url: `/ratings/reviews/${bookId}` }),
     }),
     deleteBook: build.mutation<BookModel, { id: string }>({
       query: ({ id }) => ({
@@ -171,4 +190,7 @@ export const {
   useLazyFetchRecentlyAddedQuery,
   useGetBookByIdQuery,
   useUpdateBookMutation,
+  useRateBookMutation,
+  useGetBookRatingSummaryQuery,
+  useGetBookReviewsQuery,
 } = bookApi;

@@ -3,7 +3,9 @@ import { Request } from 'express';
 import { Books } from '../../models/Books';
 import { BooksData } from '../../routes/api/books.types';
 import { apiResponse } from '../../utils/apiResponse.utils';
-import escapeStringRegexp from 'escape-string-regexp';
+function escapeRegExp(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 const getAllBooksService = async (req: Request) => {
   try {
@@ -27,7 +29,7 @@ const getAllBooksService = async (req: Request) => {
         .filter(Boolean);
       if (categories.length > 0) {
         const regexes = categories.map(
-          (c) => new RegExp(`${escapeStringRegexp(c)}`, 'i')
+          (c) => new RegExp(`${escapeRegExp(c)}`, 'i')
         );
         query.category = { $in: regexes };
       }
@@ -46,8 +48,47 @@ const getAllBooksService = async (req: Request) => {
     const sort = sortMap[sortParam] || sortMap.dateDesc;
 
     const total = await Books.countDocuments(query);
-    const results: BooksData = {
-      results: await Books.find(
+
+    let books: any[] = [];
+    if (sortParam === 'ratingDesc' || sortParam === 'ratingAsc') {
+      const ratingSort = sortParam === 'ratingAsc' ? 1 : -1;
+      const pipeline: any[] = [
+        { $match: query },
+        {
+          $lookup: {
+            from: 'ratings',
+            localField: '_id',
+            foreignField: 'bookId',
+            as: 'ratings',
+          },
+        },
+        { $addFields: { avgRating: { $avg: '$ratings.rating' } } },
+        { $sort: { avgRating: ratingSort, date: -1 } },
+        { $skip: startIndex },
+        { $limit: limit },
+        {
+          $project: {
+            name: 1,
+            path: 1,
+            size: 1,
+            date: 1,
+            url: 1,
+            uploader: 1,
+            category: 1,
+            language: 1,
+            description: 1,
+            imageLinks: 1,
+          },
+        },
+      ];
+      books = await Books.aggregate(pipeline);
+      // populate uploader after aggregation
+      await Books.populate(books, {
+        path: 'uploader',
+        select: 'username email',
+      });
+    } else {
+      books = await Books.find(
         query,
         'name path size date url uploader category language description imageLinks'
       )
@@ -55,7 +96,11 @@ const getAllBooksService = async (req: Request) => {
         .sort(sort)
         .skip(startIndex)
         .limit(limit)
-        .lean(),
+        .lean();
+    }
+
+    const results: BooksData = {
+      results: books as any,
       total: total,
       page: page,
       next: total > startIndex + limit ? { page: page + 1 } : undefined,
