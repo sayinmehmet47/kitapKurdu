@@ -11,11 +11,11 @@ import { User } from '../../models/User';
 import { comparePassword } from '../../utils/bcrypt.util';
 
 const cookieExtractor = (req: Request): string | null => {
-  let token = null;
-  if (req && req.cookies) {
-    token = req.cookies['accessToken'];
-  }
-  return token;
+  if (req?.cookies?.['accessToken']) return req.cookies['accessToken'];
+  // Fallback: allow access token from query/hash relay (e.g., /auth?at=...)
+  // Note: only used in immediate redirect flow; regular auth uses cookies
+  const atParam = (req.query?.at as string) || undefined;
+  return atParam || null;
 };
 
 const refreshTokenExtractor = (req: Request): string | null => {
