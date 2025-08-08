@@ -88,6 +88,7 @@ function App() {
           const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
           const at = hash.get('at');
           if (at) {
+            sessionStorage.setItem('auth_at', at);
             // Send as Bearer for initial auth load (server still authenticates via cookie when available)
             // We call the same endpoint via fetch here to set Redux state quickly for Safari users
             await fetch(`${apiBaseUrl}/user/auth`, {
@@ -99,6 +100,8 @@ function App() {
         } catch {}
         // Remove the query param without reloading
         navigate({ pathname: location.pathname }, { replace: true });
+        // Clear temporary token shortly after navigation
+        setTimeout(() => sessionStorage.removeItem('auth_at'), 2000);
       })();
     }
   }, [location.search, location.pathname, dispatch, navigate]);
