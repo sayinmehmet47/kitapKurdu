@@ -149,7 +149,7 @@ const AuthPage: FC = () => {
   const handleGoogleLogin = () => {
     const apiBaseUrl =
       process.env.REACT_APP_ENVIRONMENT === 'production'
-        ? '/api' // Use relative path in production to go through Vercel proxy
+        ? process.env.REACT_APP_PROD_API // Use absolute backend URL so Set-Cookie binds to backend domain
         : process.env.REACT_APP_ENVIRONMENT === 'development'
         ? process.env.REACT_APP_DEV_API
         : process.env.REACT_APP_LOCAL_API;

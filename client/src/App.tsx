@@ -1,10 +1,12 @@
 import ReactGA from 'react-ga4';
 import { Search } from './components/Search';
 import Layout from './components/Layout';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { apiBaseUrl } from './redux/common.api';
+import { useAppDispatch } from './redux/store';
+import { loadUserThunk } from './redux/authSlice';
 
 ReactGA.initialize('G-R54SYJD2B8');
 const publicVapidKey =
@@ -68,10 +70,27 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     ReactGA.send('pageview');
   }, [location]);
+
+  // After Google OAuth redirect (?auth=success), load user from backend and clean URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const auth = params.get('auth');
+    if (auth === 'success') {
+      (async () => {
+        try {
+          await dispatch(loadUserThunk()).unwrap();
+        } catch {}
+        // Remove the query param without reloading
+        navigate({ pathname: location.pathname }, { replace: true });
+      })();
+    }
+  }, [location.search, location.pathname, dispatch, navigate]);
 
   return (
     <Layout>
