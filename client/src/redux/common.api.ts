@@ -1,12 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 
-// In production, ALWAYS hit the backend domain directly so cookies are sent
-const prodApi =
-  (process.env.REACT_APP_PROD_API as string | undefined) ||
-  'https://kitapkurdu.onrender.com/api';
-
-export const apiBaseUrl =
-  process.env.NODE_ENV === 'production' ? prodApi : '/api';
+// In production, use Vercel rewrite to proxy to backend as same-origin to satisfy Safari
+export const apiBaseUrl = '/api';
 
 export const commonApi = createApi({
   reducerPath: 'api',

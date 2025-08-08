@@ -84,6 +84,17 @@ function App() {
     if (auth === 'success') {
       (async () => {
         try {
+          // Safari fallback: if hash contains access token, keep it in memory for initial call
+          const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+          const at = hash.get('at');
+          if (at) {
+            // Send as Bearer for initial auth load (server still authenticates via cookie when available)
+            // We call the same endpoint via fetch here to set Redux state quickly for Safari users
+            await fetch(`${apiBaseUrl}/user/auth`, {
+              credentials: 'include',
+              headers: at ? { Authorization: `Bearer ${at}` } : undefined,
+            });
+          }
           await dispatch(loadUserThunk()).unwrap();
         } catch {}
         // Remove the query param without reloading
