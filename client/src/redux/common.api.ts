@@ -1,8 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react';
 
-// Use absolute API URL in production to ensure auth cookies (onrender.com) are sent by the browser
+// In production, ALWAYS hit the backend domain directly so cookies are sent
+const prodApi =
+  (process.env.REACT_APP_PROD_API as string | undefined) ||
+  'https://kitapkurdu.onrender.com/api';
+
 export const apiBaseUrl =
-  (typeof process !== 'undefined' && process.env.REACT_APP_PROD_API) || '/api';
+  process.env.NODE_ENV === 'production' ? prodApi : '/api';
 
 export const commonApi = createApi({
   reducerPath: 'api',

@@ -80,6 +80,8 @@ router.get(
         | 'strict'
         | 'none',
       path: '/',
+      partitioned: process.env.NODE_ENV === 'production' ? true : undefined,
+      domain: process.env.COOKIE_DOMAIN || undefined,
     };
 
     res.cookie('refreshToken', refreshToken, {
