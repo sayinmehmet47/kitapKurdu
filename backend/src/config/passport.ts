@@ -19,8 +19,23 @@ const cookieExtractor = (req: Request): string | null => {
 };
 
 const refreshTokenExtractor = (req: Request): string | null => {
-  if (req?.cookies?.['refreshToken']) return req.cookies['refreshToken'];
+  console.log('[REFRESH TOKEN EXTRACTOR] Extracting token from:', {
+    hasCookie: !!req?.cookies?.['refreshToken'],
+    hasQueryParam: !!req.query?.rt,
+    cookieKeys: Object.keys(req?.cookies || {}),
+    queryKeys: Object.keys(req?.query || {})
+  });
+  
+  if (req?.cookies?.['refreshToken']) {
+    console.log('[REFRESH TOKEN EXTRACTOR] Found refresh token in cookies');
+    return req.cookies['refreshToken'];
+  }
   const rtParam = (req.query?.rt as string) || undefined; // optional fallback
+  if (rtParam) {
+    console.log('[REFRESH TOKEN EXTRACTOR] Found refresh token in query params');
+  } else {
+    console.log('[REFRESH TOKEN EXTRACTOR] No refresh token found in cookies or query params');
+  }
   return rtParam || null;
 };
 
@@ -103,12 +118,17 @@ passport.use(
     },
     async (jwt_payload, done) => {
       try {
+        console.log('[REFRESH TOKEN STRATEGY] JWT payload received:', { userId: jwt_payload._id, exp: jwt_payload.exp });
+        
         const user = await User.findById(jwt_payload._id);
         if (user) {
+          console.log('[REFRESH TOKEN STRATEGY] User found in database:', { userId: user._id, username: user.username });
           return done(null, user);
         }
+        console.log('[REFRESH TOKEN STRATEGY] User not found in database for ID:', jwt_payload._id);
         return done(null, false, { message: 'Invalid refresh token' });
       } catch (error) {
+        console.error('[REFRESH TOKEN STRATEGY] Database error:', error);
         return done(error, false);
       }
     }
