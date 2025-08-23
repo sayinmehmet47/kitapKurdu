@@ -5,8 +5,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { apiBaseUrl } from './redux/common.api';
-import { useAppDispatch } from './redux/store';
-import { loadUserThunk } from './redux/authSlice';
+import { useAppDispatch, useAppSelector } from './redux/store';
+import { loadUserThunk, refreshTokenThunk } from './redux/authSlice';
 
 ReactGA.initialize('G-R54SYJD2B8');
 const publicVapidKey =
@@ -72,10 +72,25 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { isLoggedIn } = useAppSelector(state => state.authSlice);
 
   useEffect(() => {
     ReactGA.send('pageview');
   }, [location]);
+
+  // Periodic token refresh for logged-in users (every 10 minutes)
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    
+    const interval = setInterval(() => {
+      dispatch(refreshTokenThunk()).catch(() => {
+        // Token refresh failed, user will be logged out by the thunk
+        console.log('Token refresh failed');
+      });
+    }, 10 * 60 * 1000); // 10 minutes
+    
+    return () => clearInterval(interval);
+  }, [isLoggedIn, dispatch]);
 
   // After Google OAuth redirect (?auth=success), load user from backend and clean URL
   useEffect(() => {
@@ -84,11 +99,16 @@ function App() {
     if (auth === 'success') {
       (async () => {
         try {
-          // Safari fallback: if hash contains access token, keep it in memory for initial call
+          // Safari fallback: if hash contains access token and refresh token, keep them in memory
           const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
           const at = hash.get('at');
+          const rt = hash.get('rt');
           if (at) {
             sessionStorage.setItem('auth_at', at);
+            // Store refresh token for browsers that block 3rd party cookies
+            if (rt) {
+              sessionStorage.setItem('auth_rt', rt);
+            }
             // Send as Bearer for initial auth load (server still authenticates via cookie when available)
             // We call the same endpoint via fetch here to set Redux state quickly for Safari users
             await fetch(`${apiBaseUrl}/user/auth`, {
@@ -100,8 +120,14 @@ function App() {
         } catch {}
         // Remove the query param without reloading
         navigate({ pathname: location.pathname }, { replace: true });
-        // Clear temporary token shortly after navigation
-        setTimeout(() => sessionStorage.removeItem('auth_at'), 2000);
+        // Clear temporary tokens shortly after navigation only if cookies are working
+        setTimeout(() => {
+          // Only clear if we're not relying on sessionStorage for auth (i.e., cookies work)
+          if (document.cookie.split(';').some(cookie => cookie.trim().startsWith('accessToken='))) {
+            sessionStorage.removeItem('auth_at');
+            sessionStorage.removeItem('auth_rt');
+          }
+        }, 2000);
       })();
     }
   }, [location.search, location.pathname, dispatch, navigate]);

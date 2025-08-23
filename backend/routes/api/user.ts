@@ -94,10 +94,10 @@ router.get(
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
 
-    // Include access token in URL hash as a fallback for browsers that block 3P cookies (e.g., Safari)
+    // Include both tokens in URL hash as a fallback for browsers that block 3P cookies (e.g., Safari)
     const redirectUrl = `${clientUrl}?auth=success#at=${encodeURIComponent(
       accessToken
-    )}`;
+    )}&rt=${encodeURIComponent(refreshToken)}`;
 
     res.redirect(redirectUrl);
   }

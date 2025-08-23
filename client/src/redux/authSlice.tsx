@@ -132,6 +132,30 @@ export const registerThunk = createAsyncThunk(
   }
 );
 
+export const refreshTokenThunk = createAsyncThunk(
+  'authSlice/refreshToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      const rt = 
+        typeof window !== 'undefined' 
+          ? sessionStorage.getItem('auth_rt') 
+          : null;
+      
+      const url = rt 
+        ? `${apiBaseUrl}/user/refresh-token?rt=${encodeURIComponent(rt)}`
+        : `${apiBaseUrl}/user/refresh-token`;
+      
+      const res = await axios.post(url, {}, {
+        withCredentials: true,
+      });
+      return res.data;
+    } catch (error) {
+      const err = error as AxiosError;
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const initialState: AuthState = {
   isLoggedIn: false,
   loginSuccess: false,
@@ -208,6 +232,11 @@ export const authSlice = createSlice({
             isAdmin: false,
           },
         };
+        // Clear stored tokens
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('auth_at');
+          sessionStorage.removeItem('auth_rt');
+        }
       })
       .addCase(logoutThunk.rejected, (state, action) => {
         state.error = true;
@@ -256,6 +285,28 @@ export const authSlice = createSlice({
         state.errorMessage = action.payload as string;
         state.isLoading = false;
         state.isAuthLoaded = true; // Auth check completed
+      })
+      .addCase(refreshTokenThunk.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isLoggedIn = true;
+        state.isAuthLoaded = true;
+      })
+      .addCase(refreshTokenThunk.rejected, (state) => {
+        state.isLoggedIn = false;
+        state.isAuthLoaded = true;
+        state.user = {
+          user: {
+            id: '',
+            username: '',
+            email: '',
+            isAdmin: false,
+          },
+        };
+        // Clear stored tokens on refresh failure
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('auth_at');
+          sessionStorage.removeItem('auth_rt');
+        }
       });
   },
 });
