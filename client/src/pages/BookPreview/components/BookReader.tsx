@@ -3,7 +3,7 @@ import { ArrowLeft, Download, FileText } from 'lucide-react';
 import { ReactReader } from 'react-reader';
 import { Button } from '@/components/ui';
 import { downloadBook } from '@/helpers/downloadBook';
-import { PdfReader } from './PdfReader';
+import { StablePdfReader } from './StablePdfReader';
 
 interface BookReaderProps {
   bookUrl: string;
@@ -25,7 +25,7 @@ export const BookReader: React.FC<BookReaderProps> = ({
   };
 
   if (fileType === 'pdf') {
-    return <PdfReader bookUrl={bookUrl} bookName={bookName} onBack={onBack} />;
+    return <StablePdfReader bookUrl={bookUrl} bookName={bookName} onBack={onBack} />;
   }
 
   if (fileType === 'epub') {
