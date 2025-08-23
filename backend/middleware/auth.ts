@@ -23,7 +23,9 @@ export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
 // Helper middleware to handle Passport authentication with custom responses
 export const handlePassportAuth = (strategy: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    console.log(`[PASSPORT AUTH] Starting ${strategy} authentication`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[PASSPORT AUTH] Starting ${strategy} authentication`);
+    }
     
     passport.authenticate(
       strategy,
@@ -41,14 +43,18 @@ export const handlePassportAuth = (strategy: string) => {
         if (!user) {
           const message = info?.message || 'Authentication failed';
           const status = info?.status || 401;
-          console.log(`[PASSPORT AUTH] ${strategy} failed:`, { message, status, info });
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(`[PASSPORT AUTH] ${strategy} failed:`, { message, status, info });
+          }
           return res.status(status).json({
             success: false,
             message,
           });
         }
 
-        console.log(`[PASSPORT AUTH] ${strategy} success for user:`, { userId: user._id, username: user.username });
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`[PASSPORT AUTH] ${strategy} success for user:`, { userId: user._id, username: user.username });
+        }
         req.user = user;
         next();
       }

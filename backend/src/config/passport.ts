@@ -19,22 +19,27 @@ const cookieExtractor = (req: Request): string | null => {
 };
 
 const refreshTokenExtractor = (req: Request): string | null => {
-  console.log('[REFRESH TOKEN EXTRACTOR] Extracting token from:', {
-    hasCookie: !!req?.cookies?.['refreshToken'],
-    hasQueryParam: !!req.query?.rt,
-    cookieKeys: Object.keys(req?.cookies || {}),
-    queryKeys: Object.keys(req?.query || {})
-  });
+  // Debug logging only in development
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[REFRESH TOKEN EXTRACTOR] Extracting token from:', {
+      hasCookie: !!req?.cookies?.['refreshToken'],
+      hasQueryParam: !!req.query?.rt
+    });
+  }
   
   if (req?.cookies?.['refreshToken']) {
-    console.log('[REFRESH TOKEN EXTRACTOR] Found refresh token in cookies');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[REFRESH TOKEN EXTRACTOR] Found refresh token in cookies');
+    }
     return req.cookies['refreshToken'];
   }
   const rtParam = (req.query?.rt as string) || undefined; // optional fallback
-  if (rtParam) {
-    console.log('[REFRESH TOKEN EXTRACTOR] Found refresh token in query params');
-  } else {
-    console.log('[REFRESH TOKEN EXTRACTOR] No refresh token found in cookies or query params');
+  if (process.env.NODE_ENV !== 'production') {
+    if (rtParam) {
+      console.log('[REFRESH TOKEN EXTRACTOR] Found refresh token in query params');
+    } else {
+      console.log('[REFRESH TOKEN EXTRACTOR] No refresh token found');
+    }
   }
   return rtParam || null;
 };
@@ -60,11 +65,24 @@ const opts: StrategyOptions = {
 passport.use(
   new JwtStrategy(opts, async (jwt_payload, done) => {
     try {
-      const user = await User.findById(jwt_payload._id);
-      if (user) {
-        return done(null, user);
-      }
-      return done(null, false);
+      // For stateless JWT, trust the verified payload instead of DB lookup
+      // The JWT is already verified by passport-jwt, so payload is trusted
+      const user = {
+        _id: jwt_payload._id,
+        username: jwt_payload.username,
+        email: jwt_payload.email,
+        isAdmin: jwt_payload.isAdmin || false,
+      };
+      
+      return done(null, user);
+      
+      // Note: Only uncomment below if you need fresh user data from DB
+      // This adds latency to every request but ensures data is current
+      // const dbUser = await User.findById(jwt_payload._id);
+      // if (dbUser) {
+      //   return done(null, dbUser);
+      // }
+      // return done(null, false);
     } catch (error) {
       return done(error, false);
     }
@@ -118,14 +136,20 @@ passport.use(
     },
     async (jwt_payload, done) => {
       try {
-        console.log('[REFRESH TOKEN STRATEGY] JWT payload received:', { userId: jwt_payload._id, exp: jwt_payload.exp });
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('[REFRESH TOKEN STRATEGY] JWT payload received:', { userId: jwt_payload._id, exp: jwt_payload.exp });
+        }
         
         const user = await User.findById(jwt_payload._id);
         if (user) {
-          console.log('[REFRESH TOKEN STRATEGY] User found in database:', { userId: user._id, username: user.username });
+          if (process.env.NODE_ENV !== 'production') {
+            console.log('[REFRESH TOKEN STRATEGY] User found in database:', { userId: user._id, username: user.username });
+          }
           return done(null, user);
         }
-        console.log('[REFRESH TOKEN STRATEGY] User not found in database for ID:', jwt_payload._id);
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('[REFRESH TOKEN STRATEGY] User not found in database for ID:', jwt_payload._id);
+        }
         return done(null, false, { message: 'Invalid refresh token' });
       } catch (error) {
         console.error('[REFRESH TOKEN STRATEGY] Database error:', error);
@@ -179,12 +203,7 @@ passport.use(
   )
 );
 
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((user: any, done) => {
-  done(null, user);
-});
+// Note: No session serialization needed for stateless JWT authentication
+// passport.serializeUser/deserializeUser are only required for session-based auth
 
 export default passport;
