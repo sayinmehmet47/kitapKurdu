@@ -197,13 +197,13 @@ export const Search = () => {
                       <TableHead className="font-semibold text-gray-900 dark:text-gray-100">
                         Book Details
                       </TableHead>
-                      <TableHead className="font-semibold text-gray-900 dark:text-gray-100">
+                      <TableHead className="font-semibold text-gray-900 dark:text-gray-100 hidden sm:table-cell">
                         Author
                       </TableHead>
-                      <TableHead className="font-semibold text-gray-900 dark:text-gray-100">
+                      <TableHead className="font-semibold text-gray-900 dark:text-gray-100 hidden md:table-cell">
                         Size
                       </TableHead>
-                      <TableHead className="font-semibold text-gray-900 dark:text-gray-100">
+                      <TableHead className="font-semibold text-gray-900 dark:text-gray-100 hidden md:table-cell">
                         Date Added
                       </TableHead>
                       <TableHead className="font-semibold text-gray-900 dark:text-gray-100">
@@ -217,7 +217,7 @@ export const Search = () => {
                         key={book._id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-900/50"
                       >
-                        <TableCell className="max-w-0 w-full">
+                        <TableCell>
                           <div className="flex items-center space-x-3">
                             <div className="flex-shrink-0">
                               <img
@@ -231,8 +231,8 @@ export const Search = () => {
                                 className="h-12 w-8 object-cover rounded"
                               />
                             </div>
-                            <div className="min-w-0 flex-1 overflow-hidden">
-                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px] md:max-w-none">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
                                 {book.name}
                               </p>
                               <div className="mt-1 flex flex-wrap gap-1 hidden md:flex">
@@ -264,22 +264,25 @@ export const Search = () => {
                                     </Badge>
                                   ))}
                               </div>
+                              <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 sm:hidden">
+                                {book.uploader?.username || 'Unknown'} • {formatFileSize(book.size)} • {formatDate(book.date)}
+                              </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden sm:table-cell">
                           <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                             <User className="h-4 w-4 mr-1" />
                             {book.uploader?.username || 'Unknown'}
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden md:table-cell">
                           <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                             <FileText className="h-4 w-4 mr-1" />
                             {formatFileSize(book.size)}
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden md:table-cell">
                           <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                             <Calendar className="h-4 w-4 mr-1" />
                             {formatDate(book.date)}
