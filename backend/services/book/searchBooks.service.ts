@@ -1,8 +1,23 @@
-// searchBooksService.ts
 import NodeCache from 'node-cache';
 import { Request } from 'express';
 import { Books } from '../../models/Books';
 const cache = new NodeCache();
+const normalizeTurkishText = (text: string): string => {
+  if (!text) return '';
+  
+  const escaped = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  
+  return escaped
+    .toLowerCase()
+    .replace(/[ıiİI]/gi, '[ıiİI]')
+    .replace(/[şs]/gi, '[şs]')  
+    .replace(/[ğg]/gi, '[ğg]')
+    .replace(/[üu]/gi, '[üu]')
+    .replace(/[öo]/gi, '[öo]')
+    .replace(/[çc]/gi, '[çc]')
+    .replace(/\\\s+/g, '\\s*')
+    .replace(/\s+/g, '\\s*');
+};
 
 const searchBooksService = async (req: Request) => {
   const cacheKey = JSON.stringify(req.query);
@@ -10,11 +25,31 @@ const searchBooksService = async (req: Request) => {
   if (cachedResult) {
     return cachedResult;
   }
+  
+  const searchTerm = req.query.name as string;
+  const normalizedSearch = normalizeTurkishText(searchTerm);
+  
   const query = {
-    name: {
-      $regex: req.query.name,
-      $options: 'i',
-    },
+    $or: [
+      {
+        name: {
+          $regex: normalizedSearch,
+          $options: 'i',
+        },
+      },
+      {
+        description: {
+          $regex: normalizedSearch,
+          $options: 'i',
+        },
+      },
+      {
+        category: {
+          $regex: normalizedSearch,
+          $options: 'i',
+        },
+      },
+    ],
   };
 
   const page = parseInt(String(req.query.page)) || 1;
@@ -28,6 +63,7 @@ const searchBooksService = async (req: Request) => {
         'name path size date url uploader category language description imageLinks'
       )
       .populate('uploader', 'username email')
+      .collation({ locale: 'tr', strength: 2 })
       .skip(startIndex)
       .limit(limit)
       .lean(),

@@ -4,6 +4,7 @@ export const schema = new mongoose.Schema(
   {
     name: {
       type: String,
+      index: true,
     },
     file: {
       type: String,
@@ -27,6 +28,7 @@ export const schema = new mongoose.Schema(
     },
     description: {
       type: String,
+      index: true,
     },
 
     imageLinks: {
@@ -46,6 +48,15 @@ export const schema = new mongoose.Schema(
   },
   { collection: 'ilkparti' }
 );
+
+schema.index({ 
+  name: 'text', 
+  description: 'text', 
+  category: 'text' 
+}, { 
+  default_language: 'turkish',
+  language_override: 'language'
+});
 
 export interface IBook extends Document {
   name: string;

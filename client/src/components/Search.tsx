@@ -149,6 +149,8 @@ export const Search = () => {
                         placeholder="Search for a book, author, or keyword..."
                         {...field}
                         className="h-12 text-lg"
+                        autoComplete="off"
+                        spellCheck="false"
                       />
                     </FormControl>
                   </FormItem>
