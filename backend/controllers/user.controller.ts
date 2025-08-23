@@ -202,6 +202,10 @@ export const refreshTokenController = async (req: Request, res: Response) => {
         email: user.email,
         isAdmin: user.isAdmin,
       },
+      // Include tokens in response for cross-domain fallback
+      tokens: {
+        accessToken: newAccessToken,
+      },
     });
   } catch (error) {
     console.error('[REFRESH TOKEN] Error in controller:', {

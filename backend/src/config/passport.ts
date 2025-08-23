@@ -11,40 +11,20 @@ import { User } from '../../models/User';
 import { comparePassword } from '../../utils/bcrypt.util';
 
 const cookieExtractor = (req: Request): string | null => {
-  if (req?.cookies?.['accessToken']) return req.cookies['accessToken'];
-  // Fallback: allow access token from query/hash relay (e.g., /auth?at=...)
-  // Note: only used in immediate redirect flow; regular auth uses cookies
-  const atParam = (req.query?.at as string) || undefined;
-  return atParam || null;
+  return req?.cookies?.['accessToken'] || null;
 };
 
 const refreshTokenExtractor = (req: Request): string | null => {
-  // Debug logging only in development
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('[REFRESH TOKEN EXTRACTOR] Extracting token from:', {
-      hasCookie: !!req?.cookies?.['refreshToken'],
-      hasQueryParam: !!req.query?.rt
-    });
-  }
-  
+  // Primary: Check cookies first
   if (req?.cookies?.['refreshToken']) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[REFRESH TOKEN EXTRACTOR] Found refresh token in cookies');
-    }
     return req.cookies['refreshToken'];
   }
-  const rtParam = (req.query?.rt as string) || undefined; // optional fallback
-  if (process.env.NODE_ENV !== 'production') {
-    if (rtParam) {
-      console.log('[REFRESH TOKEN EXTRACTOR] Found refresh token in query params');
-    } else {
-      console.log('[REFRESH TOKEN EXTRACTOR] No refresh token found');
-    }
-  }
+  
+  // Fallback: Query params (for cross-domain scenarios)
+  const rtParam = req.query?.rt as string;
   return rtParam || null;
 };
 
-// Also allow Authorization: Bearer <token> as a fallback (helps Safari flows)
 const bearerExtractor = (req: Request): string | null => {
   const authHeader = req.headers['authorization'];
   if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
@@ -53,12 +33,24 @@ const bearerExtractor = (req: Request): string | null => {
   return null;
 };
 
+// Validate JWT secrets 
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET_KEY;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET_KEY;
+
+if (!ACCESS_TOKEN_SECRET) {
+  throw new Error('ACCESS_TOKEN_SECRET_KEY environment variable is required');
+}
+
+if (!REFRESH_TOKEN_SECRET) {
+  throw new Error('REFRESH_TOKEN_SECRET_KEY environment variable is required');
+}
+
 const opts: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromExtractors([
     (req) => cookieExtractor(req as Request),
     (req) => bearerExtractor(req as Request),
   ]),
-  secretOrKey: process.env.ACCESS_TOKEN_SECRET_KEY || '',
+  secretOrKey: ACCESS_TOKEN_SECRET,
 };
 
 // JWT Strategy for access token authentication
@@ -132,7 +124,7 @@ passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: refreshTokenExtractor,
-      secretOrKey: process.env.REFRESH_TOKEN_SECRET_KEY || '',
+      secretOrKey: REFRESH_TOKEN_SECRET,
     },
     async (jwt_payload, done) => {
       try {

@@ -157,6 +157,12 @@ export const refreshTokenThunk = createAsyncThunk(
       const res = await axios.post(url, {}, {
         withCredentials: true,
       });
+      
+      // Store new access token in sessionStorage for cross-domain fallback
+      if (res.data.tokens?.accessToken && typeof window !== 'undefined') {
+        sessionStorage.setItem('auth_at', res.data.tokens.accessToken);
+      }
+      
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
