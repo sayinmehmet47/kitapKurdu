@@ -15,12 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   LoadingSpinner,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  BookFilters,
 } from '@/components';
 import { Pagination } from '@/components/ui/pagination';
 import { DownloadIcon, Edit, Eye, MoreHorizontal, Share2 } from 'lucide-react';
@@ -45,6 +40,7 @@ const AllBooks = () => {
     category: searchParams.get('category') || undefined,
     fileType: searchParams.get('fileType') || undefined,
     sort: searchParams.get('sort') || undefined,
+    search: searchParams.get('search') || undefined,
   });
 
   const { user, isLoggedIn } = useSelector(
@@ -87,40 +83,17 @@ const AllBooks = () => {
     shareLink({ title, text: `Check out this book: ${title}`, url });
   };
 
-  const handleLanguageChange = (value: string) => {
-    if (value === 'english') {
-      searchParams.set('language', 'english');
-    }
-    if (value === 'turkish') {
-      searchParams.set('language', 'turkish');
-    }
-    if (value === 'all') {
-      searchParams.delete('language');
-    }
+  const handleSearch = (query: string) => {
+    // Reset to first page when searching
+    searchParams.set('page', '1');
     setSearchParams(new URLSearchParams(searchParams));
-  };
 
-  const handleFileTypeChange = (value: string) => {
-    if (!value || value === 'all') searchParams.delete('fileType');
-    else searchParams.set('fileType', value);
-    setSearchParams(new URLSearchParams(searchParams));
-  };
-
-  const handleSortChange = (value: string) => {
-    searchParams.set('sort', value);
-    setSearchParams(new URLSearchParams(searchParams));
-  };
-
-  const AVAILABLE_CATEGORIES = ['Science', 'Technology', 'History', 'Fiction'];
-  const handleCategoryToggle = (category: string) => {
-    const current = searchParams.get('category') || '';
-    const set = new Set(current.split(',').filter(Boolean));
-    if (set.has(category)) set.delete(category);
-    else set.add(category);
-    const next = Array.from(set).join(',');
-    if (next) searchParams.set('category', next);
-    else searchParams.delete('category');
-    setSearchParams(new URLSearchParams(searchParams));
+    // Send event to Google Analytics
+    ReactGA.event({
+      category: 'Search',
+      action: 'Book Search',
+      label: query,
+    });
   };
 
   if (isLoading || isFetching) {
@@ -135,79 +108,7 @@ const AllBooks = () => {
 
   return (
     <Layout>
-      <div className="flex justify-end m-3">
-        <Select
-          defaultValue={searchParams.get('language') || 'all'}
-          onValueChange={(value) => handleLanguageChange(value)}
-        >
-          <SelectTrigger className="max-w-[160px]">
-            <SelectValue placeholder="Select a book language" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="all">All Books</SelectItem>
-              <SelectItem value="english">English 🏴󠁧󠁢󠁥󠁮󠁧󠁿</SelectItem>
-              <SelectItem value="turkish">Turkish 🇹🇷</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-wrap items-center gap-3 justify-between m-3">
-        <div className="flex flex-wrap gap-3">
-          <Select
-            defaultValue={searchParams.get('fileType') || 'all'}
-            onValueChange={handleFileTypeChange}
-          >
-            <SelectTrigger className="max-w-[140px]">
-              <SelectValue placeholder="File type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="all">All types</SelectItem>
-                <SelectItem value="pdf">PDF</SelectItem>
-                <SelectItem value="epub">EPUB</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
-          <Select
-            defaultValue={searchParams.get('sort') || 'dateDesc'}
-            onValueChange={handleSortChange}
-          >
-            <SelectTrigger className="max-w-[160px]">
-              <SelectValue placeholder="Sort" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="dateDesc">Newest</SelectItem>
-                <SelectItem value="dateAsc">Oldest</SelectItem>
-                <SelectItem value="nameAsc">Title A–Z</SelectItem>
-                <SelectItem value="nameDesc">Title Z–A</SelectItem>
-                <SelectItem value="ratingDesc">Top rated</SelectItem>
-                <SelectItem value="ratingAsc">Lowest rated</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {AVAILABLE_CATEGORIES.map((cat) => {
-            const active = (searchParams.get('category') || '')
-              .split(',')
-              .includes(cat);
-            return (
-              <Button
-                key={cat}
-                variant={active ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleCategoryToggle(cat)}
-              >
-                {cat}
-              </Button>
-            );
-          })}
-        </div>
-      </div>
+      <BookFilters onSearch={handleSearch} />
       <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1 w-3/4 mx-auto">
         {bookData?.results.map((book) => (
           <Link key={book._id} to={`/book/${book._id}`}>

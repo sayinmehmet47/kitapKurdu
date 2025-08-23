@@ -5,3 +5,4 @@ export * from './Search';
 export * from './User';
 export * from './ui';
 export * from './shelf-space';
+export { default as BookFilters } from './BookFilters';

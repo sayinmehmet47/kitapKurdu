@@ -11,14 +11,16 @@ export const bookApi = commonApi.injectEndpoints({
         category?: string; // comma-separated
         fileType?: 'pdf' | 'epub' | '' | string;
         sort?: 'dateDesc' | 'dateAsc' | 'nameAsc' | 'nameDesc' | string;
+        search?: string;
       }
     >({
-      query: ({ page, language, category, fileType, sort }) => {
+      query: ({ page, language, category, fileType, sort, search }) => {
         const params: Record<string, any> = { page };
         if (language && language !== 'all') params.language = language;
         if (category) params.category = category;
         if (fileType && fileType !== 'all') params.fileType = fileType;
         if (sort) params.sort = sort;
+        if (search) params.search = search;
         return {
           url: `/books/allBooks`,
           params,

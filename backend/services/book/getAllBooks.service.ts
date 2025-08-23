@@ -15,6 +15,7 @@ const getAllBooksService = async (req: Request) => {
     const categoryParam = String(req.query.category || '').trim();
     const fileType = String(req.query.fileType || '').toLowerCase();
     const sortParam = String(req.query.sort || 'dateDesc');
+    const searchParam = String(req.query.search || '').trim();
 
     const startIndex = (page - 1) * limit;
 
@@ -37,6 +38,15 @@ const getAllBooksService = async (req: Request) => {
     if (fileType) {
       // Match file extension at the end of URL, case-insensitive
       query.url = { $regex: new RegExp(`\\.${fileType}$`, 'i') };
+    }
+    if (searchParam) {
+      // Search in name, description, and category fields
+      const searchRegex = new RegExp(escapeRegExp(searchParam), 'i');
+      query.$or = [
+        { name: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex },
+      ];
     }
 
     const sortMap: Record<string, Record<string, 1 | -1>> = {
