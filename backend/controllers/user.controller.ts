@@ -41,6 +41,11 @@ export const loginController = async (req: Request, res: Response) => {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
+      // Include tokens in response for cross-domain fallback
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
     });
   } catch (error) {
     res.status(500).json({

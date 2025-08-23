@@ -123,7 +123,11 @@ function App() {
         // Clear temporary tokens shortly after navigation only if cookies are working
         setTimeout(() => {
           // Only clear if we're not relying on sessionStorage for auth (i.e., cookies work)
-          if (document.cookie.split(';').some(cookie => cookie.trim().startsWith('accessToken='))) {
+          // For cross-domain setups (Vercel + Render), keep tokens in sessionStorage
+          const hasCookies = document.cookie.split(';').some(cookie => cookie.trim().startsWith('accessToken='));
+          const isDifferentDomain = apiBaseUrl && window.location.hostname !== new URL(apiBaseUrl).hostname;
+          
+          if (hasCookies && !isDifferentDomain) {
             sessionStorage.removeItem('auth_at');
             sessionStorage.removeItem('auth_rt');
           }

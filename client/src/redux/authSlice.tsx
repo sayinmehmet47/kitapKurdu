@@ -50,6 +50,15 @@ export const loginThunk = createAsyncThunk(
           withCredentials: true,
         }
       );
+      
+      // Store tokens in sessionStorage for cross-domain fallback
+      if (res.data.tokens?.accessToken && typeof window !== 'undefined') {
+        sessionStorage.setItem('auth_at', res.data.tokens.accessToken);
+        if (res.data.tokens.refreshToken) {
+          sessionStorage.setItem('auth_rt', res.data.tokens.refreshToken);
+        }
+      }
+      
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
