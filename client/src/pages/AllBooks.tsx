@@ -84,10 +84,6 @@ const AllBooks = () => {
   };
 
   const handleSearch = (query: string) => {
-    // Reset to first page when searching
-    searchParams.set('page', '1');
-    setSearchParams(new URLSearchParams(searchParams));
-
     // Send event to Google Analytics
     ReactGA.event({
       category: 'Search',

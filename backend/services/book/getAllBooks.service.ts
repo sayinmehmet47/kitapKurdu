@@ -23,6 +23,27 @@ const getAllBooksService = async (req: Request) => {
     if (language !== 'all') {
       query.language = language;
     }
+    if (fileType) {
+      // Match file extension at the end of URL, case-insensitive
+      query.url = { $regex: new RegExp(`\\.${fileType}$`, 'i') };
+    }
+
+    // Handle search and category filters together
+    const searchConditions: any[] = [];
+    const categoryConditions: any[] = [];
+
+    if (searchParam) {
+      // Try text search first, fallback to regex search
+      const textSearch = { $text: { $search: searchParam } };
+      const regexSearch = new RegExp(escapeRegExp(searchParam), 'i');
+      searchConditions.push(
+        textSearch,
+        { name: regexSearch },
+        { description: regexSearch },
+        { category: regexSearch }
+      );
+    }
+
     if (categoryParam) {
       const categories = categoryParam
         .split(',')
@@ -32,21 +53,20 @@ const getAllBooksService = async (req: Request) => {
         const regexes = categories.map(
           (c) => new RegExp(`${escapeRegExp(c)}`, 'i')
         );
-        query.category = { $in: regexes };
+        categoryConditions.push({ category: { $in: regexes } });
       }
     }
-    if (fileType) {
-      // Match file extension at the end of URL, case-insensitive
-      query.url = { $regex: new RegExp(`\\.${fileType}$`, 'i') };
-    }
-    if (searchParam) {
-      // Search in name, description, and category fields
-      const searchRegex = new RegExp(escapeRegExp(searchParam), 'i');
-      query.$or = [
-        { name: searchRegex },
-        { description: searchRegex },
-        { category: searchRegex },
-      ];
+
+    // Combine search and category conditions
+    if (searchConditions.length > 0 && categoryConditions.length > 0) {
+      // Both search and category filters - use AND logic
+      query.$and = [{ $or: searchConditions }, { $or: categoryConditions }];
+    } else if (searchConditions.length > 0) {
+      // Only search
+      query.$or = searchConditions;
+    } else if (categoryConditions.length > 0) {
+      // Only category
+      query.$or = categoryConditions;
     }
 
     const sortMap: Record<string, Record<string, 1 | -1>> = {
@@ -56,6 +76,9 @@ const getAllBooksService = async (req: Request) => {
       nameDesc: { name: -1 },
     };
     const sort = sortMap[sortParam] || sortMap.dateDesc;
+
+    // Debug logging for final query
+    console.log('Final MongoDB query:', JSON.stringify(query, null, 2));
 
     const total = await Books.countDocuments(query);
 

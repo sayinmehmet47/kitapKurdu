@@ -20,10 +20,14 @@ interface BookFiltersProps {
 const BookFilters = ({ onSearch }: BookFiltersProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || ''
+  );
 
   const AVAILABLE_CATEGORIES = ['Science', 'Technology', 'History', 'Fiction'];
-  const activeCategories = (searchParams.get('category') || '').split(',').filter(Boolean);
+  const activeCategories = (searchParams.get('category') || '')
+    .split(',')
+    .filter(Boolean);
   const activeFiltersCount = [
     searchParams.get('language') && searchParams.get('language') !== 'all',
     searchParams.get('fileType') && searchParams.get('fileType') !== 'all',
@@ -74,6 +78,7 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    searchParams.set('page', '1');
     if (searchQuery.trim()) {
       searchParams.set('search', searchQuery.trim());
     } else {
@@ -93,7 +98,10 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
 
   const removeCategory = (category: string) => {
     const current = searchParams.get('category') || '';
-    const filtered = current.split(',').filter(cat => cat !== category).join(',');
+    const filtered = current
+      .split(',')
+      .filter((cat) => cat !== category)
+      .join(',');
     if (filtered) {
       searchParams.set('category', filtered);
     } else {
@@ -106,30 +114,39 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
     <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-6 mb-6 mx-4 shadow-sm">
       {/* Search Bar */}
       <form onSubmit={handleSearchSubmit} className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <Input
-            type="text"
-            placeholder="Search books by title, author, or description..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          {searchQuery && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSearchQuery('');
-                searchParams.delete('search');
-                setSearchParams(new URLSearchParams(searchParams));
-              }}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+        <div className="relative flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Input
+              type="text"
+              placeholder="Search books by title, author, or description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {searchQuery && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery('');
+                  searchParams.delete('search');
+                  searchParams.set('page', '1');
+                  setSearchParams(new URLSearchParams(searchParams));
+                }}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <Button
+            type="submit"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700"
+          >
+            Search
+          </Button>
         </div>
       </form>
 
@@ -147,7 +164,11 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
               {activeFiltersCount}
             </Badge>
           )}
-          <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${
+              showFilters ? 'rotate-180' : ''
+            }`}
+          />
         </Button>
 
         {activeFiltersCount > 0 && (
@@ -165,7 +186,7 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
       {/* Active Category Tags */}
       {activeCategories.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
-          {activeCategories.map(category => (
+          {activeCategories.map((category) => (
             <Badge
               key={category}
               variant="secondary"
@@ -191,7 +212,9 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Language Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Language</label>
+              <label className="text-sm font-medium text-gray-700">
+                Language
+              </label>
               <Select
                 value={searchParams.get('language') || 'all'}
                 onValueChange={handleLanguageChange}
@@ -211,7 +234,9 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
 
             {/* File Type Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">File Type</label>
+              <label className="text-sm font-medium text-gray-700">
+                File Type
+              </label>
               <Select
                 value={searchParams.get('fileType') || 'all'}
                 onValueChange={handleFileTypeChange}
@@ -231,7 +256,9 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
 
             {/* Sort Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Sort By</label>
+              <label className="text-sm font-medium text-gray-700">
+                Sort By
+              </label>
               <Select
                 value={searchParams.get('sort') || 'dateDesc'}
                 onValueChange={handleSortChange}
@@ -255,7 +282,9 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
 
           {/* Category Filter */}
           <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700">Categories</label>
+            <label className="text-sm font-medium text-gray-700">
+              Categories
+            </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {AVAILABLE_CATEGORIES.map((category) => {
                 const isActive = activeCategories.includes(category);
@@ -266,8 +295,8 @@ const BookFilters = ({ onSearch }: BookFiltersProps) => {
                     size="sm"
                     onClick={() => handleCategoryToggle(category)}
                     className={`justify-center transition-all duration-200 ${
-                      isActive 
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md' 
+                      isActive
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
                         : 'hover:bg-gray-50 hover:border-gray-300'
                     }`}
                   >
