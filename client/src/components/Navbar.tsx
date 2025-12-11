@@ -41,12 +41,13 @@ const NavLink = ({
 
 export default function NavbarComponent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { username, email } = useSelector(
+  const { username, email, isAdmin } = useSelector(
     (state: RootState) => state.authSlice.user.user
   );
-  const { isAuthLoaded, isLoading } = useSelector(
+  const { isAuthLoaded, isLoading, isLoggedIn } = useSelector(
     (state: RootState) => state.authSlice
   );
+  const showAdminLink = isLoggedIn && isAdmin;
 
   // Debug logging
   console.log('Navbar auth state:', {
@@ -91,6 +92,9 @@ export default function NavbarComponent() {
                 {link.label}
               </NavLink>
             ))}
+            {showAdminLink && (
+              <NavLink to="/admin/analytics">Analytics</NavLink>
+            )}
           </div>
 
           {/* User Navigation & Mobile Menu Button */}
@@ -137,6 +141,11 @@ export default function NavbarComponent() {
                 {link.label}
               </NavLink>
             ))}
+            {showAdminLink && (
+              <NavLink to="/admin/analytics" mobile>
+                Analytics
+              </NavLink>
+            )}
             <div className="flex items-center justify-between pt-2">
               <span className="text-sm text-muted-foreground">Theme</span>
               <ThemeToggle />

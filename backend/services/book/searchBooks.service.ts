@@ -1,6 +1,7 @@
 import NodeCache from 'node-cache';
 import { Request } from 'express';
 import { Books } from '../../models/Books';
+import { logSearchAnalytics } from '../analytics/logSearch.service';
 const cache = new NodeCache();
 const normalizeTurkishText = (text: string): string => {
   if (!text) return '';
@@ -25,9 +26,12 @@ const searchBooksService = async (req: Request) => {
   if (cachedResult) {
     return cachedResult;
   }
-  
+
   const searchTerm = req.query.name as string;
   const normalizedSearch = normalizeTurkishText(searchTerm);
+
+  // Log search analytics (fire-and-forget, non-blocking)
+  logSearchAnalytics(searchTerm);
   
   const query = {
     $or: [

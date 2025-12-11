@@ -18,6 +18,7 @@ import { PrivateRoute } from './components/privateRoute';
 import BookPreviewPage from './pages/BookPreview';
 import { BookEditPage } from './pages/BookEditPage';
 import { ContactUs } from './pages/ContactPage';
+import AdminAnalytics from './pages/AdminAnalytics';
 import { HelmetProvider } from 'react-helmet-async';
 
 const root = ReactDOM.createRoot(
@@ -62,6 +63,14 @@ root.render(
             element={
               <PrivateRoute>
                 <ShelfSpace />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/analytics"
+            element={
+              <PrivateRoute>
+                <AdminAnalytics />
               </PrivateRoute>
             }
           />
