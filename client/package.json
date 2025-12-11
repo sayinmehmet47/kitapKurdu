@@ -2,6 +2,9 @@
   "name": "eksi-kitap",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "dependencies": {
     "@cyntler/react-doc-viewer": "^1.14.1",
     "@emailjs/browser": "^4.0.0",
