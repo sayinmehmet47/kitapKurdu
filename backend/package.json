@@ -19,7 +19,7 @@
     ]
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": "20.x"
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
