@@ -17,7 +17,7 @@ interface BookDetailsProps {
 
 export const BookDetails: React.FC<BookDetailsProps> = ({ book, fileType }) => {
   const { data: summary } = useGetBookRatingSummaryQuery(book._id);
-  const [rateBook, { isLoading: isRating }] = useRateBookMutation();
+  const [rateBook] = useRateBookMutation();
   const { isLoggedIn } = useSelector((s: RootState) => s.authSlice);
   const [myRating, setMyRating] = useState<number>(0);
   const avg = useMemo(() => Number(summary?.data?.avgRating || 0), [summary]);

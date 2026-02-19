@@ -41,10 +41,8 @@ router.post(
       .withMessage('Email must be valid'),
     body('password', 'Please enter a valid password')
       .trim()
-      .isLength({ min: 8 })
-      .withMessage('Password must be at least 8 characters')
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-      .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number'),
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters'),
     body('isAdmin', 'Please enter a valid isAdmin').isBoolean().optional(),
   ],
   validateRequest,
