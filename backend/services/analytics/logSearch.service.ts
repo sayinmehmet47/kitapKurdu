@@ -1,4 +1,5 @@
 import { SearchAnalytics } from '../../models/SearchAnalytics';
+import { logger } from '../../logger';
 
 /**
  * Get the start of the current week (Monday)
@@ -84,6 +85,9 @@ export const logSearchAnalytics = (searchTerm: string): void => {
       )
     )
   ).catch((err) => {
-    console.error('Failed to log search analytics:', err);
+    logger.error('Failed to log search analytics', {
+      error: err instanceof Error ? err.message : 'Unknown error',
+      searchTerm: normalizedTerm
+    });
   });
 };

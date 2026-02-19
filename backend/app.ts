@@ -96,6 +96,10 @@ app.get('/og/book/:id', async (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.status(200).send(html);
   } catch (error) {
+    logger.error('Error generating Open Graph preview', {
+      bookId: req.params.id,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
     res.status(500).send('Server error');
   }
 });
@@ -133,6 +137,9 @@ ${urls
     res.setHeader('Content-Type', 'application/xml');
     res.status(200).send(xml);
   } catch (error) {
+    logger.error('Error generating sitemap', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
     res.status(500).send('Server error');
   }
 });

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import {
   createUserMessage,
   deleteMessage,
@@ -7,28 +7,42 @@ import {
 
 export const getUserMessagesController = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-  const userMessages = await getUserMessages();
-  res.json(userMessages);
+  try {
+    const userMessages = await getUserMessages();
+    res.json(userMessages);
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const createUserMessageController = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-  const { text, sender } = req.body;
   try {
+    const { text, sender } = req.body;
     const userMessages = await createUserMessage(text, sender);
     res.status(201).json(userMessages);
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    next(err);
   }
 };
 
-export const deleteMessageController = async (req: Request, res: Response) => {
-  const { id } = req.body;
-  const user = req.user as any;
-  const result = await deleteMessage(id, user.isAdmin);
-  res.status(200).json(result);
+export const deleteMessageController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.body;
+    const user = req.user as any;
+    const result = await deleteMessage(id, user.isAdmin);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
 };

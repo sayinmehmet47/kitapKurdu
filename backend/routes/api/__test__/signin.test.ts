@@ -7,7 +7,7 @@ it('returns a 401 with an invalid email', async () => {
     .post('/api/user/login')
     .send({
       username: 'test',
-      password: 'password',
+      password: 'Password123',
     })
     .expect(401);
 });
@@ -21,7 +21,7 @@ it('fail when a email that does not exist is supplied', async () => {
     .post('/api/user/login')
     .send({
       username: 'test@test.com',
-      password: 'password',
+      password: 'Password123',
     })
     .expect(401);
 });
@@ -32,7 +32,7 @@ it('fail when an incorrect password is supplied', async () => {
     .send({
       username: 'test',
       email: 'test@test.com',
-      password: 'password',
+      password: 'Password123',
     })
     .expect(201);
 
@@ -42,7 +42,7 @@ it('fail when an incorrect password is supplied', async () => {
     .post('/api/user/login')
     .send({
       username: 'test',
-      password: 'passwor',
+      password: 'WrongPass1',
     })
     .expect(401);
 });
@@ -53,7 +53,7 @@ it('fails when email is not verified', async () => {
     .send({
       username: 'test',
       email: 'test@test.com',
-      password: 'password',
+      password: 'Password123',
     })
     .expect(201);
 
@@ -61,7 +61,7 @@ it('fails when email is not verified', async () => {
     .post('/api/user/login')
     .send({
       username: 'test',
-      password: 'password',
+      password: 'Password123',
     })
     .expect(401);
 });
@@ -71,7 +71,7 @@ it('responds with a cookie when given valid credentials', async () => {
     .post('/api/user/register')
     .send({
       email: 'test@test.com',
-      password: 'password',
+      password: 'Password123',
       username: 'test',
     })
     .expect(201);
@@ -82,7 +82,7 @@ it('responds with a cookie when given valid credentials', async () => {
     .post('/api/user/login')
     .send({
       username: 'test',
-      password: 'password',
+      password: 'Password123',
     })
     .expect(200);
 

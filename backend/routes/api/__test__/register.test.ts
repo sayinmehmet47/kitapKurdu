@@ -6,7 +6,7 @@ it('returns a 201 on successful register', async () => {
     .post('/api/user/register')
     .send({
       username: 'test',
-      password: 'password',
+      password: 'Password123',
       email: 'example@gmail.com',
     })
     .expect(201);
@@ -25,7 +25,7 @@ it('returns a 400 with an invalid username', async () => {
     .send({
       username: 'te',
       email: 'example@gmail.com',
-      password: 'password',
+      password: 'Password123',
     })
     .expect(400);
 });
@@ -36,7 +36,7 @@ it('returns a 400 with an invalid password', async () => {
     .send({
       email: 'test@gmail.com',
       username: 'test',
-      password: 'p',
+      password: 'short',
     })
     .expect(400);
 });
@@ -52,7 +52,7 @@ it('returns a 400 with missing email and password', async () => {
   await request(app)
     .post('/api/user/register')
     .send({
-      password: 'password',
+      password: 'Password123',
     })
     .expect(400);
 });
@@ -62,7 +62,7 @@ it('disallows duplicate emails', async () => {
     .post('/api/user/register')
     .send({
       email: 'test@test.com',
-      password: 'password',
+      password: 'Password123',
       username: 'test',
     })
     .expect(201);
@@ -70,7 +70,7 @@ it('disallows duplicate emails', async () => {
     .post('/api/user/register')
     .send({
       email: 'test@test.com', // Same email
-      password: 'password',
+      password: 'Password123',
       username: 'test2', // Different username
     })
     .expect(400);
@@ -81,7 +81,7 @@ it('disallows duplicate usernames', async () => {
     .post('/api/user/register')
     .send({
       email: 'test1@test.com',
-      password: 'password',
+      password: 'Password123',
       username: 'test',
     })
     .expect(201);
@@ -89,7 +89,7 @@ it('disallows duplicate usernames', async () => {
     .post('/api/user/register')
     .send({
       email: 'test2@test.com', // Different email
-      password: 'password',
+      password: 'Password123',
       username: 'test', // Same username
     })
     .expect(400);
@@ -100,7 +100,7 @@ it('returns user data on successful registration', async () => {
     .post('/api/user/register')
     .send({
       email: 'test@test.com',
-      password: 'password',
+      password: 'Password123',
       username: 'test',
     })
     .expect(201);

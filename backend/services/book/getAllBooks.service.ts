@@ -3,6 +3,8 @@ import { Request } from 'express';
 import { Books } from '../../models/Books';
 import { BooksData } from '../../routes/api/books.types';
 import { apiResponse } from '../../utils/apiResponse.utils';
+import { logger } from '../../logger';
+
 function escapeRegExp(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -78,7 +80,9 @@ const getAllBooksService = async (req: Request) => {
     const sort = sortMap[sortParam] || sortMap.dateDesc;
 
     // Debug logging for final query
-    console.log('Final MongoDB query:', JSON.stringify(query, null, 2));
+    if (process.env.NODE_ENV !== 'production') {
+      logger.info('MongoDB query', { query: JSON.stringify(query, null, 2) });
+    }
 
     const total = await Books.countDocuments(query);
 
