@@ -134,7 +134,7 @@ function App() {
         }, 2000);
       })();
     }
-  }, [location.search, location.pathname, dispatch, navigate]);
+  }, [location.search, location.pathname, location.hash, dispatch, navigate]);
 
   return (
     <Layout>

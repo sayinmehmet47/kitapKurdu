@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/dist/query/react';
-import { RootState } from './store';
 
 // In production, hit backend domain directly so backend cookies are sent (Chrome),
 // while we also attach Bearer from sessionStorage for Safari fallback
