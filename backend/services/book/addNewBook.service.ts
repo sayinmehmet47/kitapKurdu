@@ -8,6 +8,7 @@ import {
   getUserSubscriptionsExcludingUser,
   removeSubscription,
 } from '../../web-push';
+import { logger } from '../../logger';
 
 const addNewBook = async (req: Request) => {
   let responseData;
@@ -20,6 +21,10 @@ const addNewBook = async (req: Request) => {
     );
     responseData = await response?.data?.items;
   } catch (error) {
+    logger.error('Failed to fetch book categories from Google Books API', {
+      bookName: req.body.name,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
     throw new Error('Could not find any categories');
   }
 
@@ -70,11 +75,15 @@ const addNewBook = async (req: Request) => {
           if (error.statusCode === 410) {
             removeSubscription(subscription.subscription);
           } else {
-            console.error('Error sending push notification:', error);
+            logger.error('Error sending push notification', {
+              error: error.message,
+              statusCode: error.statusCode,
+              endpoint: subscription.subscription?.endpoint
+            });
           }
         });
     } else {
-      console.error('Invalid subscription endpoint:', subscription);
+      logger.error('Invalid subscription endpoint', { subscription });
     }
   });
 
