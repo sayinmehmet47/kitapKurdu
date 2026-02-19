@@ -2,6 +2,7 @@ import { Request, Response, CookieOptions } from 'express';
 import { logoutUser, registerUser } from '../services/user';
 import { CustomError } from '../errors/custom-error';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt.utils';
+import { logger } from '../logger';
 
 // Base cookie options for auth cookies (cross-site friendly in production)
 const cookieBaseOptions: CookieOptions = {
@@ -153,7 +154,7 @@ export const logoutController = async (req: Request, res: Response) => {
 export const refreshTokenController = async (req: Request, res: Response) => {
   try {
     if (process.env.NODE_ENV !== 'production') {
-      console.log('[REFRESH TOKEN] Request initiated:', {
+      logger.info('Refresh token request initiated', {
         hasRefreshTokenCookie: !!req.cookies?.refreshToken,
         hasRTParam: !!req.query?.rt,
         userAgent: req.headers['user-agent'],
@@ -166,7 +167,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
 
     if (!user) {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('[REFRESH TOKEN] No user found after passport auth');
+        logger.info('No user found after passport auth');
       }
       return res.status(401).json({
         success: false,
@@ -175,13 +176,13 @@ export const refreshTokenController = async (req: Request, res: Response) => {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log('[REFRESH TOKEN] User authenticated successfully:', { userId: user._id, username: user.username });
+      logger.info('User authenticated successfully', { userId: user._id, username: user.username });
     }
 
     // Generate new access token
     const newAccessToken = generateAccessToken(user);
     if (process.env.NODE_ENV !== 'production') {
-      console.log('[REFRESH TOKEN] New access token generated');
+      logger.info('New access token generated');
     }
 
     res.cookie('accessToken', newAccessToken, {
@@ -190,7 +191,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
     });
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log('[REFRESH TOKEN] Success - new access token set in cookie');
+      logger.info('Success - new access token set in cookie');
     }
 
     res.status(200).json({
@@ -208,7 +209,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('[REFRESH TOKEN] Error in controller:', {
+    logger.error('Error in refresh token controller', {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: process.env.NODE_ENV !== 'production' ? (error instanceof Error ? error.stack : undefined) : undefined
     });
