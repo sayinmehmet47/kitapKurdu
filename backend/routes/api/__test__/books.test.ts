@@ -118,7 +118,7 @@ it('should get all the books paginated', async () => {
     .set('Cookie', `accessToken=${accessToken}`)
     .expect(200);
 
-  expect(allBooks.body.total).toEqual(2);
-  expect(allBooks.body.results[0].name).toEqual(book2.body.name);
-  expect(allBooks.body.results[1].name).toEqual(book1.body.name);
+  expect(allBooks.body.data.total).toEqual(2);
+  expect(allBooks.body.data.results[0].name).toEqual(book2.body.name);
+  expect(allBooks.body.data.results[1].name).toEqual(book1.body.name);
 });
