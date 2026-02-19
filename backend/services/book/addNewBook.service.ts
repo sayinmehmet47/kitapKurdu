@@ -20,7 +20,7 @@ const addNewBook = async (req: Request) => {
     );
     responseData = await response?.data?.items;
   } catch (error) {
-    throw new Error('Could not find any categories');
+    responseData = null;
   }
 
   const books = new Books({
@@ -31,7 +31,7 @@ const addNewBook = async (req: Request) => {
     uploader: req.body.uploader,
   });
 
-  if (responseData) {
+  if (responseData && responseData.length > 0) {
     const categories: Set<string> = new Set(
       responseData
         .slice(0, 10)
@@ -42,7 +42,7 @@ const addNewBook = async (req: Request) => {
 
     const convertedCategories = Array.from(categories);
 
-    const { description, imageLinks } = responseData[0].volumeInfo;
+    const { description, imageLinks } = responseData[0].volumeInfo || {};
     books.category = convertedCategories;
     books.description = description;
     books.imageLinks = imageLinks;

@@ -13,7 +13,7 @@ import {
 export const getAllBooksController = async (req: Request, res: Response) => {
   try {
     const books = await getAllBooksService(req);
-    res.json(books);
+    res.json((books as any).data ?? books);
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ error: err.message });
@@ -26,7 +26,7 @@ export const getAllBooksController = async (req: Request, res: Response) => {
 export const searchBooksController = async (req: Request, res: Response) => {
   try {
     const books = await searchBooksService(req);
-    res.json(books);
+    res.json((books as any).data ?? books);
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ error: err.message });
