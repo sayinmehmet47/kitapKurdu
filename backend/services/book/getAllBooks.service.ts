@@ -138,8 +138,8 @@ const getAllBooksService = async (req: Request) => {
 
     const results: BooksData = {
       results: books as any,
-      total: total,
-      page: page,
+      total,
+      page,
       next: total > startIndex + limit ? { page: page + 1 } : undefined,
       previous: startIndex > 0 ? { page: page - 1 } : undefined,
     };

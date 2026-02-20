@@ -62,7 +62,7 @@ export const deleteBookController = async (
 ) => {
   try {
     const book = await deleteBook(req);
-    res.status(201).json(book);
+    res.status(200).json(book);
   } catch (err) {
     next(err);
   }
@@ -71,7 +71,7 @@ export const deleteBookController = async (
 export const getBookByIdController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const book = await getBookById(req);
-    res.status(201).json(book);
+    res.status(200).json(book);
   } catch (err) {
     next(err);
   }
@@ -93,7 +93,7 @@ export const updateCategoriesController = async (
 export const updateBookController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const book = await updateBook(req);
-    res.status(201).json(book);
+    res.status(200).json(book);
   } catch (err) {
     next(err);
   }

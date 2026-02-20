@@ -248,23 +248,19 @@ export const Search = () => {
                                 )}
                                 {book.category &&
                                   book.category.length > 0 &&
-                                  book.category.map((category, index) => (
-                                    <Badge
-                                      key={index}
-                                      variant={
-                                        index % 4 === 0
-                                          ? 'default'
-                                          : index % 4 === 1
-                                          ? 'success'
-                                          : index % 4 === 2
-                                          ? 'info'
-                                          : 'warning'
-                                      }
-                                      className="text-xs max-w-24 truncate"
-                                    >
-                                      {category}
-                                    </Badge>
-                                  ))}
+                                  book.category.map((category, index) => {
+                                    const variants = ['default', 'success', 'info', 'warning'] as const;
+                                    const variant = variants[index % 4];
+                                    return (
+                                      <Badge
+                                        key={index}
+                                        variant={variant}
+                                        className="text-xs max-w-24 truncate"
+                                      >
+                                        {category}
+                                      </Badge>
+                                    );
+                                  })}
                               </div>
                               <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 sm:hidden">
                                 {book.uploader?.username || 'Unknown'} • {formatFileSize(book.size)} • {formatDate(book.date)}
