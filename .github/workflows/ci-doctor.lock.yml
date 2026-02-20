@@ -28,19 +28,29 @@
 #
 # Source: githubnext/agentics/workflows/ci-doctor.md@3a74730dbaddf484a9002a4bf34cd588cace7767
 #
-# gh-aw-metadata: {"schema_version":"v1","frontmatter_hash":"78aad0c985d66b2978a4eb42887fb1408d98fae2d17d4293f866d15113e407a4","compiler_version":"v0.47.2"}
+# gh-aw-metadata: {"schema_version":"v1","frontmatter_hash":"4a9a0ec89d5401bb162390bf6057e402de75c1bbb2647137d01286236c1b6f92","compiler_version":"v0.47.2"}
 
 name: "CI Failure Doctor"
 "on":
   workflow_run:
     # zizmor: ignore[dangerous-triggers] - workflow_run trigger is secured with role and fork validation
-    branches:
-    - main
     types:
     - completed
     workflows:
-    - Daily Perf Improver
-    - Daily Test Coverage Improver
+    - Agentic Maintenance
+    - Code Simplifier
+    - Daily Testify Uber Super Expert
+    - deploy-backend
+    - deploy-client
+    - deploy-manifests
+    - Promote to Backend Staging
+    - Promote to Client Staging
+    - Backend Build & Deploy
+    - Client Build & Deploy
+    - Keep backend warm
+    - tests-backend
+    - Claude
+    - OpenAI Codex
 
 permissions: {}
 

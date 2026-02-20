@@ -7,11 +7,24 @@ description: |
 
 on:
   workflow_run:
-    workflows: ["Daily Perf Improver", "Daily Test Coverage Improver"]  # Monitor the CI workflow specifically
+    # workflow_run does not support wildcard names. Keep this list in sync
+    # with the workflows you want CI Failure Doctor to monitor.
+    workflows:
+      - Agentic Maintenance
+      - Code Simplifier
+      - Daily Testify Uber Super Expert
+      - deploy-backend
+      - deploy-client
+      - deploy-manifests
+      - Promote to Backend Staging
+      - Promote to Client Staging
+      - Backend Build & Deploy
+      - Client Build & Deploy
+      - Keep backend warm
+      - tests-backend
+
     types:
       - completed
-    branches:
-      - main
 
 # Only trigger for failures - check in the workflow body
 if: ${{ github.event.workflow_run.conclusion == 'failure' }}
