@@ -9,7 +9,7 @@ it('returns a 401 with an invalid email', async () => {
       username: 'test',
       password: 'Password123',
     })
-    .expect(418);
+    .expect(401);
 });
 
 it('returns a 400 with missing email and password', async () => {
