@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Pull dev image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: false
@@ -35,7 +35,7 @@ jobs:
         run: docker tag sayinmehmet47/backend-kitapkurdu-1:${{ github.event.inputs.version }} sayinmehmet47/backend-kitapkurdu-1:staging.${{ github.event.inputs.version }}
 
       - name: Push staging image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
