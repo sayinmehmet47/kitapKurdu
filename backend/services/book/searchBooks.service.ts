@@ -86,21 +86,18 @@ const searchBooksService = async (req: Request) => {
       limit: number;
     };
     results?: any;
-  } = {};
+  } = {
+    total: count,
+    results,
+  };
+  
   if (endIndex < count) {
-    pagination.next = {
-      page: page + 1,
-      limit: limit,
-    };
+    pagination.next = { page: page + 1, limit };
   }
-  pagination.total = count;
+  
   if (startIndex > 0) {
-    pagination.previous = {
-      page: page - 1,
-      limit: limit,
-    };
+    pagination.previous = { page: page - 1, limit };
   }
-  pagination.results = results;
   cache.set(cacheKey, pagination); // store the result in the cache
 
   return pagination;
