@@ -85,7 +85,7 @@ it('should admin delete book', async () => {
   await request(app)
     .post(`/api/books/deleteBook/${book.body._id}`)
     .set('Cookie', `accessToken=${accessToken}`)
-    .expect(201);
+    .expect(200);
 });
 
 it('should get all the books paginated', async () => {
