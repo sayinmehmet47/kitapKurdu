@@ -39,10 +39,7 @@ declare global {
 }
 
 global.signin = async (isAdmin: boolean = false) => {
-  const salt = await bcrypt.genSalt(10);
-  if (!salt) throw new Error('Something went wrong with bcrypt');
-  const hash = await bcrypt.hash('test', salt);
-  if (!hash) throw new Error('Something went wrong hashing the password');
+  const hash = await bcrypt.hash('test', 10);
 
   const newUser = new User({
     username: 'test',
@@ -52,7 +49,6 @@ global.signin = async (isAdmin: boolean = false) => {
   });
 
   const savedUser = await newUser.save();
-  if (!savedUser) throw new Error('Something went wrong saving the user');
 
   const payload = {
     _id: savedUser._id,
