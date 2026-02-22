@@ -1,0 +1,13 @@
+node_modules
+dist
+build
+coverage
+.next
+.turbo
+.cache
+tmp
+temp
+*.log
+package-lock.json
+client/package-lock.json
+backend/package-lock.json
