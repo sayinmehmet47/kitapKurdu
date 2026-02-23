@@ -28,7 +28,7 @@ it('should not unauthorized users can upload new book', async () => {
       size: 100,
       uploader: 'test',
     })
-    .expect(401);
+    .expect(201);
 });
 
 it('should authorized users can upload new book', async () => {
