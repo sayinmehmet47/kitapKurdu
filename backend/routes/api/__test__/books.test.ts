@@ -1,6 +1,15 @@
 import request from 'supertest';
 import { app } from '../../../app';
 
+const DUMMY_PDF_URL = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+
+const VALID_BOOK_DATA = {
+  name: 'test',
+  url: DUMMY_PDF_URL,
+  size: 100,
+  uploader: 'test',
+};
+
 it('return 400 with invalid body', async () => {
   const { accessToken } = await global.signin();
 
@@ -19,43 +28,31 @@ it('return 400 with invalid body', async () => {
     });
 });
 
-it('should not unauthorized users can upload new book', async () => {
-  await request(app)
-    .post('/api/books/addNewBook')
-    .send({
-      name: 'test',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      size: 100,
-      uploader: 'test',
-    })
-    .expect(401);
+it('should not allow unauthorized users to upload new book', async () => {
+  await request(app).post('/api/books/addNewBook').send(VALID_BOOK_DATA).expect(401);
 });
 
-it('should authorized users can upload new book', async () => {
+it('should allow authorized users to upload new book', async () => {
   const { accessToken, sender } = await global.signin();
 
   await request(app)
     .post('/api/books/addNewBook')
     .set('Cookie', `accessToken=${accessToken}`)
     .send({
-      name: 'test',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      size: 100,
+      ...VALID_BOOK_DATA,
       uploader: sender,
     })
     .expect(201);
 });
 
-it('should not member delete book', async () => {
+it('should not allow non-admin members to delete books', async () => {
   const { accessToken, sender } = await global.signin();
 
   const book = await request(app)
     .post('/api/books/addNewBook')
     .set('Cookie', `accessToken=${accessToken}`)
     .send({
-      name: 'test',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      size: 100,
+      ...VALID_BOOK_DATA,
       uploader: sender,
     })
     .expect(201);
@@ -69,15 +66,13 @@ it('should not member delete book', async () => {
     .expect(403);
 });
 
-it('should admin delete book', async () => {
+it('should allow admin users to delete books', async () => {
   const { accessToken, sender } = await global.signin(true);
   const book = await request(app)
     .post('/api/books/addNewBook')
     .set('Cookie', `accessToken=${accessToken}`)
     .send({
-      name: 'test',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      size: 100,
+      ...VALID_BOOK_DATA,
       uploader: sender,
     })
     .expect(201);
@@ -88,15 +83,14 @@ it('should admin delete book', async () => {
     .expect(200);
 });
 
-it('should get all the books paginated', async () => {
+it('should get all books paginated', async () => {
   const { accessToken, sender } = await global.signin();
   const book1 = await request(app)
     .post('/api/books/addNewBook')
     .set('Cookie', `accessToken=${accessToken}`)
     .send({
+      ...VALID_BOOK_DATA,
       name: 'test-1',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      size: 100,
       uploader: sender,
     })
     .expect(201);
@@ -105,9 +99,8 @@ it('should get all the books paginated', async () => {
     .post('/api/books/addNewBook')
     .set('Cookie', `accessToken=${accessToken}`)
     .send({
+      ...VALID_BOOK_DATA,
       name: 'test-2',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-      size: 100,
       uploader: sender,
       language: 'all',
     })
