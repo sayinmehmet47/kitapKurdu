@@ -3,10 +3,10 @@ import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError 
 // In production, hit backend domain directly so backend cookies are sent (Chrome),
 // while we also attach Bearer from sessionStorage for Safari fallback
 const prodApi =
-  (process.env.REACT_APP_PROD_API as string | undefined) ||
+  (import.meta.env.VITE_PROD_API as string | undefined) ||
   'https://kitapkurdu.onrender.com/api';
 export const apiBaseUrl =
-  process.env.NODE_ENV === 'production' ? prodApi : '/api';
+  import.meta.env.PROD ? prodApi : '/api';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: apiBaseUrl,

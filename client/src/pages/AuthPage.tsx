@@ -148,11 +148,11 @@ const AuthPage: FC = () => {
 
   const handleGoogleLogin = () => {
     const apiBaseUrl =
-      process.env.REACT_APP_ENVIRONMENT === 'production'
-        ? process.env.REACT_APP_PROD_API // Use absolute backend URL so Set-Cookie binds to backend domain
-        : process.env.REACT_APP_ENVIRONMENT === 'development'
-        ? process.env.REACT_APP_DEV_API
-        : process.env.REACT_APP_LOCAL_API;
+      import.meta.env.VITE_ENVIRONMENT === 'production'
+        ? import.meta.env.VITE_PROD_API // Use absolute backend URL so Set-Cookie binds to backend domain
+        : import.meta.env.VITE_ENVIRONMENT === 'development'
+        ? import.meta.env.VITE_DEV_API
+        : import.meta.env.VITE_LOCAL_API;
 
     window.location.href = `${apiBaseUrl}/user/auth/google`;
   };
@@ -168,11 +168,11 @@ const AuthPage: FC = () => {
 
       // Use the same environment-aware API base URL
       const apiBaseUrl =
-        process.env.REACT_APP_ENVIRONMENT === 'production'
-          ? process.env.REACT_APP_PROD_API
-          : process.env.REACT_APP_ENVIRONMENT === 'development'
-          ? process.env.REACT_APP_DEV_API
-          : process.env.REACT_APP_LOCAL_API;
+        import.meta.env.VITE_ENVIRONMENT === 'production'
+          ? import.meta.env.VITE_PROD_API
+          : import.meta.env.VITE_ENVIRONMENT === 'development'
+          ? import.meta.env.VITE_DEV_API
+          : import.meta.env.VITE_LOCAL_API;
 
       const response = await fetch(`${apiBaseUrl}/user/resend-verification`, {
         method: 'POST',
