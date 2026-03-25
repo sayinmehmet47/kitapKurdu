@@ -9,6 +9,7 @@ import { store } from './redux/store';
 import Layout from './components/Layout';
 import { PrivateRoute } from './components/privateRoute';
 import { HelmetProvider } from 'react-helmet-async';
+import { LoadingSpinner } from './components/ui/loading';
 
 const AllBooks = lazy(() => import('./pages/AllBooks'));
 const RecentlyAdded = lazy(() => import('./pages/RecentlyAdded/index'));
@@ -30,7 +31,7 @@ root.render(
   <HelmetProvider>
     <Provider store={store}>
       <BrowserRouter>
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><LoadingSpinner size={32} /></div>}>
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/login" element={<AuthPage />} />
