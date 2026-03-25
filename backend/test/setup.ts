@@ -11,12 +11,20 @@ process.env.REFRESH_TOKEN_SECRET_KEY = 'refresh';
 // Fix mongoose deprecation warning
 mongoose.set('strictQuery', false);
 
-let mongo: MongoMemoryServer;
+let mongo: MongoMemoryServer | null = null;
 
 beforeAll(async () => {
+  const mongoUri = process.env.TEST_MONGO_URI;
+  const dbName =
+    process.env.TEST_MONGO_DB || `kitapkurdu-test-${process.env.JEST_WORKER_ID || '1'}`;
+
+  if (mongoUri) {
+    await mongoose.connect(mongoUri, { dbName });
+    return;
+  }
+
   mongo = await MongoMemoryServer.create();
-  const mongoUri = mongo.getUri();
-  await mongoose.connect(mongoUri, {});
+  await mongoose.connect(mongo.getUri(), { dbName });
 });
 
 beforeEach(async () => {

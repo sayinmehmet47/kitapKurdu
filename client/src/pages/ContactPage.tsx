@@ -43,14 +43,14 @@ export function ContactUs() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     emailjs
       .send(
-        process.env.REACT_APP_PUBLIC_EMAILJS_SERVICE_ID as string,
-        process.env.REACT_APP_PUBLIC_EMAILJS_TEMPLATE_ID as string,
+        import.meta.env.VITE_PUBLIC_EMAILJS_SERVICE_ID as string,
+        import.meta.env.VITE_PUBLIC_EMAILJS_TEMPLATE_ID as string,
         {
           name: values.name,
           email: values.email,
           feedback: values.feedback,
         },
-        process.env.REACT_APP_PUBLIC_EMAILJS_PUBLIC_KEY as string
+        import.meta.env.VITE_PUBLIC_EMAILJS_PUBLIC_KEY as string
       )
       .then(
         (result) => {

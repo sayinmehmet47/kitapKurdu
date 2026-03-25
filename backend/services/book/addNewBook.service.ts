@@ -25,7 +25,7 @@ const addNewBook = async (req: Request) => {
       bookName: req.body.name,
       error: error instanceof Error ? error.message : 'Unknown error'
     });
-    throw new Error('Could not find any categories');
+    responseData = [];
   }
 
   const books = new Books({
@@ -36,7 +36,7 @@ const addNewBook = async (req: Request) => {
     uploader: req.body.uploader,
   });
 
-  if (responseData) {
+  if (responseData && responseData.length > 0) {
     const categories: Set<string> = new Set(
       responseData
         .slice(0, 10)

@@ -46,7 +46,7 @@ export default function UploadNewBook() {
     formData.append('upload_preset', 'unsigned_upload'); // You may need to configure this
 
     const response = await fetch(
-      process.env.REACT_APP_CLOUDINARY_URL as string,
+      import.meta.env.VITE_CLOUDINARY_URL as string,
       {
         method: 'POST',
         body: formData,
