@@ -150,18 +150,44 @@ explicitly requests it.
 
 ### CI/CD
 
-GitHub Actions workflows (`.github/workflows/`) run pull-request checks and
-backend tests via [`main.yml`](../.github/workflows/main.yml). Additional legacy
-Kubernetes deployment workflow files remain present in the repository and may
-still have triggers configured. These legacy workflows are not the canonical
-deployment path and must not be invoked, repaired, or reactivated without an
-explicit issue. Migration and cleanup of deployment automation is tracked in
-issue [#317](/sayinmehmet47/kitapKurdu/issues/317).
+The [`main.yml`](../.github/workflows/main.yml) workflow (`Pull request quality checks`)
+runs on every pull request with no path or branch filters, so required checks
+never remain pending on docs-only or config-only PRs. It consists of two
+required checks:
+
+| Check name | What it verifies | Technology |
+| --- | --- | --- |
+| **Backend build and tests** | `npm ci` → `npm run build` → `npm run test:ci -- --runInBand` | Jest, Supertest, mongodb-memory-server (in-memory, no production service) |
+| **Client type-check and build** | `npm ci` → `npm run build` (`tsc && vite build`) | TypeScript compiler + Vite production bundle |
+
+The workflow uses `permissions: contents: read` (read-only), npm dependency
+caching via `setup-node`, and a concurrency group that cancels redundant
+in-progress runs on the same PR branch.
+
+Backend tests use isolated infrastructure (in-memory MongoDB via
+mongodb-memory-server) and never target production services. CI runs Jest
+serially (`--runInBand`) to prevent parallel first-download lock
+contention while still executing the complete test suite. CI pins the
+mongodb-memory-server binary to MongoDB 7.0.3 (`MONGOMS_VERSION`) for
+Linux runner compatibility (Debian 12). Client unit tests
+and Playwright E2E tests are tracked separately in issues
+[#315](/sayinmehmet47/kitapKurdu/issues/315) and
+[#316](/sayinmehmet47/kitapKurdu/issues/316) respectively and are not yet part
+of CI.
+
+Branch protection should require both checks — `Backend build and tests` and
+`Client type-check and build` — to pass before merging, after the workflow has
+run at least once on the target branch.
+
+Additional legacy Kubernetes deployment workflow files remain present in the
+repository and may still have triggers configured. These legacy workflows are
+not the canonical deployment path and must not be invoked, repaired, or
+reactivated without an explicit issue. Migration and cleanup of deployment
+automation is tracked in issue
+[#317](/sayinmehmet47/kitapKurdu/issues/317).
 
 The active deployment targets are Vercel (frontend) and Render (backend),
-as described in [Deployment topology](#deployment-topology). CI unit and
-integration tests use isolated infrastructure (e.g., GitHub-hosted runners,
-in-memory MongoDB) and must not target production services. Preview and
+as described in [Deployment topology](#deployment-topology). Preview and
 E2E tests may use Vercel preview deployments and may target a dedicated
 test/staging backend if one is provisioned in the future, but must never
 mutate production data.
