@@ -1,28 +1,13 @@
+import { BookOpen, Calendar, LogOut, Mail, Settings, Shield, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { logoutThunk } from '../redux/authSlice';
-import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
 import { toast } from 'sonner';
-import {
-  User,
-  Mail,
-  Shield,
-  Calendar,
-  LogOut,
-  Settings,
-  BookOpen,
-} from 'lucide-react';
-
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { type RootState, useAppDispatch, useAppSelector } from '@/redux/store';
+import { logoutThunk } from '../redux/authSlice';
 
 export default function UserProfile() {
   const dispatch = useAppDispatch();
@@ -37,7 +22,7 @@ export default function UserProfile() {
       await dispatch(logoutThunk()).unwrap();
       toast.success('Successfully logged out');
       navigate('/');
-    } catch (error) {
+    } catch {
       toast.error('Logout failed');
     }
   };
@@ -56,9 +41,7 @@ export default function UserProfile() {
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences
-          </p>
+          <p className="text-muted-foreground">Manage your account settings and preferences</p>
         </div>
 
         {/* Profile Card */}
@@ -86,12 +69,8 @@ export default function UserProfile() {
                   <User className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Username
-                  </p>
-                  <p className="text-lg font-semibold">
-                    {username || 'Not set'}
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">Username</p>
+                  <p className="text-lg font-semibold">{username || 'Not set'}</p>
                 </div>
               </div>
 
@@ -100,9 +79,7 @@ export default function UserProfile() {
                   <Mail className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Email
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">Email</p>
                   <p className="text-lg font-semibold">{email || 'Not set'}</p>
                 </div>
               </div>
@@ -112,14 +89,9 @@ export default function UserProfile() {
                   <Shield className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Role
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">Role</p>
                   <div className="flex items-center space-x-2">
-                    <Badge
-                      variant={isAdmin ? 'default' : 'secondary'}
-                      className="text-sm"
-                    >
+                    <Badge variant={isAdmin ? 'default' : 'secondary'} className="text-sm">
                       {isAdmin ? 'Administrator' : 'User'}
                     </Badge>
                   </div>
@@ -141,9 +113,7 @@ export default function UserProfile() {
                   <Settings className="h-4 w-4 mr-2" />
                   <div className="text-left">
                     <div className="font-medium">Edit Profile</div>
-                    <div className="text-xs text-muted-foreground">
-                      Update your information
-                    </div>
+                    <div className="text-xs text-muted-foreground">Update your information</div>
                   </div>
                 </Button>
 
@@ -155,9 +125,7 @@ export default function UserProfile() {
                   <BookOpen className="h-4 w-4 mr-2" />
                   <div className="text-left">
                     <div className="font-medium">My Books</div>
-                    <div className="text-xs text-muted-foreground">
-                      View your library
-                    </div>
+                    <div className="text-xs text-muted-foreground">View your library</div>
                   </div>
                 </Button>
               </div>
@@ -168,11 +136,7 @@ export default function UserProfile() {
             {/* Account Actions */}
             <div className="space-y-3">
               <h3 className="text-lg font-semibold">Account</h3>
-              <Button
-                variant="destructive"
-                onClick={handleLogout}
-                className="w-full"
-              >
+              <Button variant="destructive" onClick={handleLogout} className="w-full">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
@@ -191,20 +155,13 @@ export default function UserProfile() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="font-medium text-muted-foreground">
-                  Member since:
-                </span>
+                <span className="font-medium text-muted-foreground">Member since:</span>
                 <p className="mt-1">Recently joined</p>
               </div>
               <div>
-                <span className="font-medium text-muted-foreground">
-                  Account status:
-                </span>
+                <span className="font-medium text-muted-foreground">Account status:</span>
                 <div className="mt-1">
-                  <Badge
-                    variant="outline"
-                    className="text-green-600 border-green-200"
-                  >
+                  <Badge variant="outline" className="text-green-600 border-green-200">
                     Active
                   </Badge>
                 </div>

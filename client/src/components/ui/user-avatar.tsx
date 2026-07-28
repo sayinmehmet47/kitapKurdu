@@ -1,4 +1,9 @@
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useAppDispatch } from '@/redux/store';
+import { logoutThunk } from '../../redux/authSlice';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
+import { Button } from './button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,11 +13,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './dropdown-menu';
-import { logoutThunk } from '../../redux/authSlice';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Button } from './button';
-import { useAppDispatch } from '@/redux/store';
 
 export interface UserNavProps {
   avatarUrl?: string;
@@ -32,7 +32,7 @@ export function UserNav({
     try {
       await dispatch(logoutThunk()).unwrap();
       toast.success('Logout successful');
-    } catch (error) {
+    } catch {
       toast.error('Logout failed');
     }
   };
@@ -78,9 +78,7 @@ export function UserNav({
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{username}</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {email}
-                </p>
+                <p className="text-xs leading-none text-muted-foreground">{email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

@@ -1,30 +1,22 @@
-import React, { useState, useCallback } from 'react';
+import { AlertCircle, Book, CheckCircle, FileText, Upload, X } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import {
-  Upload,
-  FileText,
-  X,
-  CheckCircle,
-  AlertCircle,
-  Book,
-} from 'lucide-react';
 import { toast } from 'sonner';
-
-import Layout from '../components/Layout';
-import { useAppSelector } from '@/redux/store';
-import { useAddNewBookMutation } from '../redux/services/book.api';
 import {
+  Alert,
+  AlertDescription,
+  Badge,
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  Button,
   Progress,
-  Badge,
-  Alert,
-  AlertDescription,
 } from '@/components/ui';
+import { useAppSelector } from '@/redux/store';
+import Layout from '../components/Layout';
+import { useAddNewBookMutation } from '../redux/services/book.api';
 
 interface UploadFile {
   file: File;
@@ -45,13 +37,10 @@ export default function UploadNewBook() {
     formData.append('file', file);
     formData.append('upload_preset', 'unsigned_upload'); // You may need to configure this
 
-    const response = await fetch(
-      import.meta.env.VITE_CLOUDINARY_URL as string,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+    const response = await fetch(import.meta.env.VITE_CLOUDINARY_URL as string, {
+      method: 'POST',
+      body: formData,
+    });
 
     if (!response.ok) {
       throw new Error('Upload failed');
@@ -76,18 +65,14 @@ export default function UploadNewBook() {
     try {
       // Update status to uploading
       setUploadFiles((prev) =>
-        prev.map((f) =>
-          f.id === fileItem.id ? { ...f, status: 'uploading', progress: 0 } : f
-        )
+        prev.map((f) => (f.id === fileItem.id ? { ...f, status: 'uploading', progress: 0 } : f))
       );
 
       // Simulate progress (you can implement real progress tracking)
       const progressInterval = setInterval(() => {
         setUploadFiles((prev) =>
           prev.map((f) =>
-            f.id === fileItem.id && f.progress < 90
-              ? { ...f, progress: f.progress + 10 }
-              : f
+            f.id === fileItem.id && f.progress < 90 ? { ...f, progress: f.progress + 10 } : f
           )
         );
       }, 200);
@@ -102,22 +87,15 @@ export default function UploadNewBook() {
 
       // Update status to success
       setUploadFiles((prev) =>
-        prev.map((f) =>
-          f.id === fileItem.id ? { ...f, status: 'success', progress: 100 } : f
-        )
+        prev.map((f) => (f.id === fileItem.id ? { ...f, status: 'success', progress: 100 } : f))
       );
 
       toast.success(`${book.name} has been uploaded successfully!`);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Upload failed';
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
 
       setUploadFiles((prev) =>
-        prev.map((f) =>
-          f.id === fileItem.id
-            ? { ...f, status: 'error', error: errorMessage }
-            : f
-        )
+        prev.map((f) => (f.id === fileItem.id ? { ...f, status: 'error', error: errorMessage } : f))
       );
 
       toast.error(`Upload failed: ${errorMessage}`);
@@ -157,7 +135,7 @@ export default function UploadNewBook() {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / k ** i).toFixed(2)) + ' ' + sizes[i];
   };
 
   const getStatusIcon = (status: UploadFile['status']) => {
@@ -209,9 +187,7 @@ export default function UploadNewBook() {
                 <Book className="h-5 w-5" />
                 Select Files
               </CardTitle>
-              <CardDescription>
-                Drag and drop your books here, or click to browse
-              </CardDescription>
+              <CardDescription>Drag and drop your books here, or click to browse</CardDescription>
             </CardHeader>
             <CardContent>
               <div
@@ -231,9 +207,7 @@ export default function UploadNewBook() {
                     <Upload className="h-8 w-8 text-primary" />
                   </div>
                   {isDragActive ? (
-                    <p className="text-lg font-medium text-primary">
-                      Drop your books here!
-                    </p>
+                    <p className="text-lg font-medium text-primary">Drop your books here!</p>
                   ) : (
                     <>
                       <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -255,15 +229,14 @@ export default function UploadNewBook() {
                 <Alert>
                   <FileText className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>PDF files:</strong> Perfect for academic papers,
-                    textbooks, and documents
+                    <strong>PDF files:</strong> Perfect for academic papers, textbooks, and
+                    documents
                   </AlertDescription>
                 </Alert>
                 <Alert>
                   <Book className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>EPUB files:</strong> Ideal for novels, stories, and
-                    reflowable content
+                    <strong>EPUB files:</strong> Ideal for novels, stories, and reflowable content
                   </AlertDescription>
                 </Alert>
               </div>
@@ -277,8 +250,7 @@ export default function UploadNewBook() {
                 <div>
                   <CardTitle>Upload Queue</CardTitle>
                   <CardDescription>
-                    {completedFiles.length} of {uploadFiles.length} files
-                    uploaded
+                    {completedFiles.length} of {uploadFiles.length} files uploaded
                   </CardDescription>
                 </div>
                 {pendingFiles.length > 0 && (
@@ -294,9 +266,7 @@ export default function UploadNewBook() {
                       key={fileItem.id}
                       className="flex items-center space-x-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
                     >
-                      <div className="flex-shrink-0">
-                        {getStatusIcon(fileItem.status)}
-                      </div>
+                      <div className="flex-shrink-0">{getStatusIcon(fileItem.status)}</div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
@@ -308,20 +278,14 @@ export default function UploadNewBook() {
                               {formatFileSize(fileItem.file.size)}
                             </Badge>
                             <Badge variant="secondary" className="text-xs">
-                              {fileItem.file.name
-                                .split('.')
-                                .pop()
-                                ?.toUpperCase()}
+                              {fileItem.file.name.split('.').pop()?.toUpperCase()}
                             </Badge>
                           </div>
                         </div>
 
                         {fileItem.status === 'uploading' && (
                           <div className="space-y-2">
-                            <Progress
-                              value={fileItem.progress}
-                              className="h-2"
-                            />
+                            <Progress value={fileItem.progress} className="h-2" />
                             <p className="text-xs text-gray-500">
                               Uploading... {fileItem.progress}%
                             </p>
@@ -329,9 +293,7 @@ export default function UploadNewBook() {
                         )}
 
                         {fileItem.status === 'error' && (
-                          <p className="text-xs text-red-500">
-                            Error: {fileItem.error}
-                          </p>
+                          <p className="text-xs text-red-500">Error: {fileItem.error}</p>
                         )}
 
                         {fileItem.status === 'success' && (
