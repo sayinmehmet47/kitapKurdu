@@ -1,21 +1,18 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import 'express-async-errors';
 import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
-
-import routes from './routes';
-import { json } from 'body-parser';
-
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
+import morgan from 'morgan';
 import path from 'path';
-import { NotFoundError } from './errors/not-found-error';
-import { errorHandler } from './middleware/error-handler';
-import { updateMetrics } from './metrics';
-import { logger } from './logger';
 import winston from 'winston';
-import passport from './src/config/passport';
+import { NotFoundError } from './errors/not-found-error';
+import { logger } from './logger';
+import { updateMetrics } from './metrics';
+import { errorHandler } from './middleware/error-handler';
 import { Books } from './models/Books';
+import routes from './routes';
+import passport from './src/config/passport';
 
 const app = express();
 app.set('trust proxy', true);
@@ -37,13 +34,7 @@ app.use(
       'https://kitapkurdu.onrender.com',
       'https://kitap-kurdu-bx87.vercel.app',
     ],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Requested-With',
-      'Accept',
-      'Origin',
-    ],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   })
@@ -67,8 +58,7 @@ app.get('/og/book/:id', async (req: Request, res: Response) => {
       : book.imageLinks?.thumbnail || `${origin}/logo-white.svg`;
 
     const title = `${book.name} | Book-Worm`;
-    const description =
-      book.description || 'Read and download books on Book-Worm';
+    const description = book.description || 'Read and download books on Book-Worm';
 
     const html = `<!DOCTYPE html>
     <html lang="en">
@@ -98,7 +88,7 @@ app.get('/og/book/:id', async (req: Request, res: Response) => {
   } catch (error) {
     logger.error('Error generating Open Graph preview', {
       bookId: req.params.id,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
     res.status(500).send('Server error');
   }
@@ -107,8 +97,7 @@ app.get('/og/book/:id', async (req: Request, res: Response) => {
 // Sitemap for key routes and per-book pages
 app.get('/sitemap.xml', async (req: Request, res: Response) => {
   try {
-    const origin =
-      process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
+    const origin = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
     const staticUrls = ['/', '/all-books', '/recently-added'];
 
     const books = await Books.find({}, { _id: 1, date: 1 }).lean();
@@ -138,16 +127,14 @@ ${urls
     res.status(200).send(xml);
   } catch (error) {
     logger.error('Error generating sitemap', {
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
     res.status(500).send('Server error');
   }
 });
 
 app.get('/healthz', (req: Request, res: Response) => {
-  res
-    .status(200)
-    .json({ status: 'ok', uptime: process.uptime(), timestamp: Date.now() });
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: Date.now() });
 });
 
 app.use(updateMetrics);
@@ -174,6 +161,7 @@ if (process.env.NODE_ENV !== 'production') {
     })
   );
 }
+
 export { app };
 
 function escapeHtml(input: string): string {

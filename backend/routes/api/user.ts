@@ -1,13 +1,10 @@
-import express, { Request, Response, CookieOptions } from 'express';
+import express, { type CookieOptions, type Request, type Response } from 'express';
 import { body } from 'express-validator';
-import { auth, handlePassportAuth } from '../../middleware/auth';
-import { validateRequest } from '../../middleware/validate-request';
 import passport from 'passport';
 import {
-  generateAccessToken,
-  generateRefreshToken,
-} from '../../utils/jwt.utils';
-
+  resendVerificationController,
+  verifyEmailController,
+} from '../../controllers/emailVerification.controller';
 import {
   authController,
   loginController,
@@ -15,10 +12,10 @@ import {
   refreshTokenController,
   registerController,
 } from '../../controllers/user.controller';
-import {
-  verifyEmailController,
-  resendVerificationController,
-} from '../../controllers/emailVerification.controller';
+import { auth } from '../../middleware/auth';
+import { validateRequest } from '../../middleware/validate-request';
+import { generateAccessToken, generateRefreshToken } from '../../utils/jwt.utils';
+
 const router = express.Router();
 
 router.post(
@@ -36,15 +33,15 @@ router.post(
   '/register',
   [
     body('username', 'Please enter a valid username').isLength({ min: 3 }),
-    body('email', 'Please enter a valid email')
-      .isEmail()
-      .withMessage('Email must be valid'),
+    body('email', 'Please enter a valid email').isEmail().withMessage('Email must be valid'),
     body('password', 'Please enter a valid password')
       .trim()
       .isLength({ min: 8 })
       .withMessage('Password must be at least 8 characters')
       .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-      .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number'),
+      .withMessage(
+        'Password must contain at least one lowercase letter, one uppercase letter, and one number'
+      ),
     body('isAdmin', 'Please enter a valid isAdmin').isBoolean().optional(),
   ],
   validateRequest,
@@ -119,11 +116,7 @@ router.post(
 router.get('/verify-email/:token', verifyEmailController);
 router.post(
   '/resend-verification',
-  [
-    body('email', 'Please enter a valid email')
-      .isEmail()
-      .withMessage('Email must be valid'),
-  ],
+  [body('email', 'Please enter a valid email').isEmail().withMessage('Email must be valid')],
   validateRequest,
   resendVerificationController
 );

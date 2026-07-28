@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import {
   addNewBook,
   deleteBook,
@@ -9,7 +9,6 @@ import {
   updateBook,
   updateCategories,
 } from '../services/book';
-import { logger } from '../logger';
 
 export const getAllBooksController = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -55,11 +54,7 @@ export const recentlyAddedBooksController = async (
   }
 };
 
-export const deleteBookController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteBookController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const book = await deleteBook(req);
     res.status(200).json(book);
