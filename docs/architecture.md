@@ -250,6 +250,36 @@ E2E tests may use Vercel preview deployments and may target a dedicated
 test/staging backend if one is provisioned in the future, but must never
 mutate production data.
 
+### Biome
+
+A single root [`biome.json`](../biome.json) (Biome 2.5.6) runs through root npm
+scripts in [`package.json`](../package.json). It handles formatting, linting, and
+import organization for supported file types (JS, TS, JSX, TSX, JSON, CSS).
+Markdown and YAML are not supported by Biome and are excluded from the
+configuration.
+
+| Script | Scope | Behavior |
+| --- | --- | --- |
+| `npm run check` | Staged files only | Reports format/lint issues without modifying files |
+| `npm run check:write` | Staged files only | Applies formatting and safe fixes; review and re-stage before committing |
+| `npm run check:ci` | Changed files vs `origin/main` | Read-only (non-mutating); used in CI with `fetch-depth: 0` |
+| `npm run check:all` | All supported files | Full audit; currently reports legacy debt not yet addressed |
+
+The incremental staged/local workflow (`check:write` → manual review → `check`)
+keeps the migration deliberate. The changed-file CI strategy (`check:ci`)
+requires `fetch-depth: 0` so Biome can diff against the base branch without a
+shallow-clone error.
+
+#### CI job
+
+| Check name | What it verifies | Technology |
+| --- | --- | --- |
+| **Biome code quality** | `npm ci` → `npm run check:ci` (read-only, changed files) | Biome 2.5.6 |
+
+This job (`id: code-quality`) is independent and is **not** branch-protection-required
+yet. The existing protected check names — **Backend build and tests** and
+**Client type-check and build** — remain unchanged.
+
 ## Current test state
 
 | Area       | Status                                                                                                   |
