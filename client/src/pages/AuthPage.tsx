@@ -1,20 +1,12 @@
-import { FC, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { type FC, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import * as z from 'zod';
+import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -23,11 +15,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import Layout from '@/components/Layout';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { loginThunk, registerThunk } from '@/redux/authSlice';
-import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
 import { apiBaseUrl } from '@/redux/common.api';
+import { type RootState, useAppDispatch, useAppSelector } from '@/redux/store';
 
 // Types
 interface LoginFormData {
@@ -70,8 +63,7 @@ const AUTH_TABS = {
 
 const AuthPage: FC = () => {
   const [activeTab, setActiveTab] = useState<string>(AUTH_TABS.LOGIN);
-  const [showResendVerification, setShowResendVerification] =
-    useState<boolean>(false);
+  const [showResendVerification, setShowResendVerification] = useState<boolean>(false);
   const [lastAttemptedEmail, setLastAttemptedEmail] = useState<string>('');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -124,7 +116,7 @@ const AuthPage: FC = () => {
           toast.error(errorMessage);
         }
       }
-    } catch (error) {
+    } catch {
       toast.error('Something went wrong during login');
     }
   };
@@ -134,15 +126,13 @@ const AuthPage: FC = () => {
       const { confirmPassword, ...registerData } = data;
       const result = await dispatch(registerThunk(registerData));
       if (result.meta.requestStatus === 'fulfilled') {
-        toast.success(
-          'Registration successful! Please check your email to verify your account.'
-        );
+        toast.success('Registration successful! Please check your email to verify your account.');
         setActiveTab(AUTH_TABS.LOGIN);
         registerForm.reset();
       } else {
         toast.error((result.payload as string) || 'Registration failed');
       }
-    } catch (error) {
+    } catch {
       toast.error('Something went wrong during registration');
     }
   };
@@ -175,7 +165,7 @@ const AuthPage: FC = () => {
         const error = await response.json();
         toast.error(error.error || 'Failed to send verification email');
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to send verification email');
     }
   };
@@ -191,11 +181,7 @@ const AuthPage: FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value={AUTH_TABS.LOGIN}>Sign In</TabsTrigger>
                 <TabsTrigger value={AUTH_TABS.REGISTER}>Sign Up</TabsTrigger>
@@ -204,10 +190,7 @@ const AuthPage: FC = () => {
               {/* Login Tab */}
               <TabsContent value={AUTH_TABS.LOGIN} className="space-y-4">
                 <Form {...loginForm}>
-                  <form
-                    onSubmit={loginForm.handleSubmit(handleLogin)}
-                    className="space-y-4"
-                  >
+                  <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
                     <FormField
                       control={loginForm.control}
                       name="username"
@@ -243,11 +226,7 @@ const AuthPage: FC = () => {
                         </FormItem>
                       )}
                     />
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={isLoading}
-                    >
+                    <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading ? 'Signing in...' : 'Sign In'}
                     </Button>
                   </form>
@@ -286,7 +265,12 @@ const AuthPage: FC = () => {
                   onClick={handleGoogleLogin}
                   disabled={isLoading}
                 >
-                  <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    viewBox="0 0 24 24"
+                    aria-hidden={true}
+                    focusable={false}
+                  >
                     <path
                       fill="#4285F4"
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -311,10 +295,7 @@ const AuthPage: FC = () => {
               {/* Register Tab */}
               <TabsContent value={AUTH_TABS.REGISTER} className="space-y-4">
                 <Form {...registerForm}>
-                  <form
-                    onSubmit={registerForm.handleSubmit(handleRegister)}
-                    className="space-y-4"
-                  >
+                  <form onSubmit={registerForm.handleSubmit(handleRegister)} className="space-y-4">
                     <FormField
                       control={registerForm.control}
                       name="username"
@@ -396,11 +377,7 @@ const AuthPage: FC = () => {
                         Privacy Policy
                       </span>
                     </div>
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={isLoading}
-                    >
+                    <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading ? 'Creating account...' : 'Create Account'}
                     </Button>
                   </form>

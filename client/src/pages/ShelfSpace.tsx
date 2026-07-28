@@ -1,23 +1,18 @@
 import { useSelector } from 'react-redux';
-import Layout from '../components/Layout';
-import { RootState } from '@/redux/store';
 import { toast } from 'sonner';
 import {
-  useDeleteMessageMutation,
-  useGetAllMessagesQuery,
-} from '../redux/services/messages.api';
-import {
-  ShelfSpaceHeader,
   ErrorState,
-  MessagesList,
   FormSidebar,
   LoadingState,
+  MessagesList,
+  ShelfSpaceHeader,
 } from '@/components/shelf-space';
+import type { RootState } from '@/redux/store';
+import Layout from '../components/Layout';
+import { useDeleteMessageMutation, useGetAllMessagesQuery } from '../redux/services/messages.api';
 
 export default function ShelfSpace() {
-  const { isAdmin } = useSelector(
-    (state: RootState) => state.authSlice.user.user
-  );
+  const { isAdmin } = useSelector((state: RootState) => state.authSlice.user.user);
   const { data: messages, isLoading, isError } = useGetAllMessagesQuery();
   const [deleteMessage] = useDeleteMessageMutation();
 
@@ -25,7 +20,7 @@ export default function ShelfSpace() {
     try {
       await deleteMessage({ id: messageId }).unwrap();
       toast.success('Message deleted successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete message');
     }
   };

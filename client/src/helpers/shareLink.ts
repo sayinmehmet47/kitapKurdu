@@ -14,7 +14,7 @@ export const shareLink = async ({ title, text, url }: ShareLinkParams) => {
       await navigator.clipboard.writeText(url);
       toast.success('Link copied to clipboard');
     }
-  } catch (error) {
+  } catch {
     // User may cancel share; ignore silently
   }
 };
