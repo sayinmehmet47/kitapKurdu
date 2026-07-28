@@ -172,8 +172,28 @@ mongodb-memory-server binary to MongoDB 7.0.3 (`MONGOMS_VERSION`) for
 Linux runner compatibility (Debian 12).
 
 Client unit tests use Vitest with jsdom and Testing Library and avoid
-production services. Playwright E2E tests are tracked separately in
-[#316](/sayinmehmet47/kitapKurdu/issues/316) and are not yet part of CI.
+production services.
+
+#### Playwright E2E smoke (`e2e.yml`)
+
+A separate [`e2e.yml`](../.github/workflows/e2e.yml) workflow runs Playwright
+smoke tests on pull requests targeting `main` when `client/**` or the workflow
+itself changes. It can also be triggered manually via `workflow_dispatch`.
+
+| Aspect | Detail |
+| --- | --- |
+| **Browsers** | Chromium-only (Desktop Chrome). No Firefox or WebKit on PRs. |
+| **API strategy** | Every API call is intercepted at `page.route()` level with deterministic fixture JSON. No backend, MongoDB, Cloudinary, Render, or Vercel is required. |
+| **External services** | Google Analytics/Tag Manager, production Render API, Pexels, unpkg, and service worker registrations are blocked at the route level. |
+| **Isolation** | Fully mocked frontend-only; no network calls leave the browser except Vite dev-server requests for HTML/JS/CSS assets. |
+| **Artifacts** | `test-results/` and `playwright-report/` are uploaded only when the job fails (retention 7 days). |
+| **Concurrency** | Grouped by workflow + ref; in-progress runs on the same PR are cancelled. |
+| **Run command** | `npm run test:e2e` in `client/`. Prerequisite: `npx playwright install chromium`. |
+
+**Important:** These are **frontend smoke tests**, not a full-stack E2E suite.
+They validate that critical UI flows render correctly with mocked API responses.
+A future true full-stack E2E environment must use isolated test/staging
+resources and must never target production services or data.
 
 Branch protection should require both checks — `Backend build and tests` and
 `Client type-check and build` — to pass before merging, after the workflow has
@@ -198,4 +218,4 @@ mutate production data.
 | ---------- | -------------------------------------------------------------------------------------------------------- |
 | Backend    | Jest + Supertest + mongodb-memory-server. Route integration tests live under [`backend/routes/api/__test__/`](../backend/routes/api/__test__/). Run with `npm test` or `npm run test:ci` in `backend/`. |
 | Client     | Vitest + jsdom + Testing Library. Unit tests live under `client/src/` in `__tests__` directories. Run with `npm test` in `client/`. |
-| Playwright | Configuration exists at [`client/playwright.config.ts`](../client/playwright.config.ts). First smoke tests are tracked in issue [#316](/sayinmehmet47/kitapKurdu/issues/316). E2E tests are not yet part of CI. |
+| Playwright | Smoke specs under `client/tests/`. Fully mocked API fixtures (no backend, database, or external services). Chromium-only. Run with `npm run test:e2e` in `client/`. CI via [`e2e.yml`](../.github/workflows/e2e.yml). |
