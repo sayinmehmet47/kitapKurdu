@@ -158,7 +158,7 @@ required checks:
 | Check name | What it verifies | Technology |
 | --- | --- | --- |
 | **Backend build and tests** | `npm ci` → `npm run build` → `npm run test:ci -- --runInBand` | Jest, Supertest, mongodb-memory-server (in-memory, no production service) |
-| **Client type-check and build** | `npm ci` → `npm run build` (`tsc && vite build`) | TypeScript compiler + Vite production bundle |
+| **Client type-check and build** | `npm ci` → `npm test` → `npm run build` (`tsc && vite build`) | Vitest, jsdom, Testing Library + TypeScript compiler + Vite production bundle |
 
 The workflow uses `permissions: contents: read` (read-only), npm dependency
 caching via `setup-node`, and a concurrency group that cancels redundant
@@ -169,11 +169,11 @@ mongodb-memory-server) and never target production services. CI runs Jest
 serially (`--runInBand`) to prevent parallel first-download lock
 contention while still executing the complete test suite. CI pins the
 mongodb-memory-server binary to MongoDB 7.0.3 (`MONGOMS_VERSION`) for
-Linux runner compatibility (Debian 12). Client unit tests
-and Playwright E2E tests are tracked separately in issues
-[#315](/sayinmehmet47/kitapKurdu/issues/315) and
-[#316](/sayinmehmet47/kitapKurdu/issues/316) respectively and are not yet part
-of CI.
+Linux runner compatibility (Debian 12).
+
+Client unit tests use Vitest with jsdom and Testing Library and avoid
+production services. Playwright E2E tests are tracked separately in
+[#316](/sayinmehmet47/kitapKurdu/issues/316) and are not yet part of CI.
 
 Branch protection should require both checks — `Backend build and tests` and
 `Client type-check and build` — to pass before merging, after the workflow has
@@ -197,5 +197,5 @@ mutate production data.
 | Area       | Status                                                                                                   |
 | ---------- | -------------------------------------------------------------------------------------------------------- |
 | Backend    | Jest + Supertest + mongodb-memory-server. Route integration tests live under [`backend/routes/api/__test__/`](../backend/routes/api/__test__/). Run with `npm test` or `npm run test:ci` in `backend/`. |
-| Client     | `@testing-library/*` packages are installed but no working unit-test script is wired up.                 |
+| Client     | Vitest + jsdom + Testing Library. Unit tests live under `client/src/` in `__tests__` directories. Run with `npm test` in `client/`. |
 | Playwright | Configuration exists at [`client/playwright.config.ts`](../client/playwright.config.ts). First smoke tests are tracked in issue [#316](/sayinmehmet47/kitapKurdu/issues/316). E2E tests are not yet part of CI. |
