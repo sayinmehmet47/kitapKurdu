@@ -38,6 +38,7 @@
   <a href="#rocket-technologies">Technologies</a> &#xa0; | &#xa0;
   <a href="#white_check_mark-requirements">Requirements</a> &#xa0; | &#xa0;
   <a href="#checkered_flag-starting">Starting</a> &#xa0; | &#xa0;
+  <a href="#books-documentation">Documentation</a> &#xa0; | &#xa0;
   <a href="#memo-license">License</a> &#xa0; | &#xa0;
   <a href="https://github.com/sayinmehmet47" target="_blank">Author</a>
 </p>
@@ -125,6 +126,11 @@ $ cd ..
 
 
 
+
+## :books: Documentation
+
+- [Agent instructions](AGENTS.md) — commands, workflow, security, and testing guidance for contributors and automation.
+- [Architecture](docs/architecture.md) — current repository architecture, data flow, API routes, environment variables, deployment topology, and test state.
 
 ## :memo: License
 
