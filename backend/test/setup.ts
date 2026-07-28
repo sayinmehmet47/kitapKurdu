@@ -13,6 +13,7 @@ mongoose.set('strictQuery', false);
 
 let mongo: MongoMemoryServer | null = null;
 
+// First isolated CI run may need to download the MongoDB binary.
 beforeAll(async () => {
   const mongoUri = process.env.TEST_MONGO_URI;
   const dbName =
@@ -25,7 +26,7 @@ beforeAll(async () => {
 
   mongo = await MongoMemoryServer.create();
   await mongoose.connect(mongo.getUri(), { dbName });
-});
+}, 60_000);
 
 beforeEach(async () => {
   jest.clearAllMocks();
