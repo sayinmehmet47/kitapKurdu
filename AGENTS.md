@@ -64,6 +64,8 @@ guess commands.
 | `npm start`          | `vite` (dev server, port 3000)        |
 | `npm run build`      | `tsc && vite build`                   |
 | `npm run preview`    | `vite preview`                        |
+| `npm test`           | `vitest run`                          |
+| `npm run test:watch` | `vitest`                              |
 
 ### Backend (`backend/`)
 
@@ -125,7 +127,7 @@ The Vite dev server proxies `/api` requests to `http://localhost:5000`.
 | Area      | Status                                                        |
 | --------- | ------------------------------------------------------------- |
 | Backend   | Jest + Supertest + mongodb-memory-server. Route tests under `backend/routes/api/__test__/`. Run with `npm test` or `npm run test:ci` in `backend/`. |
-| Client    | No working unit-test script. `@testing-library/*` packages are installed but the test infrastructure is incomplete. |
+| Client    | Vitest + jsdom + Testing Library. Unit tests live under `client/src/` in `__tests__` directories. Run with `npm test` in `client/`. |
 | Playwright | Config exists (`client/playwright.config.ts`). First smoke tests are tracked in a separate issue (#316). |
 
 When verifying changes, run the **closest relevant check** for the layer you
