@@ -1,0 +1,94 @@
+name: Agent Task
+description: Define a bounded task for an automated coding agent
+title: "agent: "
+labels:
+  - agent-ready
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **Before filling this form**, read the repository's agent instructions
+        at [AGENTS.md](https://github.com/sayinmehmet47/kitapKurdu/blob/main/AGENTS.md)
+        and the architecture overview in
+        [AGENTS.md#repository-overview](https://github.com/sayinmehmet47/kitapKurdu/blob/main/AGENTS.md#repository-overview).
+
+  - type: textarea
+    id: goal_background
+    attributes:
+      label: Goal / Background
+      description: What should be accomplished and why?
+      placeholder: Describe the objective and any necessary context
+    validations:
+      required: true
+
+  - type: textarea
+    id: in_scope
+    attributes:
+      label: In-Scope Paths or Components
+      description: Exact files, directories, or components the agent may modify
+      placeholder: |
+        - client/src/pages/Search.tsx
+        - backend/routes/api/books.ts
+        - backend/services/bookSearch.ts
+    validations:
+      required: true
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out-of-Scope Boundaries
+      description: What the agent must NOT touch
+      placeholder: |
+        - No changes to CI/CD workflows
+        - No dependency upgrades
+        - No reformatting outside scope
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Measurable, testable conditions for completion
+      placeholder: |
+        - [ ] When ... the system ...
+        - [ ] Test at backend/routes/api/__test__/... passes
+        - [ ] User can see ... on the page
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification_expectations
+    attributes:
+      label: Verification Expectations
+      description: Commands or checks the agent should run before reporting done
+      placeholder: |
+        - Run `npm test` in backend/
+        - Confirm the page renders in dev mode
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies_blockers
+    attributes:
+      label: Dependencies / Blockers (optional)
+      description: Issues, PRs, or decisions this task depends on
+      placeholder: "Blocked by #42, requires PR #77 to land first"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: readiness_confirmations
+    attributes:
+      label: Readiness Confirmations
+      options:
+        - label: This task is bounded to one issue (single concern)
+          required: true
+        - label: Acceptance criteria are measurable and verifiable
+          required: true
+        - label: Tests or manual checks have been identified for verification
+          required: true
+        - label: No secret values, passwords, tokens, or credentials are included
+          required: true
+        - label: This task does not require deployment or Kubernetes activation (unless explicitly scoped above)
+          required: true
