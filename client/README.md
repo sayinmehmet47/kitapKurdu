@@ -1,70 +1,147 @@
-# Getting Started with Create React App
+# KitapKurdu Client
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React 18 frontend for the KitapKurdu book search and sharing application. Built with Vite 6,
+TypeScript, Redux Toolkit, Tailwind CSS, and Radix UI.
 
-## Available Scripts
+- [Root README](../README.md) — Full project overview, setup, deployment
+- [`docs/architecture.md`](../docs/architecture.md) — Architecture, data flow, API routes
 
-In the project directory, you can run:
+## Prerequisites
 
-### `yarn start`
+- [Node.js](https://nodejs.org) 20.x (pinned via `engines.node` in `package.json`)
+- Backend running on port 5000 (see [root quick start](../README.md#quick-start))
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Setup
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+cd client
+npm ci
+cp .env.example .env   # fill in Cloudinary/EmailJS values (optional)
+npm start              # Vite dev server on port 3000
+```
 
-### `yarn test`
+The Vite dev server proxies `/api` requests to `http://localhost:5000`. The canonical
+API path is `/api` in both development and production — see the [request flow
+explanation](../README.md#request-flow) in the root README.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Scripts
 
-### `yarn build`
+| Command                  | Purpose                                                |
+| ------------------------ | ------------------------------------------------------ |
+| `npm start`              | Vite dev server (port 3000, hot reload)                 |
+| `npm run build`          | TypeScript check + production bundle (`tsc && vite build`) |
+| `npm run preview`        | Preview the production build locally                     |
+| `npm test`               | Run Vitest unit tests                                    |
+| `npm run test:watch`     | Run Vitest in watch mode                                 |
+| `npm run test:e2e`       | Run Playwright smoke tests                               |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Directory map
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+client/
+├── src/
+│   ├── main.tsx            # Entry point
+│   ├── pages/              # Route-level components (Home, Books, Login, etc.)
+│   ├── components/         # Shared UI components (Navbar, Footer, Search, etc.)
+│   ├── redux/              # Redux store, slices, API helper
+│   ├── helpers/            # Utility functions
+│   ├── constants/          # Application constants
+│   ├── lib/                # Shared library code
+│   └── book-table/         # Book table components
+├── tests/                  # Playwright E2E specs
+├── vite.config.ts          # Vite config (port 3000, /api proxy, build)
+└── vercel.json             # Vercel deployment config
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Environment variables
 
-### `yarn eject`
+All `VITE_*` variables are embedded in the JavaScript bundle at build time and are
+**publicly visible** in the browser. Never store private credentials in them.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+| Variable                              | Purpose                                        | Default                  |
+| ------------------------------------- | ---------------------------------------------- | ------------------------ |
+| `VITE_PROD_API`                       | Override API base path in production            | unset → `/api`           |
+| `VITE_CLOUDINARY_URL`                 | Cloudinary base URL for image uploads          | (required for uploads)   |
+| `VITE_PUBLIC_EMAILJS_SERVICE_ID`      | EmailJS service ID (contact form)               | (required for contact form) |
+| `VITE_PUBLIC_EMAILJS_TEMPLATE_ID`     | EmailJS template ID (contact form)              | (required for contact form) |
+| `VITE_PUBLIC_EMAILJS_PUBLIC_KEY`      | EmailJS public key (contact form)               | (required for contact form) |
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+`VITE_PROD_API` is optional. When unset, the production API path defaults to `/api` and
+is rewritten to the Render backend by the Vercel rewrite rule in
+[`vercel.json`](vercel.json). Setting it to a full URL stores that URL in the public
+bundle — prefer leaving it unset.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+The variables `VITE_LOCAL_API` and `VITE_DEV_API` are **not** actively consumed by the
+codebase and should not be relied upon.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Testing
 
-## Learn More
+### Unit tests (Vitest)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm test              # single run
+npm run test:watch    # watch mode
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Framework:** Vitest with jsdom environment
+- **Utilities:** Testing Library (React, jest-dom, user-event)
+- Tests live in `__tests__` directories under `src/`
 
-### Code Splitting
+### E2E smoke tests (Playwright)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+npx playwright install chromium   # prerequisite (one-time)
+npm run test:e2e
+```
 
-### Analyzing the Bundle Size
+- **Browsers:** Chromium only
+- **API strategy:** All API calls are intercepted at `page.route()` level with
+  deterministic fixture JSON — no backend, database, Cloudinary, or external
+  services required
+- **External services blocked:** Google Analytics, Tag Manager, production Render
+  API, Pexels, unpkg, and service worker registrations
+- **Isolation:** Fully mocked frontend-only. No network calls leave the browser
+  except Vite dev-server asset requests
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Deployment
 
-### Making a Progressive Web App
+The client is deployed to Vercel. See [the root README's Deployment
+section](../README.md#vercel-frontend) for the complete configuration and the
+[`vercel.json`](vercel.json) file for the build and rewrite rules.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+| Setting            | Value                          |
+| ------------------ | ------------------------------ |
+| Root Directory     | `client`                       |
+| Build Command      | `npm run build`                 |
+| Output Directory   | `build`                        |
+| Node.js Version    | 20.x                           |
 
-### Advanced Configuration
+Merging to `main` triggers an automatic deployment. Frontend-only PRs receive preview
+URLs.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+The backend runs on Render (`https://kitapkurdu.onrender.com`). API requests are
+rewritten by Vercel to the backend — the client does not reference the Render URL
+directly in its source code (unless `VITE_PROD_API` is explicitly overridden).
 
-### Deployment
+## Troubleshooting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**API requests return 404 or CORS errors.**
+The Vite dev server must be running (port 3000) and proxying to the backend (port 5000).
+Verify the backend is up at `http://localhost:5000/healthz`. For CORS errors in
+production, verify that the Vercel domain is in the explicit origin allowlist in
+`backend/app.ts`; `CLIENT_URL` controls redirects/OAuth/email links and does not
+dynamically update CORS.
 
-### `yarn build` fails to minify
+**Production builds hitting the wrong API URL.**
+Check the Vercel dashboard environment variables. If `VITE_PROD_API` is set, it
+overrides the canonical `/api` path. Remove it or set it back to `/api`. Remember that
+all `VITE_*` values are public — do not store the Render URL as a secret.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Playwright tests fail — browser not found.**
+Run `npx playwright install chromium` in the `client/` directory to install the
+required browser binary.
+
+**Biome formatting (from repo root).**
+Biome operates from the repository root via the root `package.json` scripts. Run
+`npm run check:write` and `npm run check` from the root directory — not from
+`client/`.
