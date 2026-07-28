@@ -60,6 +60,10 @@ guess commands.
 | `npm run local:frontend` | `npm --prefix ./client start`        |
 | `npm run local:backend`  | `PORT=5000 npm --prefix ./backend run dev` |
 | `npm test`           | Placeholder (`echo "Error: no test specified" && exit 1`) — **do not use for verification.** |
+| `npm run check`       | Checks staged supported files for format/lint issues (`biome check --staged --no-errors-on-unmatched .`) |
+| `npm run check:write` | Formats and applies safe fixes to staged supported files (`biome check --write --staged --no-errors-on-unmatched .`) |
+| `npm run check:ci`    | Read-only check of changed files vs `origin/main`, used in CI (`biome ci --changed --since=origin/main --no-errors-on-unmatched .`) |
+| `npm run check:all`   | Audits all supported files; currently reports legacy debt (`biome check .`) |
 
 ### Client (`client/`)
 
@@ -95,6 +99,40 @@ and `./backend` as needed.
 | Backend  | 5000 |
 
 The Vite dev server proxies `/api` requests to `http://localhost:5000`.
+
+## Biome
+
+A single root [`biome.json`](biome.json) (Biome 2.5.6) covers supported files in both
+`client/` and `backend/`:
+
+- **Supported:** JavaScript, TypeScript, JSX/TSX, JSON, CSS under `client/src/`,
+  `client/tests/`, `backend/`, root `package.json` variants, `tsconfig*.json`,
+  `biome.json`, and `opencode.jsonc`.
+- **Excluded:** Markdown, YAML, legacy infra manifests (`infra/`), CI workflows,
+  `.env` files, and generated code (`dist/`, `build/`, `node_modules/`).
+- **Type-checking is separate:** Biome does not replace `tsc` — the existing
+  `npm run build` steps in `client/` and `backend/` still perform full
+  TypeScript compilation checks.
+
+### Before committing or pushing
+
+1. Stage the files you intend to commit.
+2. Run `npm run check:write` to apply formatting and safe auto-fixes.
+3. Review and re-stage any automatic changes.
+4. Run `npm run check` to verify no issues remain.
+5. Never auto-format in CI — CI runs `check:ci` read-only.
+
+There is **no Husky** or pre-commit hook. All formatting is manual and
+deliberate.
+
+### CI integration
+
+The `Biome code quality` job in [`main.yml`](.github/workflows/main.yml) runs
+`npm run check:ci` (read-only, `fetch-depth: 0`) on every PR. It is an
+independent job and does not block merges unless branch protection is updated.
+
+The existing required check names — **Backend build and tests** and
+**Client type-check and build** — are unchanged.
 
 ## Agent workflow
 

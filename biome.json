@@ -1,0 +1,66 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.6/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "client/src/**/*.{js,jsx,ts,tsx,css}",
+      "client/tests/**/*.ts",
+      "client/*.config.{js,ts}",
+      "backend/**/*.ts",
+      "package.json",
+      "client/package.json",
+      "backend/package.json",
+      "tsconfig.json",
+      "client/tsconfig.json",
+      "backend/tsconfig.json",
+      "backend/tsconfig.build.json",
+      "biome.json",
+      "opencode.jsonc"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "es5",
+      "arrowParentheses": "always"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error"
+      }
+    },
+    "domains": {
+      "react": "recommended",
+      "test": "recommended",
+      "playwright": "recommended"
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

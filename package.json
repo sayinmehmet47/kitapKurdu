@@ -7,9 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "local": "forego start -f Procfile.local",
     "local:frontend": "npm --prefix ./client start",
-    "local:backend": "PORT=5000 npm --prefix ./backend run dev"
+    "local:backend": "PORT=5000 npm --prefix ./backend run dev",
+    "check": "biome check --staged --no-errors-on-unmatched .",
+    "check:write": "biome check --write --staged --no-errors-on-unmatched .",
+    "check:ci": "biome ci --changed --since=origin/main --no-errors-on-unmatched .",
+    "check:all": "biome check ."
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@biomejs/biome": "2.5.6"
+  }
 }
