@@ -35,7 +35,8 @@ Browser React app  ──>  Vite proxy /api  ──>  Express server  ──>  M
 | [`infra/k8s-dev/`](../infra/k8s-dev/)              | Kubernetes manifests — dev (legacy, reference only) |
 | [`infra/k8s-staging/`](../infra/k8s-staging/)      | Kubernetes manifests — staging (legacy, reference only) |
 | [`infra/secrets/`](../infra/secrets/)              | Sealed secrets (legacy)                         |
-| [`.github/workflows/`](../.github/workflows/)      | PR checks and deployment automation (current and legacy) |
+| [`infra/workflows-legacy/`](../infra/workflows-legacy/) | Archived Kubernetes/Rancher deployment workflows (non-executable) |
+| [`.github/workflows/`](../.github/workflows/)      | PR checks, E2E, code-simplifier workflows       |
 
 ## Runtime stack & local ports
 
@@ -108,6 +109,20 @@ Also referenced at runtime:
 - `SERVER_URL`
 - `NODE_ENV`
 
+Optional (email features silently degrade if unset):
+
+- `EMAIL_USER`
+- `EMAIL_PASS`
+- `EMAIL_HOST`
+- `EMAIL_PORT`
+- `EMAIL_SECURE`
+- `EMAIL_FROM`
+- `EMAIL_FROM_NAME`
+
+**Note:** The backend `build` script (`tsc -p tsconfig.build.json`) is
+compile-only. Dependency installation (`npm ci`) is performed externally
+by Render (via `buildCommand` in `render.yaml`) or CI before the build step.
+
 ### Client (`client/.env.example`)
 
 - `VITE_LOCAL_API`
@@ -128,25 +143,49 @@ credentials or secrets.
 
 | Layer    | Platform | Notes |
 | -------- | -------- | ----- |
-| Client   | **Vercel** | The client application (`client/vercel.json`) rewrites `/api` requests to the Render backend. |
-| Backend  | **Render** | The backend API is served from `https://kitapkurdu.onrender.com`. |
+| Client   | **Vercel** | The client application (`client/vercel.json`) rewrites `/api` requests to the Render backend. Root Directory is `client`, build command is `npm run build`, output directory is `build`, and Node is pinned to `20.x` via `client/package.json` `engines.node`. |
+| Backend  | **Render** | The backend API is served from `https://kitapkurdu.onrender.com`. Configured via `render.yaml` (Blueprint) at the repository root: runtime `node`, root directory `backend`, build command `npm ci && npm run build`, start command `npm run start`, health check `/healthz`, plan `free`, region `oregon`, branch `main`, auto-deploy `off`, previews generation `automatic`. |
 
 These are the canonical deployment targets. All production traffic flows through
 this topology.
 
+**Important:** Adding `render.yaml` alone does **not** deploy the service. The
+Blueprint must be reviewed and manually adopted/synced in the Render dashboard
+to avoid creating a duplicate service.
+
+#### API same-origin strategy
+
+The client uses a shared `apiBaseUrl` constant (exported from
+`client/src/redux/common.api.ts`). In development (`import.meta.env.DEV`) it
+resolves to `/api` (Vite proxy → `localhost:5000`). In production
+(`import.meta.env.PROD`) it defaults to `/api`, which is rewritten to
+`https://kitapkurdu.onrender.com/api` by Vercel's `vercel.json` rewrite rule.
+The optional `VITE_PROD_API` build-time variable can override this, but for the
+canonical Vercel deployment the default `/api` (or leaving `VITE_PROD_API`
+unset) is preferred — do **not** store the Render URL as a secret. All
+`VITE_*` variables are embedded in the public JavaScript bundle.
+
+#### Free-tier cold starts
+
+The Render free plan spins down after inactivity. The legacy `keepalive.yml`
+GitHub Actions cron workflow that pinged `/healthz` every 5 minutes has been
+removed. Expect cold starts on first request after idle periods.
+
 ### Legacy Kubernetes manifests (reference only)
 
-Kubernetes manifests are retained for historical reference and are **not**
+Kubernetes manifests and deployment workflows are retained for historical reference and are **not**
 currently used for deployment:
 
 - [`infra/k8s/`](../infra/k8s/) — Production deployment manifests (legacy)
 - [`infra/k8s-dev/`](../infra/k8s-dev/) — Dev environment manifests (legacy)
 - [`infra/k8s-staging/`](../infra/k8s-staging/) — Staging environment manifests (legacy)
 - [`infra/secrets/`](../infra/secrets/) — Sealed secrets (legacy)
+- [`infra/workflows-legacy/`](../infra/workflows-legacy/) — Archived K8s/Rancher deployment workflows (non-executable, moved from `.github/workflows/`)
 
-These manifests are **not actively deployed**. Agents must not deploy to,
+These manifests and workflows are **not actively deployed**. Agents must not deploy to,
 re-enable, or reactivate Kubernetes infrastructure unless an issue
-explicitly requests it.
+explicitly requests it. The workflow files in `infra/workflows-legacy/` must
+not be moved back into `.github/workflows/` without an explicit issue and review.
 
 ### CI/CD
 
@@ -199,12 +238,11 @@ Branch protection should require both checks — `Backend build and tests` and
 `Client type-check and build` — to pass before merging, after the workflow has
 run at least once on the target branch.
 
-Additional legacy Kubernetes deployment workflow files remain present in the
-repository and may still have triggers configured. These legacy workflows are
-not the canonical deployment path and must not be invoked, repaired, or
-reactivated without an explicit issue. Migration and cleanup of deployment
-automation is tracked in issue
-[#317](/sayinmehmet47/kitapKurdu/issues/317).
+Legacy Kubernetes/Rancher deployment workflows (`deploy-backend.yaml`,
+`deploy-client.yaml`, `deploy-manifests.yaml`, `deploy-staging-backend.yaml`,
+`deploy-staging-client.yaml`, `dev-backend.yml`, `dev-client.yml`) have been
+moved to [`infra/workflows-legacy/`](../infra/workflows-legacy/) and are
+non-executable. The `keepalive.yml` cron workflow has been deleted.
 
 The active deployment targets are Vercel (frontend) and Render (backend),
 as described in [Deployment topology](#deployment-topology). Preview and
@@ -219,3 +257,26 @@ mutate production data.
 | Backend    | Jest + Supertest + mongodb-memory-server. Route integration tests live under [`backend/routes/api/__test__/`](../backend/routes/api/__test__/). Run with `npm test` or `npm run test:ci` in `backend/`. |
 | Client     | Vitest + jsdom + Testing Library. Unit tests live under `client/src/` in `__tests__` directories. Run with `npm test` in `client/`. |
 | Playwright | Smoke specs under `client/tests/`. Fully mocked API fixtures (no backend, database, or external services). Chromium-only. Run with `npm run test:e2e` in `client/`. CI via [`e2e.yml`](../.github/workflows/e2e.yml). |
+
+## Provider dashboard configuration checklist
+
+These settings must be manually verified in the provider dashboards after any
+deployment-configuration change. Actual values are managed in-platform, not in
+this repository.
+
+### Vercel
+
+- [ ] **Root Directory**: Set to `client`
+- [ ] **Build Command**: `npm run build`
+- [ ] **Output Directory**: `build`
+- [ ] **Node.js Version**: Pinned to `20.x` via `engines.node` in `client/package.json`
+- [ ] **Environment Variables**: Remove or set `VITE_PROD_API` to `/api` (do not store the Render URL as a Vercel secret; `VITE_*` variables are public)
+
+### Render
+
+- [ ] **Blueprint Adoption**: Review and manually adopt `render.yaml` from the repository root (`repo` → `Blueprint` in dashboard). Adding the file alone does **not** deploy — manual sync is required to avoid creating a duplicate service.
+- [ ] **Auto Deploy**: Verify set to `off` (controlled via `autoDeploy` in `render.yaml`)
+- [ ] **Health Check**: `/healthz`
+- [ ] **Plan**: Free; **Region**: Oregon
+- [ ] **Root Directory**: `backend`
+- [ ] All env vars listed in `render.yaml` are configured with values in the dashboard (names only in the file)

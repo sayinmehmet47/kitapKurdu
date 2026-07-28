@@ -1,0 +1,51 @@
+version: "1"
+services:
+  - type: web
+    name: kitapkurdu
+    runtime: node
+    repo: https://github.com/sayinmehmet47/kitapKurdu
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    autoDeployTrigger: "off"
+    healthCheckPath: /healthz
+    previews:
+      generation: automatic
+    envVars:
+      - key: SERVER_URL
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: NODE_ENV
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_FROM_NAME
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_SECURE
+        sync: false
+      - key: EMAIL_PORT
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: ACCESS_TOKEN_SECRET_KEY
+        sync: false
+      - key: REFRESH_TOKEN_SECRET_KEY
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false

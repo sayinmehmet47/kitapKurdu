@@ -1,15 +1,11 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://kitapkurdu.onrender.com/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://kitapkurdu.onrender.com/api/:path*"
     }
-  ],
-  "build": {
-    "env": {
-      "REACT_APP_ENVIRONMENT": "production",
-      "REACT_APP_PROD_API": "https://kitapkurdu.onrender.com/api",
-      "NODE_VERSION": "20"
-    }
-  }
+  ]
 }
