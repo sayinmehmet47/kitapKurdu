@@ -1,0 +1,111 @@
+name: Bug Report
+description: Report a defect or unexpected behavior
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **Security notice**: Never paste passwords, tokens, API keys,
+        connection strings, cookies, private user data, or other secrets.
+        Use environment-variable names only (e.g. `MONGO_URI`,
+        `JWT_SECRET`).  For sensitive security issues, see the
+        [security boundaries](https://github.com/sayinmehmet47/kitapKurdu/blob/main/AGENTS.md#security-boundaries)
+        documented in AGENTS.md.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One-line description of the bug
+      placeholder: e.g. "Book search returns 500 when query includes special characters"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected_area
+    attributes:
+      label: Affected Area
+      description: Which part of the system is affected?
+      options:
+        - Frontend (client/)
+        - Backend (backend/)
+        - CI/CD (.github/workflows/)
+        - Infrastructure (infra/)
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Steps to Reproduce
+      description: Ordered steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What should have happened?
+      placeholder: Describe the expected outcome
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Describe what went wrong, including error messages
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, OS, device, and relevant versions
+      placeholder: e.g. "Chrome 125, macOS 14.5, Node 20"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs_screenshots
+    attributes:
+      label: Logs / Screenshots (optional)
+      description: Paste relevant logs or attach screenshots. Strip secrets.
+      placeholder: Log output or screenshot links
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this bug?
+      options:
+        - Critical (blocks all work, data loss)
+        - High (major feature broken, no workaround)
+        - Medium (partial functionality broken, workaround exists)
+        - Low (cosmetic or minor inconvenience)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: I removed all secret values, tokens, passwords, and sensitive data
+          required: true

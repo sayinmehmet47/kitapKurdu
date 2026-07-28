@@ -1,0 +1,97 @@
+name: Feature Request
+description: Propose a new feature or enhancement
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **Security notice**: Never paste passwords, tokens, API keys,
+        connection strings, cookies, private user data, or other secrets.
+        Use environment-variable names only (e.g. `MONGO_URI`,
+        `JWT_SECRET`).  For sensitive security issues, see the
+        [security boundaries](https://github.com/sayinmehmet47/kitapKurdu/blob/main/AGENTS.md#security-boundaries)
+        documented in AGENTS.md.
+
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? Why is it needed?
+      placeholder: Describe the pain point or user need
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_outcome
+    attributes:
+      label: Proposed Outcome
+      description: What should the feature do? Describe the desired behavior.
+      placeholder: Describe what success looks like
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected_area
+    attributes:
+      label: Affected Area
+      description: Which part of the system will this feature touch?
+      options:
+        - Frontend (client/)
+        - Backend (backend/)
+        - CI/CD (.github/workflows/)
+        - Infrastructure / deployment
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Measurable, testable conditions that must be met
+      placeholder: |
+        - [ ] User can ...
+        - [ ] When ... then ...
+        - [ ] Edge case ... is handled
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered (optional)
+      description: What alternative approaches did you evaluate?
+      placeholder: Other ways to solve this problem
+    validations:
+      required: false
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of Scope (optional)
+      description: What should this feature explicitly NOT include?
+      placeholder: Things this feature should not address
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context (optional)
+      description: Screenshots, references, research, or related issues
+      placeholder: Links, screenshots, or notes
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and this request is not already tracked
+          required: true
+        - label: I did not include secret values, tokens, passwords, or sensitive data
+          required: true
