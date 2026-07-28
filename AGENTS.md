@@ -40,6 +40,9 @@ kitapKurdu/
 │   ├── secrets/             # Sealed secrets
 │   └── workflows-legacy/    # Archived K8s/Rancher deployment workflows (non-executable)
 ├── .github/workflows/       # CI/CD pipelines (PR checks, E2E, code-simplifier)
+├── opencode.jsonc           # Project-scoped agent overrides (steps, permissions)
+├── .opencode/
+│   └── agents/              # Project-local agent prompt/permission overrides
 ├── package.json             # Root npm scripts
 └── docker-compose.yaml
 ```
@@ -110,6 +113,32 @@ The Vite dev server proxies `/api` requests to `http://localhost:5000`.
    in `infra/` are legacy artifacts retained for reference. Do not deploy to,
    re-enable, or reactivate them unless an issue explicitly requests it.
    The canonical deployment targets are Vercel (frontend) and Render (backend).
+
+## OpenCode configuration
+
+This project uses a minimal root `opencode.jsonc` and per-agent markdown
+overrides under `.opencode/agents/` to tune agent behaviour without
+embedding credentials, models, or providers in the repository.
+
+- **Root `opencode.jsonc`** signals that project agent overrides live in
+  `.opencode/agents/`. It carries only a `$schema` reference and a comment;
+  no model, provider, MCP, or credential configuration is present.
+- **`.opencode/agents/`** contains six project-local agent files
+  (`supervisor.md`, `shell-runner.md`, `code-editor.md`, `code-search.md`,
+  `repo-mapper.md`, `web-research.md`). Each uses YAML frontmatter with
+  `steps` and `permission: allow` so the agents proceed without repeated UI
+  tool-confirmation prompts. Step budgets are 60/50/40/30 respectively.
+- **`permission: allow` does not override AGENTS.md authorization.**
+  Commit, push, merge, deploy, and destructive operations still require an
+  explicit user request. Secrets remain prohibited (never read, display, or
+  commit secret values).
+- **Global credentials, models, providers, and MCP config** must never appear
+  in these project files. They belong in the user-level OpenCode config
+  (`~/.config/opencode/`) and must never be committed.
+
+After editing `opencode.jsonc` or files under `.opencode/agents/`, quit and
+restart OpenCode. Validate with `opencode debug config` (do not print merged
+secrets).
 
 ## Security boundaries
 
