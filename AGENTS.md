@@ -66,6 +66,7 @@ guess commands.
 | `npm run preview`    | `vite preview`                        |
 | `npm test`           | `vitest run`                          |
 | `npm run test:watch` | `vitest`                              |
+| `npm run test:e2e`   | `playwright test`                     |
 
 ### Backend (`backend/`)
 
@@ -128,7 +129,7 @@ The Vite dev server proxies `/api` requests to `http://localhost:5000`.
 | --------- | ------------------------------------------------------------- |
 | Backend   | Jest + Supertest + mongodb-memory-server. Route tests under `backend/routes/api/__test__/`. Run with `npm test` or `npm run test:ci` in `backend/`. |
 | Client    | Vitest + jsdom + Testing Library. Unit tests live under `client/src/` in `__tests__` directories. Run with `npm test` in `client/`. |
-| Playwright | Config exists (`client/playwright.config.ts`). First smoke tests are tracked in a separate issue (#316). |
+| Playwright | Smoke specs under `client/tests/`. Fully mocked API fixtures, Chromium-only, no production/external resources. Run with `npm run test:e2e` in `client/`. Prerequisite: `npx playwright install chromium`. |
 
 When verifying changes, run the **closest relevant check** for the layer you
 touched. For documentation-only edits, a build is not necessary.
