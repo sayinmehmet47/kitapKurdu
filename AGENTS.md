@@ -33,12 +33,13 @@ kitapKurdu/
 │   ├── src/config/passport.ts  # Passport (local, Google, JWT)
 │   ├── metrics.ts           # Prometheus /metrics endpoint
 │   └── test/setup.ts        # Jest setup (mongodb-memory-server)
-├── infra/                   # Kubernetes manifests
+├── infra/                   # Kubernetes manifests (legacy, reference only)
 │   ├── k8s/                 # Production manifests
 │   ├── k8s-dev/             # Dev manifests
 │   ├── k8s-staging/         # Staging manifests
-│   └── secrets/             # Sealed secrets
-├── .github/workflows/       # CI/CD pipelines
+│   ├── secrets/             # Sealed secrets
+│   └── workflows-legacy/    # Archived K8s/Rancher deployment workflows (non-executable)
+├── .github/workflows/       # CI/CD pipelines (PR checks, E2E, code-simplifier)
 ├── package.json             # Root npm scripts
 └── docker-compose.yaml
 ```
@@ -73,7 +74,7 @@ guess commands.
 | Command              | Script                                         |
 | -------------------- | -----------------------------------------------|
 | `npm run dev`        | `ts-node-dev ... index.ts` (watch mode)       |
-| `npm run build`      | `npm install && tsc -p tsconfig.build.json`    |
+| `npm run build`      | `tsc -p tsconfig.build.json`    |
 | `npm test`           | `jest --no-cache`                              |
 | `npm run test:ci`    | `jest`                                         |
 | `npm start`          | `node ./dist/index.js` (requires `npm run build` first) |

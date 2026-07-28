@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError 
 // while we also attach Bearer from sessionStorage for Safari fallback
 const prodApi =
   (import.meta.env.VITE_PROD_API as string | undefined) ||
-  'https://kitapkurdu.onrender.com/api';
+  '/api';
 export const apiBaseUrl =
   import.meta.env.PROD ? prodApi : '/api';
 

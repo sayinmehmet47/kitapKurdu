@@ -27,6 +27,7 @@ import { Separator } from '@/components/ui/separator';
 import Layout from '@/components/Layout';
 import { loginThunk, registerThunk } from '@/redux/authSlice';
 import { RootState, useAppDispatch, useAppSelector } from '@/redux/store';
+import { apiBaseUrl } from '@/redux/common.api';
 
 // Types
 interface LoginFormData {
@@ -147,13 +148,6 @@ const AuthPage: FC = () => {
   };
 
   const handleGoogleLogin = () => {
-    const apiBaseUrl =
-      import.meta.env.VITE_ENVIRONMENT === 'production'
-        ? import.meta.env.VITE_PROD_API // Use absolute backend URL so Set-Cookie binds to backend domain
-        : import.meta.env.VITE_ENVIRONMENT === 'development'
-        ? import.meta.env.VITE_DEV_API
-        : import.meta.env.VITE_LOCAL_API;
-
     window.location.href = `${apiBaseUrl}/user/auth/google`;
   };
 
@@ -165,14 +159,6 @@ const AuthPage: FC = () => {
         toast.error('Please enter your email address first');
         return;
       }
-
-      // Use the same environment-aware API base URL
-      const apiBaseUrl =
-        import.meta.env.VITE_ENVIRONMENT === 'production'
-          ? import.meta.env.VITE_PROD_API
-          : import.meta.env.VITE_ENVIRONMENT === 'development'
-          ? import.meta.env.VITE_DEV_API
-          : import.meta.env.VITE_LOCAL_API;
 
       const response = await fetch(`${apiBaseUrl}/user/resend-verification`, {
         method: 'POST',
