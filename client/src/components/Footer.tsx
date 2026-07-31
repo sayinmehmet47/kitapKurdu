@@ -1,63 +1,27 @@
-import styled from 'styled-components';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
-
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  position: fixed;
-  padding: 0 20px;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 50px;
-  box-shadow: 0px -1px 1px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out;
-  background-color: #f5f5f6;
-`;
-
-const Title = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  margin: 0px 20px;
-`;
-const IconGroup = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const Icon = styled.div`
-  &:hover {
-    color: #c97474;
-  }
-  margin: 0px 10px;
-`;
-
-const Anchor = styled.a`
-  color: black;
-`;
 
 export default function Footer() {
   return (
-    <Wrapper>
-      <Title>Made with ❤️ by Mehmet Sayin </Title>
-      <IconGroup>
-        <Anchor href="https://github.com/sayinmehmet47">
-          <Icon>
-            <FaGithub size={25} />
-          </Icon>
-        </Anchor>
-        <Anchor href="https://www.linkedin.com/in/sayinmehmet/">
-          <Icon>
-            <FaLinkedin size={25} />
-          </Icon>
-        </Anchor>
-      </IconGroup>
-    </Wrapper>
+    <footer className="border-t border-border bg-muted/30">
+      <div className="container mx-auto flex flex-col items-center justify-between gap-3 px-4 py-4 text-sm text-muted-foreground sm:flex-row">
+        <p>Made with ❤️ by Mehmet Sayin</p>
+        <nav aria-label="Footer navigation" className="flex items-center gap-4">
+          <a
+            href="https://github.com/sayinmehmet47"
+            aria-label="GitHub profile"
+            className="rounded-sm hover:text-foreground"
+          >
+            <FaGithub aria-hidden="true" size={25} />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/sayinmehmet/"
+            aria-label="LinkedIn profile"
+            className="rounded-sm hover:text-foreground"
+          >
+            <FaLinkedin aria-hidden="true" size={25} />
+          </a>
+        </nav>
+      </div>
+    </footer>
   );
 }

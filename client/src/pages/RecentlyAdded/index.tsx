@@ -1,10 +1,10 @@
-import React from 'react';
 import { BookOpen } from 'lucide-react';
-import { Badge, LoadingSpinner } from '@/components/ui';
+import type React from 'react';
 import Layout from '@/components/Layout';
+import { Badge, LoadingSpinner } from '@/components/ui';
+import { BackToTopButton } from './components/BackToTopButton';
 import { BookCard } from './components/BookCard';
 import { LoadMoreButton } from './components/LoadMoreButton';
-import { BackToTopButton } from './components/BackToTopButton';
 import { useRecentlyAddedBooks } from './hooks/useRecentlyAddedBooks';
 
 const RecentlyAdded: React.FC = () => {
@@ -51,8 +51,8 @@ const RecentlyAdded: React.FC = () => {
             </div>
 
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
-              Discover the latest additions to our collection. New books are
-              added regularly for your reading pleasure.
+              Discover the latest additions to our collection. New books are added regularly for
+              your reading pleasure.
             </p>
 
             <Badge
@@ -64,15 +64,15 @@ const RecentlyAdded: React.FC = () => {
           </header>
 
           {/* Books Content */}
-          <main>
+          <section aria-label="Recently added books">
             {books.length === 0 ? (
               <div className="text-center py-20">
                 <div className="bg-white dark:bg-gray-800 rounded-full p-8 w-32 h-32 mx-auto mb-6 flex items-center justify-center shadow-sm">
                   <BookOpen className="h-16 w-16 text-gray-300 dark:text-gray-600" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
                   No recent books
-                </h3>
+                </h2>
                 <p className="text-gray-600 dark:text-gray-300 text-lg">
                   Check back soon for new additions to our collection.
                 </p>
@@ -92,30 +92,26 @@ const RecentlyAdded: React.FC = () => {
                 </div>
 
                 {/* Load More Button */}
-                <LoadMoreButton
-                  hasMore={hasMore}
-                  isLoading={isLoadingMore}
-                  onLoadMore={loadMore}
-                />
+                <LoadMoreButton hasMore={hasMore} isLoading={isLoadingMore} onLoadMore={loadMore} />
 
                 {/* End Message */}
                 {!hasMore && books.length > 16 && (
                   <div className="text-center py-12">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md mx-auto shadow-sm border border-gray-200 dark:border-gray-700">
                       <BookOpen className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                         That's all for now!
-                      </h3>
+                      </h2>
                       <p className="text-gray-600 dark:text-gray-300">
-                        You've seen all {books.length} recently added books.
-                        Check back soon for more.
+                        You've seen all {books.length} recently added books. Check back soon for
+                        more.
                       </p>
                     </div>
                   </div>
                 )}
               </>
             )}
-          </main>
+          </section>
         </div>
       </div>
 

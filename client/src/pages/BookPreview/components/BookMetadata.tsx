@@ -24,7 +24,7 @@ export const BookMetadata: React.FC<BookMetadataProps> = ({ book }) => {
   return (
     <Card>
       <CardHeader>
-        <h3 className="text-lg font-semibold">Book Details</h3>
+        <h2 className="text-lg font-semibold">Book Details</h2>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

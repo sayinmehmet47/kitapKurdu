@@ -1,10 +1,11 @@
+import { DownloadIcon, Edit, Eye, MoreHorizontal, Share2 } from 'lucide-react';
+import ReactGA from 'react-ga4';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { useSelector } from 'react-redux';
 import { Link, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
-  useDeleteBookMutation,
-  useFetchAllBooksQuery,
-} from '@/redux/services/book.api';
-import Layout from '@/components/Layout';
-import {
+  BookFilters,
   Button,
   Card,
   CardTitle,
@@ -15,17 +16,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   LoadingSpinner,
-  BookFilters,
 } from '@/components';
+import Layout from '@/components/Layout';
 import { Pagination } from '@/components/ui/pagination';
-import { DownloadIcon, Edit, Eye, MoreHorizontal, Share2 } from 'lucide-react';
-import { AiOutlineDelete } from 'react-icons/ai';
 import { downloadBook } from '@/helpers/downloadBook';
-import ReactGA from 'react-ga4';
-import { useSelector } from 'react-redux';
-import { toast } from 'sonner';
-import { RootState } from '@/redux/store';
 import { shareLink } from '@/helpers/shareLink';
+import { useDeleteBookMutation, useFetchAllBooksQuery } from '@/redux/services/book.api';
+import type { RootState } from '@/redux/store';
 
 const AllBooks = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,9 +40,7 @@ const AllBooks = () => {
     search: searchParams.get('search') || undefined,
   });
 
-  const { user, isLoggedIn } = useSelector(
-    (state: RootState) => state.authSlice
-  );
+  const { user, isLoggedIn } = useSelector((state: RootState) => state.authSlice);
   const [deleteBook, { isSuccess, isError }] = useDeleteBookMutation();
 
   const isAdmin = isLoggedIn && user.user.isAdmin;
@@ -95,7 +90,8 @@ const AllBooks = () => {
   if (isLoading || isFetching) {
     return (
       <Layout>
-        <div className="flex justify-center items-center min-h-screen">
+        <div className="flex flex-col justify-center items-center min-h-screen gap-6">
+          <h1 className="text-3xl font-bold text-foreground">All Books</h1>
           <LoadingSpinner />
         </div>
       </Layout>
@@ -104,6 +100,7 @@ const AllBooks = () => {
 
   return (
     <Layout>
+      <h1 className="text-3xl font-bold text-foreground text-center mt-8 mb-4">All Books</h1>
       <BookFilters onSearch={handleSearch} />
       <div className="mt-5 2xl:grid-cols-4 grid xl:grid-cols-4 lg:grid-cols-3  gap-12 m-4 md:grid-cols-2 sm:grid-cols-1 w-3/4 mx-auto">
         {bookData?.results.map((book) => (
@@ -151,10 +148,7 @@ const AllBooks = () => {
                   >
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem className="cursor-pointer">
-                      <Link
-                        to={`/book/${book._id}`}
-                        className="flex items-center"
-                      >
+                      <Link to={`/book/${book._id}`} className="flex items-center">
                         <Eye className="h-4 w-4 mr-2 " />
                         Preview
                       </Link>
@@ -183,10 +177,7 @@ const AllBooks = () => {
                     <DropdownMenuSeparator />
                     {
                       <DropdownMenuItem disabled={!isAdmin}>
-                        <Link
-                          className="cursor-pointer"
-                          to={`/book/edit/${book._id}`}
-                        >
+                        <Link className="cursor-pointer" to={`/book/edit/${book._id}`}>
                           <div className="flex">
                             <Edit className="h-4 w-4 mr-2" />
                             <span>Edit Book</span>
@@ -206,9 +197,7 @@ const AllBooks = () => {
                         }
                       >
                         <AiOutlineDelete className="h-4 w-4 mr-2 text-red-500" />
-                        <span className="cursor-pointer text-red-500">
-                          Delete Book
-                        </span>
+                        <span className="cursor-pointer text-red-500">Delete Book</span>
                       </DropdownMenuItem>
                     }
                   </DropdownMenuContent>

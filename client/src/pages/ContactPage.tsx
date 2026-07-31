@@ -1,22 +1,15 @@
-import { CardHeader, CardContent, Card } from '@/components/ui/card';
 import emailjs from '@emailjs/browser';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import Layout from '@/components/Layout';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useForm } from 'react-hook-form';
 import { BiSend } from 'react-icons/bi';
 import { toast } from 'sonner';
+import * as z from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components';
+import Layout from '@/components/Layout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export function ContactUs() {
   const formSchema = z.object({
@@ -67,12 +60,11 @@ export function ContactUs() {
   }
   return (
     <Layout>
-      <main className="container mx-auto px-2 py-10">
+      <div className="container mx-auto px-2 py-10">
         <div className="flex flex-col space-y-8">
           <h1 className="text-4xl font-bold text-center">Contact Us</h1>
           <p className="text-lg text-gray-500 text-center">
-            We would love to hear your feedback and suggestions. Please fill out
-            the form below.
+            We would love to hear your feedback and suggestions. Please fill out the form below.
           </p>
           <div className="max-w-2xl mx-auto">
             <Card className="p-6 space-y-4">
@@ -81,10 +73,7 @@ export function ContactUs() {
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-8"
-                  >
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <div className="space-y-3 md:w-[400px]">
                       <div className="space-y-1">
                         <FormField
@@ -94,10 +83,7 @@ export function ContactUs() {
                             <FormItem>
                               <FormLabel>Your Name:</FormLabel>
                               <FormControl>
-                                <Input
-                                  placeholder="Enter your name"
-                                  {...field}
-                                />
+                                <Input placeholder="Enter your name" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -112,10 +98,7 @@ export function ContactUs() {
                             <FormItem>
                               <FormLabel>Your Email:</FormLabel>
                               <FormControl>
-                                <Input
-                                  placeholder="Enter your email"
-                                  {...field}
-                                />
+                                <Input placeholder="Enter your email" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -130,22 +113,14 @@ export function ContactUs() {
                             <FormItem>
                               <FormLabel>Your Feedback:</FormLabel>
                               <FormControl>
-                                <Textarea
-                                  placeholder="Write your feedback here !!!"
-                                  {...field}
-                                />
+                                <Textarea placeholder="Write your feedback here !!!" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                       </div>
-                      <Button
-                        type="submit"
-                        size="lg"
-                        variant="default"
-                        className="w-full"
-                      >
+                      <Button type="submit" size="lg" variant="default" className="w-full">
                         <div className="flex gap-2 items-center">
                           Submit
                           <BiSend />
@@ -158,7 +133,7 @@ export function ContactUs() {
             </Card>
           </div>
         </div>
-      </main>
+      </div>
     </Layout>
   );
 }

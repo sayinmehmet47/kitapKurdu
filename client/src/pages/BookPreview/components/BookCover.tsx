@@ -1,5 +1,5 @@
-import React from 'react';
-import { BookOpen, Download, Share2, Bookmark, Heart } from 'lucide-react';
+import { Bookmark, BookOpen, Download, Heart, Share2 } from 'lucide-react';
+import type React from 'react';
 import { Button, Card, CardContent, Separator } from '@/components/ui';
 
 interface BookCoverProps {
@@ -25,29 +25,22 @@ export const BookCover: React.FC<BookCoverProps> = ({
           alt={bookName}
           className="w-full h-full object-cover"
           onError={(e) => {
-            e.currentTarget.src = 'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+            e.currentTarget.src =
+              'https://images.pexels.com/photos/8594539/pexels-photo-8594539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
-      
+
       <CardContent className="p-6 space-y-4">
         {/* Primary Actions */}
         <div className="space-y-3">
-          <Button 
-            className="w-full" 
-            size="lg"
-            onClick={onStartReading}
-          >
+          <Button className="w-full" size="lg" onClick={onStartReading}>
             <BookOpen className="h-5 w-5 mr-2" />
             Start Reading
           </Button>
-          
-          <Button 
-            variant="outline" 
-            className="w-full" 
-            onClick={onDownload}
-          >
+
+          <Button variant="outline" className="w-full" onClick={onDownload}>
             <Download className="h-4 w-4 mr-2" />
             Download
           </Button>
@@ -57,27 +50,30 @@ export const BookCover: React.FC<BookCoverProps> = ({
 
         {/* Secondary Actions */}
         <div className="grid grid-cols-3 gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onShare}
             className="flex items-center justify-center"
+            aria-label="Share book"
           >
-            <Share2 className="h-4 w-4" />
+            <Share2 className="h-4 w-4" aria-hidden="true" />
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             className="flex items-center justify-center"
+            aria-label="Bookmark book"
           >
-            <Bookmark className="h-4 w-4" />
+            <Bookmark className="h-4 w-4" aria-hidden="true" />
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             className="flex items-center justify-center"
+            aria-label="Favorite book"
           >
-            <Heart className="h-4 w-4" />
+            <Heart className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
       </CardContent>
