@@ -33,18 +33,28 @@ const parseBoundedPositiveInt = (value: unknown, fallback: number, maximum: numb
 
 const escapeRegExp = (input: string): string => input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+const turkishCharacterPatterns: Record<string, string> = {
+  i: '[ıiİI](?:\\x{0307})?',
+  ı: '[ıiİI](?:\\x{0307})?',
+  s: '[şsŞS](?:\\x{0327})?',
+  ş: '[şsŞS](?:\\x{0327})?',
+  c: '[çcÇC](?:\\x{0327})?',
+  ç: '[çcÇC](?:\\x{0327})?',
+  g: '[ğgĞG](?:\\x{0306})?',
+  ğ: '[ğgĞG](?:\\x{0306})?',
+  u: '[üuÜU](?:\\x{0308})?',
+  ü: '[üuÜU](?:\\x{0308})?',
+  o: '[öoÖO](?:\\x{0308})?',
+  ö: '[öoÖO](?:\\x{0308})?',
+};
+
 const normalizeTurkishText = (text: string): string => {
   if (!text) return '';
 
-  const escaped = escapeRegExp(text.toLocaleLowerCase('tr'));
+  const escaped = escapeRegExp(text.normalize('NFC').toLocaleLowerCase('tr'));
 
   return escaped
-    .replace(/[ıiİI]/gi, '[ıiİI]')
-    .replace(/[şs]/gi, '[şs]')
-    .replace(/[ğg]/gi, '[ğg]')
-    .replace(/[üu]/gi, '[üu]')
-    .replace(/[öo]/gi, '[öo]')
-    .replace(/[çc]/gi, '[çc]')
+    .replace(/[ıişsğgüuoöçc]/g, (character) => turkishCharacterPatterns[character])
     .replace(/\\\s+/g, '\\s*')
     .replace(/\s+/g, '\\s*');
 };
@@ -80,7 +90,33 @@ const searchBooksService = async (req: Request) => {
   }
 
   if (author) {
-    filters.push({ author });
+    const normalizedAuthor = normalizeTurkishText(author);
+    filters.push({
+      $or: [
+        { author: { $regex: normalizedAuthor, $options: 'i' } },
+        {
+          $expr: {
+            $and: [
+              {
+                $eq: [{ $trim: { input: { $ifNull: ['$author', ''] } } }, ''],
+              },
+              {
+                $gte: [{ $size: { $split: [{ $ifNull: ['$name', ''] }, ' - '] } }, 2],
+              },
+              {
+                $regexMatch: {
+                  input: {
+                    $arrayElemAt: [{ $split: [{ $ifNull: ['$name', ''] }, ' - '] }, 0],
+                  },
+                  regex: normalizedAuthor,
+                  options: 'i',
+                },
+              },
+            ],
+          },
+        },
+      ],
+    });
   }
 
   if (isbn) {
