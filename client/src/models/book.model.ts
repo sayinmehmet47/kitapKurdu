@@ -11,7 +11,7 @@ export interface BookModel {
     size: number;
     url: string;
     date: string;
-    uploader: string;
+    uploader?: BookUploader | string | null;
     __v: number;
     category: string;
     language: string;
@@ -24,6 +24,11 @@ export interface BookModel {
       thumbnail: string;
     };
   }[];
+}
+
+export interface BookUploader {
+  _id: string;
+  username: string;
 }
 
 export interface Book {
@@ -43,11 +48,7 @@ export interface Book {
     smallThumbnail: string;
     thumbnail: string;
   };
-  uploader: {
-    username: string;
-    _id: string;
-    email: string;
-  };
+  uploader?: BookUploader | string | null;
 }
 export interface BooksData {
   results: Book[];

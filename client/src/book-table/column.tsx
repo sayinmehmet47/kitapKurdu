@@ -1,29 +1,26 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { toast } from 'sonner';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
-import { Button } from '../components/ui/button';
+import type { ColumnDef } from '@tanstack/react-table';
 import { DownloadIcon, Edit, MoreHorizontal } from 'lucide-react';
-import { DropdownMenuContent } from '../components/ui/dropdown-menu';
-import { DropdownMenuLabel } from '../components/ui/dropdown-menu';
-import { DropdownMenuItem } from '../components/ui/dropdown-menu';
-import { DropdownMenuSeparator } from '../components/ui/dropdown-menu';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
-
 import { Link } from 'react-router-dom';
 import { useDeleteBookMutation } from 'redux/services/book.api';
-import { RootState } from 'redux/store';
-import { downloadBook } from '@/helpers/downloadBook';
+import type { RootState } from 'redux/store';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
-import { Book } from '@/models/book.model';
+import { downloadBook } from '@/helpers/downloadBook';
+import type { Book } from '@/models/book.model';
+import { Button } from '../components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
 
 const BookOptions = ({ row }: { row: { original: Book } }) => {
-  const { user, isLoggedIn } = useSelector(
-    (state: RootState) => state.authSlice
-  );
+  const { user, isLoggedIn } = useSelector((state: RootState) => state.authSlice);
 
   const [deleteBook, { isSuccess, isError }] = useDeleteBookMutation();
 
@@ -56,10 +53,7 @@ const BookOptions = ({ row }: { row: { original: Book } }) => {
         <DropdownMenuSeparator />
         {
           <DropdownMenuItem disabled={!isAdmin}>
-            <Link
-              className="cursor-pointer"
-              to={`/book/edit/${row.original._id}`}
-            >
+            <Link className="cursor-pointer" to={`/book/edit/${row.original._id}`}>
               <div className="flex">
                 <Edit className="h-4 w-4 mr-2" />
                 <span>Edit Book</span>
@@ -84,9 +78,7 @@ export const columns: ColumnDef<Book>[] = [
   {
     accessorKey: 'name',
     header: () => (
-      <div className="text-green-800 dark:text-green-400 font-bold text-base">
-        Name
-      </div>
+      <div className="text-green-800 dark:text-green-400 font-bold text-base">Name</div>
     ),
     cell: ({ row }) => (
       <Link
@@ -113,10 +105,10 @@ export const columns: ColumnDef<Book>[] = [
             index % 4 === 0
               ? 'default'
               : index % 4 === 1
-              ? 'success'
-              : index % 4 === 2
-              ? 'info'
-              : 'warning'
+                ? 'success'
+                : index % 4 === 2
+                  ? 'info'
+                  : 'warning'
           }
           className="text-xs max-w-36 truncate hidden md:inline-flex m-1"
           key={category}
@@ -149,11 +141,15 @@ export const columns: ColumnDef<Book>[] = [
       </div>
     ),
     accessorKey: 'uploader',
-    cell: ({ row }) => (
-      <div className="text-gray-500 dark:text-gray-300 hidden md:flex">
-        {row.original.uploader.username}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const uploader = row.original.uploader;
+
+      return (
+        <div className="text-gray-500 dark:text-gray-300 hidden md:flex">
+          {typeof uploader === 'object' && uploader?.username}
+        </div>
+      );
+    },
   },
   {
     id: 'actions',

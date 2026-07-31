@@ -97,7 +97,6 @@ export const bookApi = commonApi.injectEndpoints({
         name: string;
         size: string;
         url: string;
-        uploader: string;
         author?: string | null;
         isbn?: string | null;
         publisher?: string | null;

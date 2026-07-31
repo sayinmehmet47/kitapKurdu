@@ -1,5 +1,6 @@
 // recentlyAddedBooks.service.ts
 import { Books } from '../../models/Books';
+import type { PublicBook, PublicUploader } from '../../routes/api/books.types';
 import { apiResponse } from '../../utils/apiResponse.utils';
 
 interface PaginationParams {
@@ -8,7 +9,7 @@ interface PaginationParams {
 }
 
 interface PaginatedBooksResponse {
-  books: any[];
+  books: PublicBook[];
   pagination: {
     currentPage: number;
     totalPages: number;
@@ -27,11 +28,15 @@ const getRecentlyAddedBooks = async (params: PaginationParams = {}) => {
     const totalBooks = await Books.countDocuments({});
 
     // Get paginated books
-    const books = await Books.find({})
+    const books = (await Books.find({})
       .sort({ date: -1, createdAt: -1 }) // Sort by date first, then createdAt
       .skip(skip)
       .limit(limit)
-      .exec();
+      .populate<{ uploader: PublicUploader | null }>({
+        path: 'uploader',
+        select: '_id username',
+      })
+      .exec()) as unknown as PublicBook[];
 
     const totalPages = Math.ceil(totalBooks / limit);
     const hasMore = page < totalPages;
@@ -47,15 +52,9 @@ const getRecentlyAddedBooks = async (params: PaginationParams = {}) => {
       },
     };
 
-    return apiResponse(
-      200,
-      'success',
-      'Recently added books fetched successfully',
-      response
-    );
+    return apiResponse(200, 'success', 'Recently added books fetched successfully', response);
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     throw new Error(`Failed to fetch recently added books: ${errorMessage}`);
   }
 };
