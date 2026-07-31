@@ -1,57 +1,77 @@
-import ReactGA from 'react-ga4';
-import { Search } from './components/Search';
-import Layout from './components/Layout';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import axios from 'axios';
+import { useEffect } from 'react';
+import ReactGA from 'react-ga4';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Layout from './components/Layout';
+import { Search } from './components/Search';
+import { loadUserThunk, refreshTokenThunk } from './redux/authSlice';
 import { apiBaseUrl } from './redux/common.api';
 import { useAppDispatch, useAppSelector } from './redux/store';
-import { loadUserThunk, refreshTokenThunk } from './redux/authSlice';
 
 ReactGA.initialize('G-R54SYJD2B8');
-const publicVapidKey =
-  'BCrScCgFJml1t1UsPNfsgd6562aSzuyRB_qQw79KrAfaALzpxkYPaLxavkP2s_P1OP3kWXuvhiK2T1ZJNmhhCiE';
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
+const publicVapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
-export async function regSw(user: User): Promise<void> {
-  if ('serviceWorker' in navigator && 'PushManager' in window) {
-    const permission = await window.Notification.requestPermission();
+export async function regSw(): Promise<void> {
+  if (!publicVapidKey) {
+    return;
+  }
 
-    if (permission === 'granted') {
-      const register = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/',
-      });
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    return;
+  }
 
-      if (register.active) {
-        try {
-          const subscription = await register.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-          });
+  const permission = await window.Notification.requestPermission();
+  if (permission !== 'granted') {
+    return;
+  }
 
-          if (subscription && apiBaseUrl) {
-            await axios.post(`${apiBaseUrl}/subscription`, {
-              subscription,
-              user,
-            });
-          }
-          console.log('Push Sent...');
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    } else {
-      console.log('Push notifications are not allowed by the user');
+  try {
+    const register = await navigator.serviceWorker.register('/sw.js', {
+      scope: '/',
+    });
+
+    if (!register.active) {
+      return;
     }
-  } else {
-    console.log(
-      'Service workers or Push notifications are not supported by the browser'
-    );
+
+    let subscription = await register.pushManager.getSubscription();
+
+    // Browsers that do not expose options.applicationServerKey cannot be
+    // checked, so treat the existing subscription as reusable rather than
+    // unsubscribing on every visit. Real mismatch rotation only applies when
+    // the key bytes are available.
+    if (
+      subscription?.options?.applicationServerKey &&
+      !pushApplicationServerKeyMatches(subscription, urlBase64ToUint8Array(publicVapidKey))
+    ) {
+      await subscription.unsubscribe();
+      subscription = null;
+    }
+
+    if (!subscription) {
+      subscription = await register.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+      });
+    }
+
+    if (subscription && apiBaseUrl) {
+      const headers: Record<string, string> = {};
+      const authToken = sessionStorage.getItem('auth_at');
+      if (authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+      }
+
+      await axios.post(
+        `${apiBaseUrl}/subscription`,
+        { subscription },
+        { headers, withCredentials: true }
+      );
+    }
+  } catch {
+    // Push registration is best-effort; never surface endpoints or tokens.
+    console.log('Push notification setup failed');
   }
 }
 
@@ -68,27 +88,45 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
+function pushApplicationServerKeyMatches(
+  subscription: PushSubscription,
+  expectedKey: Uint8Array
+): boolean {
+  const currentKey = subscription.options?.applicationServerKey;
+  if (!currentKey) {
+    return false;
+  }
+  return bytesEqual(new Uint8Array(currentKey), expectedKey);
+}
+
+function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
+  return a.length === b.length && a.every((byte, index) => byte === b[index]);
+}
+
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isLoggedIn } = useAppSelector(state => state.authSlice);
+  const { isLoggedIn } = useAppSelector((state) => state.authSlice);
 
   useEffect(() => {
-    ReactGA.send('pageview');
-  }, [location]);
+    ReactGA.send({ hitType: 'pageview', page: location.pathname });
+  }, [location.pathname]);
 
   // Periodic token refresh for logged-in users (every 10 minutes)
   useEffect(() => {
     if (!isLoggedIn) return;
-    
-    const interval = setInterval(() => {
-      dispatch(refreshTokenThunk()).catch(() => {
-        // Token refresh failed, user will be logged out by the thunk
-        console.log('Token refresh failed');
-      });
-    }, 10 * 60 * 1000); // 10 minutes
-    
+
+    const interval = setInterval(
+      () => {
+        dispatch(refreshTokenThunk()).catch(() => {
+          // Token refresh failed, user will be logged out by the thunk
+          console.log('Token refresh failed');
+        });
+      },
+      10 * 60 * 1000
+    ); // 10 minutes
+
     return () => clearInterval(interval);
   }, [isLoggedIn, dispatch]);
 
@@ -124,9 +162,12 @@ function App() {
         setTimeout(() => {
           // Only clear if we're not relying on sessionStorage for auth (i.e., cookies work)
           // For cross-domain setups (Vercel + Render), keep tokens in sessionStorage
-          const hasCookies = document.cookie.split(';').some(cookie => cookie.trim().startsWith('accessToken='));
-          const isDifferentDomain = apiBaseUrl && window.location.hostname !== new URL(apiBaseUrl).hostname;
-          
+          const hasCookies = document.cookie
+            .split(';')
+            .some((cookie) => cookie.trim().startsWith('accessToken='));
+          const isDifferentDomain =
+            apiBaseUrl && window.location.hostname !== new URL(apiBaseUrl).hostname;
+
           if (hasCookies && !isDifferentDomain) {
             sessionStorage.removeItem('auth_at');
             sessionStorage.removeItem('auth_rt');
