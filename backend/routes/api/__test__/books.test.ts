@@ -195,6 +195,46 @@ it('searches metadata and keywords with AND filters', async () => {
       url: DUMMY_PDF_URL,
       size: 100,
     },
+    {
+      name: 'Türkçe Yazar',
+      author: 'Şahin Çelik',
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
+    {
+      name: 'Legacy Author - Title Only Token',
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
+    {
+      name: 'Legacy Author - Null Title',
+      author: null,
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
+    {
+      name: 'Legacy Author - Empty Title',
+      author: '',
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
+    {
+      name: 'Legacy Author - Whitespace Title',
+      author: '   ',
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
+    {
+      name: 'Legacy Prefix - Populated Title',
+      author: 'Actual Author',
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
+    {
+      name: 'Authorless title without separator',
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
   ]);
 
   const keyword = await request(app).get('/api/books/search').query({ q: 'KAYIP' }).expect(200);
@@ -204,7 +244,60 @@ it('searches metadata and keywords with AND filters', async () => {
     .get('/api/books/search')
     .query({ author: 'orhan pamuk' })
     .expect(200);
+  expect(author.body.total).toBe(1);
   expect(author.body.results[0].name).toBe('Kayıp Zaman');
+
+  const partialAuthor = await request(app)
+    .get('/api/books/search')
+    .query({ author: 'pamuk' })
+    .expect(200);
+  expect(partialAuthor.body.total).toBe(1);
+  expect(partialAuthor.body.results[0].author).toBe('Orhan Pamuk');
+
+  const normalizedAuthor = await request(app)
+    .get('/api/books/search')
+    .query({ author: 'sahin celik' })
+    .expect(200);
+  expect(normalizedAuthor.body.total).toBe(1);
+  expect(normalizedAuthor.body.results[0].name).toBe('Türkçe Yazar');
+
+  const escapedAuthor = await request(app)
+    .get('/api/books/search')
+    .query({ author: '.*' })
+    .expect(200);
+  expect(escapedAuthor.body.total).toBe(0);
+
+  const legacyAuthorFilter = await request(app)
+    .get('/api/books/search')
+    .query({ author: 'legacy' })
+    .expect(200);
+  expect(legacyAuthorFilter.body.total).toBe(4);
+  expect(legacyAuthorFilter.body.results.map((book: { name: string }) => book.name)).toEqual(
+    expect.arrayContaining([
+      'Legacy Author - Title Only Token',
+      'Legacy Author - Null Title',
+      'Legacy Author - Empty Title',
+      'Legacy Author - Whitespace Title',
+    ])
+  );
+
+  const titleOnlyAuthorFilter = await request(app)
+    .get('/api/books/search')
+    .query({ author: 'title only' })
+    .expect(200);
+  expect(titleOnlyAuthorFilter.body.total).toBe(0);
+
+  const authorlessTitleFilter = await request(app)
+    .get('/api/books/search')
+    .query({ author: 'authorless' })
+    .expect(200);
+  expect(authorlessTitleFilter.body.total).toBe(0);
+
+  const populatedPrefixAuthorFilter = await request(app)
+    .get('/api/books/search')
+    .query({ author: 'legacy prefix' })
+    .expect(200);
+  expect(populatedPrefixAuthorFilter.body.total).toBe(0);
 
   const isbn = await request(app)
     .get('/api/books/search')
@@ -241,6 +334,36 @@ it('searches metadata and keywords with AND filters', async () => {
     .query({ name: 'KAYIP' })
     .expect(200);
   expect(legacyRoute.body.results[0].name).toBe('Kayıp Zaman');
+});
+
+it('matches NFD-decomposed legacy author names with plain queries', async () => {
+  const ihsanBookName = 'I\u0307hsan Oktay Anar - Puslu Kıtalar Atlası';
+  const sahinCelikBookName = 'S\u0327ahin C\u0327elik - Kayıp Zaman';
+
+  await Books.insertMany([
+    {
+      name: ihsanBookName,
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
+    {
+      name: sahinCelikBookName,
+      url: DUMMY_PDF_URL,
+      size: 100,
+    },
+  ]);
+
+  const ihsan = await request(app).get('/api/books/search').query({ author: 'ihsan' }).expect(200);
+  expect(ihsan.body.total).toBe(1);
+  expect(ihsan.body.results[0].name).toBe(ihsanBookName);
+
+  const sahin = await request(app).get('/api/books/search').query({ author: 'sahin' }).expect(200);
+  expect(sahin.body.total).toBe(1);
+  expect(sahin.body.results[0].name).toBe(sahinCelikBookName);
+
+  const celik = await request(app).get('/api/books/search').query({ author: 'celik' }).expect(200);
+  expect(celik.body.total).toBe(1);
+  expect(celik.body.results[0].name).toBe(sahinCelikBookName);
 });
 
 it('paginates metadata searches with bounded page and limit values', async () => {

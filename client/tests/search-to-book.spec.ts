@@ -103,4 +103,25 @@ test.describe('Search to book detail flow', () => {
     ).toHaveCount(1);
     await expect(ratingSummary.getByRole('radiogroup')).toHaveCount(0);
   });
+
+  test('searches books by a partial author value', async ({ page }) => {
+    await page.goto('/');
+
+    const searchRequestPromise = page.waitForRequest((request) => {
+      const url = new URL(request.url());
+      return (
+        url.pathname.endsWith('/api/books/search') && url.searchParams.get('author') === 'Author'
+      );
+    });
+
+    await page.getByLabel('Author').fill('Author');
+    await page.getByRole('button', { name: 'Search' }).click();
+
+    const searchRequest = await searchRequestPromise;
+    expect(new URL(searchRequest.url()).searchParams.get('author')).toBe('Author');
+    await expect(page.getByText('Search Results')).toBeVisible();
+    await expect(page.getByText(MOCK_BOOK_TITLE)).toBeVisible();
+    const searchResultRow = page.getByRole('row').filter({ hasText: MOCK_BOOK_TITLE });
+    await expect(searchResultRow.getByRole('cell').nth(1)).toContainText('Test Author');
+  });
 });
