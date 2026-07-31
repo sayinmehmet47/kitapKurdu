@@ -16,6 +16,9 @@ export interface BookModel {
     category: string;
     language: string;
     description: string;
+    author?: string | null;
+    isbn?: string | null;
+    publisher?: string | null;
     imageLinks: {
       smallThumbnail: string;
       thumbnail: string;
@@ -33,6 +36,9 @@ export interface Book {
   language: string;
   url?: string;
   description: string;
+  author?: string | null;
+  isbn?: string | null;
+  publisher?: string | null;
   imageLinks: {
     smallThumbnail: string;
     thumbnail: string;
@@ -46,11 +52,13 @@ export interface Book {
 export interface BooksData {
   results: Book[];
   total: number;
-  page: number;
-  next: {
+  page?: number;
+  next?: {
     page: number;
+    limit: number;
   };
-  previous: {
+  previous?: {
     page: number;
+    limit: number;
   };
 }

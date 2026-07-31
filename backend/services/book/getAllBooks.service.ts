@@ -1,9 +1,9 @@
 // getAllBooksService.ts
-import { Request } from 'express';
-import { Books } from '../../models/Books';
-import { BooksData } from '../../routes/api/books.types';
-import { apiResponse } from '../../utils/apiResponse.utils';
+import type { Request } from 'express';
 import { logger } from '../../logger';
+import { Books } from '../../models/Books';
+import type { BooksData } from '../../routes/api/books.types';
+import { apiResponse } from '../../utils/apiResponse.utils';
 
 function escapeRegExp(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -21,7 +21,7 @@ const getAllBooksService = async (req: Request) => {
 
     const startIndex = (page - 1) * limit;
 
-    let query: Record<string, unknown> = {};
+    const query: Record<string, unknown> = {};
     if (language !== 'all') {
       query.language = language;
     }
@@ -52,9 +52,7 @@ const getAllBooksService = async (req: Request) => {
         .map((c) => c.trim())
         .filter(Boolean);
       if (categories.length > 0) {
-        const regexes = categories.map(
-          (c) => new RegExp(`${escapeRegExp(c)}`, 'i')
-        );
+        const regexes = categories.map((c) => new RegExp(`${escapeRegExp(c)}`, 'i'));
         categoryConditions.push({ category: { $in: regexes } });
       }
     }
@@ -115,6 +113,9 @@ const getAllBooksService = async (req: Request) => {
             language: 1,
             description: 1,
             imageLinks: 1,
+            author: 1,
+            isbn: 1,
+            publisher: 1,
           },
         },
       ];
@@ -127,7 +128,7 @@ const getAllBooksService = async (req: Request) => {
     } else {
       books = await Books.find(
         query,
-        'name path size date url uploader category language description imageLinks'
+        'name path size date url uploader category language description imageLinks author isbn publisher'
       )
         .populate('uploader', 'username email')
         .sort(sort)

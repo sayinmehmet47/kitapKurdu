@@ -119,6 +119,10 @@ Optional (email features silently degrade if unset):
 - `EMAIL_FROM`
 - `EMAIL_FROM_NAME`
 
+Optional (Google Books metadata enrichment; provider access remains available without it):
+
+- `GOOGLE_BOOKS_API_KEY`
+
 **Note:** The backend `build` script (`tsc -p tsconfig.build.json`) is
 compile-only. Dependency installation (`npm ci`) is performed externally
 by Render (via `buildCommand` in `render.yaml`) or CI before the build step.

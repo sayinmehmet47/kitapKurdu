@@ -17,7 +17,7 @@ test.describe('Search to book detail flow', () => {
 
     // Specific API routes must be registered BEFORE the global external-block
     // catch-all so they take priority.
-    await page.route('**/api/books/searchBooks**', async (route) => {
+    await page.route('**/api/books/search**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -64,6 +64,10 @@ test.describe('Search to book detail flow', () => {
     await expect(page.getByText('Search Results')).toBeVisible();
     await expect(page.getByText('1 books found')).toBeVisible();
     await expect(page.getByText(MOCK_BOOK_TITLE)).toBeVisible();
+    const searchResultRow = page.getByRole('row').filter({ hasText: MOCK_BOOK_TITLE });
+    await expect(searchResultRow.getByRole('cell').nth(1)).toContainText('Test Author');
+    await expect(page.getByText('Publisher: Test Publisher')).toBeVisible();
+    await expect(page.getByText('ISBN: 978-1-23456-789-0')).toBeVisible();
 
     // Click View to navigate to book detail
     await page.getByRole('link', { name: 'View' }).click();
@@ -77,6 +81,13 @@ test.describe('Search to book detail flow', () => {
 
     // Description
     await expect(page.getByText('A test book for smoke testing.')).toBeVisible();
+
+    await expect(page.getByText('Author', { exact: true })).toBeVisible();
+    await expect(page.getByText('Test Author')).toBeVisible();
+    await expect(page.getByText('Publisher', { exact: true })).toBeVisible();
+    await expect(page.getByText('Test Publisher')).toBeVisible();
+    await expect(page.getByText('ISBN')).toBeVisible();
+    await expect(page.getByText('978-1-23456-789-0')).toBeVisible();
 
     // Core detail and review sections
     await expect(page.getByText('Book Details')).toBeVisible();

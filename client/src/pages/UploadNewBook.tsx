@@ -1,5 +1,5 @@
 import { AlertCircle, Book, CheckCircle, FileText, Upload, X } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 import {
@@ -12,6 +12,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Input,
+  Label,
   Progress,
 } from '@/components/ui';
 import { useAppSelector } from '@/redux/store';
@@ -26,8 +28,22 @@ interface UploadFile {
   error?: string;
 }
 
+interface ManualMetadata {
+  author: string;
+  isbn: string;
+  publisher: string;
+}
+
+const emptyManualMetadata: ManualMetadata = {
+  author: '',
+  isbn: '',
+  publisher: '',
+};
+
 export default function UploadNewBook() {
   const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
+  const [manualMetadata, setManualMetadata] = useState<ManualMetadata>(emptyManualMetadata);
+  const metadataFileIdRef = useRef<string | undefined>(undefined);
   const [addNewBook] = useAddNewBookMutation();
   const user = useAppSelector((state) => state.authSlice.user.user);
   const userId = user.id || user.username;
@@ -49,12 +65,17 @@ export default function UploadNewBook() {
     return response.json();
   };
 
-  const addBook = async (response: any, originalFile: File) => {
+  const addBook = async (response: any, originalFile: File, metadata?: ManualMetadata) => {
     const book = {
       name: originalFile.name,
       size: response.bytes,
       url: response.secure_url,
       uploader: userId,
+      ...(metadata?.author.trim() && { author: metadata.author.trim() }),
+      ...(metadata?.isbn.trim() && { isbn: metadata.isbn.trim() }),
+      ...(metadata?.publisher.trim() && {
+        publisher: metadata.publisher.trim(),
+      }),
     };
 
     await addNewBook(book).unwrap();
@@ -62,6 +83,14 @@ export default function UploadNewBook() {
   };
 
   const handleFileUpload = async (fileItem: UploadFile) => {
+    const metadataForBook =
+      uploadFiles.length === 1 &&
+      uploadFiles[0].id === fileItem.id &&
+      metadataFileIdRef.current === fileItem.id
+        ? { ...manualMetadata }
+        : undefined;
+    let progressInterval: ReturnType<typeof setInterval> | undefined;
+
     try {
       // Update status to uploading
       setUploadFiles((prev) =>
@@ -69,7 +98,7 @@ export default function UploadNewBook() {
       );
 
       // Simulate progress (you can implement real progress tracking)
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setUploadFiles((prev) =>
           prev.map((f) =>
             f.id === fileItem.id && f.progress < 90 ? { ...f, progress: f.progress + 10 } : f
@@ -81,9 +110,7 @@ export default function UploadNewBook() {
       const cloudinaryResponse = await uploadToCloudinary(fileItem.file);
 
       // Add to database
-      const book = await addBook(cloudinaryResponse, fileItem.file);
-
-      clearInterval(progressInterval);
+      const book = await addBook(cloudinaryResponse, fileItem.file, metadataForBook);
 
       // Update status to success
       setUploadFiles((prev) =>
@@ -99,6 +126,10 @@ export default function UploadNewBook() {
       );
 
       toast.error(`Upload failed: ${errorMessage}`);
+    } finally {
+      if (progressInterval !== undefined) {
+        clearInterval(progressInterval);
+      }
     }
   };
 
@@ -116,6 +147,15 @@ export default function UploadNewBook() {
   const removeFile = (id: string) => {
     setUploadFiles((prev) => prev.filter((f) => f.id !== id));
   };
+
+  useEffect(() => {
+    const nextMetadataFileId = uploadFiles.length === 1 ? uploadFiles[0].id : undefined;
+
+    if (metadataFileIdRef.current !== nextMetadataFileId) {
+      metadataFileIdRef.current = nextMetadataFileId;
+      setManualMetadata(emptyManualMetadata);
+    }
+  }, [uploadFiles]);
 
   const uploadAll = () => {
     uploadFiles.filter((f) => f.status === 'pending').forEach(handleFileUpload);
@@ -260,6 +300,64 @@ export default function UploadNewBook() {
                 )}
               </CardHeader>
               <CardContent>
+                {uploadFiles.length === 1 && uploadFiles[0].status !== 'success' && (
+                  <div className="mb-6 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                      Optional book metadata
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      These details apply only to the single queued file.
+                    </p>
+                    <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="upload-author">Author</Label>
+                        <Input
+                          id="upload-author"
+                          value={manualMetadata.author}
+                          onChange={(event) =>
+                            setManualMetadata((current) => ({
+                              ...current,
+                              author: event.target.value,
+                            }))
+                          }
+                          maxLength={200}
+                          autoComplete="off"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="upload-isbn">ISBN</Label>
+                        <Input
+                          id="upload-isbn"
+                          value={manualMetadata.isbn}
+                          onChange={(event) =>
+                            setManualMetadata((current) => ({
+                              ...current,
+                              isbn: event.target.value,
+                            }))
+                          }
+                          maxLength={32}
+                          autoComplete="off"
+                          inputMode="numeric"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="upload-publisher">Publisher</Label>
+                        <Input
+                          id="upload-publisher"
+                          value={manualMetadata.publisher}
+                          onChange={(event) =>
+                            setManualMetadata((current) => ({
+                              ...current,
+                              publisher: event.target.value,
+                            }))
+                          }
+                          maxLength={200}
+                          autoComplete="off"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-4">
                   {uploadFiles.map((fileItem) => (
                     <div
@@ -304,24 +402,25 @@ export default function UploadNewBook() {
                       </div>
 
                       <div className="flex-shrink-0">
-                        {fileItem.status === 'pending' && (
+                        {fileItem.status !== 'uploading' && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => removeFile(fileItem.id)}
                             className="h-8 w-8 p-0"
+                            aria-label={`Remove ${fileItem.file.name}`}
                           >
                             <X className="h-4 w-4" />
                           </Button>
                         )}
-                        {fileItem.status === 'pending' && (
+                        {(fileItem.status === 'pending' || fileItem.status === 'error') && (
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleFileUpload(fileItem)}
                             className="ml-2"
                           >
-                            Upload
+                            {fileItem.status === 'error' ? 'Retry' : 'Upload'}
                           </Button>
                         )}
                       </div>
