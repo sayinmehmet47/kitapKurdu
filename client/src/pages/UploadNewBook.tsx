@@ -16,7 +16,6 @@ import {
   Label,
   Progress,
 } from '@/components/ui';
-import { useAppSelector } from '@/redux/store';
 import Layout from '../components/Layout';
 import { useAddNewBookMutation } from '../redux/services/book.api';
 
@@ -45,8 +44,6 @@ export default function UploadNewBook() {
   const [manualMetadata, setManualMetadata] = useState<ManualMetadata>(emptyManualMetadata);
   const metadataFileIdRef = useRef<string | undefined>(undefined);
   const [addNewBook] = useAddNewBookMutation();
-  const user = useAppSelector((state) => state.authSlice.user.user);
-  const userId = user.id || user.username;
 
   const uploadToCloudinary = async (file: File): Promise<any> => {
     const formData = new FormData();
@@ -70,7 +67,6 @@ export default function UploadNewBook() {
       name: originalFile.name,
       size: response.bytes,
       url: response.secure_url,
-      uploader: userId,
       ...(metadata?.author.trim() && { author: metadata.author.trim() }),
       ...(metadata?.isbn.trim() && { isbn: metadata.isbn.trim() }),
       ...(metadata?.publisher.trim() && {

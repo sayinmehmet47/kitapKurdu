@@ -33,7 +33,6 @@ router.post(
       .withMessage('Name must be at most 200 characters'),
     body('url').not().isEmpty().withMessage('Url is required'),
     body('size').not().isEmpty().withMessage('Size is required'),
-    body('uploader').not().isEmpty().withMessage('Uploader is required'),
     body('author')
       .optional({ nullable: true })
       .isString()

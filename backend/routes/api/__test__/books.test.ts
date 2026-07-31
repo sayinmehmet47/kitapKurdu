@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { app } from '../../../app';
 import { Books } from '../../../models/Books';
+import { User } from '../../../models/User';
 import { fetchGoogleBooksMetadata } from '../../../services/book/googleBooksMetadata.service';
 
 jest.mock('../../../services/book/googleBooksMetadata.service');
@@ -15,7 +16,6 @@ const VALID_BOOK_DATA = {
   name: 'test',
   url: DUMMY_PDF_URL,
   size: 100,
-  uploader: 'test',
 };
 
 beforeEach(() => {
@@ -37,7 +37,7 @@ it('return 400 with invalid body', async () => {
       expect(res.body.errors[0].message).toEqual('Name is required');
       expect(res.body.errors[1].message).toEqual('Url is required');
       expect(res.body.errors[2].message).toEqual('Size is required');
-      expect(res.body.errors[3].message).toEqual('Uploader is required');
+      expect(res.body.errors).toHaveLength(3);
     });
 });
 
@@ -56,6 +56,28 @@ it('should allow authorized users to upload new book', async () => {
       uploader: sender,
     })
     .expect(201);
+});
+
+it('ignores a legacy uploader body value and stores the authenticated user', async () => {
+  const { accessToken, sender } = await global.signin();
+  const otherUser = await User.create({
+    username: 'spoof-target',
+    email: 'spoof-target@example.com',
+  });
+
+  const response = await request(app)
+    .post('/api/books/addNewBook')
+    .set('Cookie', `accessToken=${accessToken}`)
+    .send({
+      ...VALID_BOOK_DATA,
+      uploader: otherUser._id,
+    })
+    .expect(201);
+
+  const storedBook = await Books.findById(response.body._id).lean();
+
+  expect(String(response.body.uploader)).toBe(String(sender));
+  expect(String(storedBook?.uploader)).toBe(String(sender));
 });
 
 it('populates book metadata from the provider', async () => {
@@ -456,4 +478,47 @@ it('should get all books paginated', async () => {
   expect(allBooks.body.data.total).toEqual(2);
   expect(allBooks.body.data.results[0].name).toEqual(book2.body.name);
   expect(allBooks.body.data.results[1].name).toEqual(book1.body.name);
+});
+
+it('returns only safe uploader attribution from public book endpoints', async () => {
+  const { sender } = await global.signin();
+  const book = await Books.create({
+    name: 'safe uploader attribution book',
+    url: DUMMY_PDF_URL,
+    size: 100,
+    uploader: sender,
+  });
+  const uploaderId = String(sender);
+
+  const expectSafeUploader = (uploader: unknown) => {
+    expect(uploader).toEqual({ _id: uploaderId, username: 'test' });
+    expect(uploader).not.toHaveProperty('email');
+  };
+
+  const search = await request(app)
+    .get('/api/books/search')
+    .query({ q: 'safe uploader attribution book' })
+    .expect(200);
+  expectSafeUploader(search.body.results[0].uploader);
+
+  const allBooks = await request(app)
+    .get('/api/books/allBooks')
+    .query({ language: 'all', page: 1, limit: 10 })
+    .expect(200);
+  expectSafeUploader(allBooks.body.data.results[0].uploader);
+
+  const ratingSortedBooks = await request(app)
+    .get('/api/books/allBooks')
+    .query({ language: 'all', page: 1, limit: 10, sort: 'ratingDesc' })
+    .expect(200);
+  expectSafeUploader(ratingSortedBooks.body.data.results[0].uploader);
+
+  const recentlyAdded = await request(app)
+    .get('/api/books/recently-added')
+    .query({ page: 1, limit: 10 })
+    .expect(200);
+  expectSafeUploader(recentlyAdded.body.data.books[0].uploader);
+
+  const detail = await request(app).get(`/api/books/getBookById/${book._id}`).expect(200);
+  expectSafeUploader(detail.body.uploader);
 });

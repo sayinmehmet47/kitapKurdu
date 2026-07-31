@@ -24,7 +24,6 @@ export const mockBook = {
   uploader: {
     username: 'test-uploader',
     _id: 'uploader-id-001',
-    email: 'uploader@example.com',
   },
 };
 

@@ -1,6 +1,8 @@
 // addNewBook.service.ts
 import type { Request } from 'express';
+import type { Types } from 'mongoose';
 import * as webpush from 'web-push';
+import { NotAuthorizedError } from '../../errors/not-authorized-error';
 import { logger } from '../../logger';
 import { Books } from '../../models/Books';
 import { getUserSubscriptionsExcludingUser, removeSubscription } from '../../web-push';
@@ -16,7 +18,18 @@ const getTrimmedString = (value: unknown): string | undefined => {
   return trimmed || undefined;
 };
 
+interface AuthenticatedUser {
+  _id?: Types.ObjectId | string;
+}
+
 const addNewBook = async (req: Request) => {
+  const user = req.user as AuthenticatedUser | undefined;
+  const uploaderId = user?._id;
+
+  if (!uploaderId) {
+    throw new NotAuthorizedError();
+  }
+
   const incomingName = typeof req.body.name === 'string' ? req.body.name : undefined;
   const nameForLookup = getTrimmedString(incomingName);
   const manualAuthor = getTrimmedString(req.body.author);
@@ -42,7 +55,7 @@ const addNewBook = async (req: Request) => {
     url: req.body.url,
     size: req.body.size,
     date: new Date(),
-    uploader: req.body.uploader,
+    uploader: uploaderId,
     author: manualAuthor ?? metadata?.author ?? null,
     isbn: manualIsbn ?? metadata?.isbn ?? null,
     publisher: manualPublisher ?? metadata?.publisher ?? null,
@@ -64,14 +77,12 @@ const addNewBook = async (req: Request) => {
 
   await books.save();
 
-  const user = req.user as any;
-
   const payload = JSON.stringify({
     title: 'New Book Added',
     body: `A new book "${books.name}" has been added!`,
   });
 
-  const subscriptions = await getUserSubscriptionsExcludingUser(user.id);
+  const subscriptions = await getUserSubscriptionsExcludingUser(uploaderId.toString());
 
   subscriptions.forEach((subscription) => {
     if (subscription?.subscription?.endpoint) {

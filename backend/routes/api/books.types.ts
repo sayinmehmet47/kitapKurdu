@@ -1,4 +1,14 @@
+import type { Types } from 'mongoose';
 import type { IBook } from '../../models/Books';
+
+export interface PublicUploader {
+  _id: Types.ObjectId;
+  username: string;
+}
+
+export type PublicBook = Omit<IBook, 'uploader'> & {
+  uploader?: PublicUploader | null;
+};
 
 export interface ImageLinks {
   smallThumbnail?: string;
@@ -32,7 +42,7 @@ export interface GoogleBooksResponse {
 }
 
 export interface BooksData {
-  results: IBook[];
+  results: PublicBook[];
   total: number;
   page?: number;
   next?: {

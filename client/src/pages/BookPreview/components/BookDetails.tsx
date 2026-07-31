@@ -15,6 +15,7 @@ export const BookDetails: React.FC<BookDetailsProps> = ({ book, fileType }) => {
   const { data: summary } = useGetBookRatingSummaryQuery(book._id);
   const avg = useMemo(() => Number(summary?.data?.avgRating || 0), [summary]);
   const count = summary?.data?.count || 0;
+  const uploader = book.uploader;
 
   return (
     <Card>
@@ -23,10 +24,10 @@ export const BookDetails: React.FC<BookDetailsProps> = ({ book, fileType }) => {
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-2">{book.name}</h1>
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-              {book.uploader?.username && (
+              {typeof uploader === 'object' && uploader?.username && (
                 <div className="flex items-center">
                   <User className="h-4 w-4 mr-1" />
-                  {book.uploader.username}
+                  {uploader.username}
                 </div>
               )}
               {book.language && (

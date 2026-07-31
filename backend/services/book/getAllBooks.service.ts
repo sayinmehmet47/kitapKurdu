@@ -2,7 +2,7 @@
 import type { Request } from 'express';
 import { logger } from '../../logger';
 import { Books } from '../../models/Books';
-import type { BooksData } from '../../routes/api/books.types';
+import type { BooksData, PublicBook, PublicUploader } from '../../routes/api/books.types';
 import { apiResponse } from '../../utils/apiResponse.utils';
 
 function escapeRegExp(input: string): string {
@@ -123,14 +123,17 @@ const getAllBooksService = async (req: Request) => {
       // populate uploader after aggregation
       await Books.populate(books, {
         path: 'uploader',
-        select: 'username email',
+        select: '_id username',
       });
     } else {
       books = await Books.find(
         query,
         'name path size date url uploader category language description imageLinks author isbn publisher'
       )
-        .populate('uploader', 'username email')
+        .populate<{ uploader: PublicUploader | null }>({
+          path: 'uploader',
+          select: '_id username',
+        })
         .sort(sort)
         .skip(startIndex)
         .limit(limit)
@@ -138,7 +141,7 @@ const getAllBooksService = async (req: Request) => {
     }
 
     const results: BooksData = {
-      results: books as any,
+      results: books as unknown as PublicBook[],
       total,
       page,
       next: total > startIndex + limit ? { page: page + 1 } : undefined,

@@ -36,7 +36,6 @@ const resultWithMetadata = {
   uploader: {
     username: 'uploader-name',
     _id: 'user-1',
-    email: 'uploader@example.com',
   },
   category: ['Fiction'],
   language: 'English',

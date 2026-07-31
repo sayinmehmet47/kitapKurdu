@@ -1,6 +1,7 @@
 import type { Request } from 'express';
 import NodeCache from 'node-cache';
 import { Books } from '../../models/Books';
+import type { PublicBook, PublicUploader } from '../../routes/api/books.types';
 import { logSearchAnalytics } from '../analytics/logSearch.service';
 
 const SEARCH_CACHE_TTL_SECONDS = 60;
@@ -148,7 +149,10 @@ const searchBooksService = async (req: Request) => {
       .select(
         'name path size date url uploader category language description imageLinks author isbn publisher'
       )
-      .populate('uploader', 'username email')
+      .populate<{ uploader: PublicUploader | null }>({
+        path: 'uploader',
+        select: '_id username',
+      })
       .collation({ locale: 'tr', strength: 2 })
       .skip(startIndex)
       .limit(limit)
@@ -167,10 +171,10 @@ const searchBooksService = async (req: Request) => {
       page: number;
       limit: number;
     };
-    results: unknown[];
+    results: PublicBook[];
   } = {
     total: count,
-    results,
+    results: results as unknown as PublicBook[],
   };
 
   if (endIndex < count) {
