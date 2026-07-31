@@ -1,20 +1,20 @@
-import React from 'react';
 import { ArrowLeft } from 'lucide-react';
+import type React from 'react';
+import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui';
-import { useBookPreview } from './hooks/useBookPreview';
-import { Helmet } from 'react-helmet-async';
 import {
-  BookReader,
+  AdminActions,
   BookCover,
+  BookDescription,
   BookDetails,
   BookMetadata,
-  BookDescription,
-  Reviews,
-  AdminActions,
+  BookReader,
   ErrorState,
   LoadingState,
+  Reviews,
 } from './components';
+import { useBookPreview } from './hooks/useBookPreview';
 
 const BookPreviewPage: React.FC = () => {
   const {
@@ -59,12 +59,14 @@ const BookPreviewPage: React.FC = () => {
   // Reading Mode
   if (isReading) {
     return (
-      <BookReader
-        bookUrl={book.url || ''}
-        fileType={fileType || ''}
-        bookName={book.name}
-        onBack={handleStopReading}
-      />
+      <main id="main-content" data-route-path={window.location.pathname} tabIndex={-1}>
+        <BookReader
+          bookUrl={book.url || ''}
+          fileType={fileType || ''}
+          bookName={book.name}
+          onBack={handleStopReading}
+        />
+      </main>
     );
   }
 

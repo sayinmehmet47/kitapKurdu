@@ -1,3 +1,4 @@
+import { User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAppDispatch } from '@/redux/store';
@@ -55,22 +56,19 @@ export function UserNav({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-10 w-10 cursor-pointer">
-          <AvatarImage src={avatarUrl} alt={username || 'User'} />
-          <AvatarFallback>
-            {isLoggedIn ? (
-              username.slice(0, 2).toUpperCase()
-            ) : (
-              <Button
-                variant="ghost"
-                className="text-muted-foreground shrink-0"
-                onClick={handleLogin}
-              >
-                Login
-              </Button>
-            )}
-          </AvatarFallback>
-        </Avatar>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          aria-label={isLoggedIn ? 'Open profile menu' : 'Open login menu'}
+        >
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={avatarUrl} alt={username || 'User'} />
+            <AvatarFallback>
+              {isLoggedIn ? username.slice(0, 2).toUpperCase() : <User />}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         {isLoggedIn ? (

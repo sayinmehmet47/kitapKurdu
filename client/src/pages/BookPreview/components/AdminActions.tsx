@@ -1,5 +1,5 @@
-import React from 'react';
-import { Card, CardHeader, CardContent, Button } from '@/components/ui';
+import type React from 'react';
+import { Button, Card, CardContent, CardHeader } from '@/components/ui';
 
 interface AdminActionsProps {
   isAdmin: boolean;
@@ -17,7 +17,7 @@ export const AdminActions: React.FC<AdminActionsProps> = ({
   return (
     <Card>
       <CardHeader>
-        <h3 className="text-lg font-semibold">Admin Actions</h3>
+        <h2 className="text-lg font-semibold">Admin Actions</h2>
       </CardHeader>
       <CardContent>
         <div className="flex space-x-3">

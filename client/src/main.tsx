@@ -1,15 +1,18 @@
 import { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App';
 import './App.css';
+import './accessibility.css';
 
-import { store } from './redux/store';
+import { HelmetProvider } from 'react-helmet-async';
 import Layout from './components/Layout';
 import { PrivateRoute } from './components/privateRoute';
-import { HelmetProvider } from 'react-helmet-async';
+import RouteAccessibilityManager from './components/RouteAccessibilityManager';
+import SkipLink from './components/SkipLink';
 import { LoadingSpinner } from './components/ui/loading';
+import { store } from './redux/store';
 
 const AllBooks = lazy(() => import('./pages/AllBooks'));
 const RecentlyAdded = lazy(() => import('./pages/RecentlyAdded/index'));
@@ -19,19 +22,27 @@ const UploadNewBook = lazy(() => import('./pages/UploadNewBook'));
 const UserProfile = lazy(() => import('./components/User'));
 const ShelfSpace = lazy(() => import('./pages/ShelfSpace'));
 const BookPreviewPage = lazy(() => import('./pages/BookPreview'));
-const BookEditPage = lazy(() => import('./pages/BookEditPage').then(m => ({ default: m.BookEditPage })));
-const ContactUs = lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactUs })));
+const BookEditPage = lazy(() =>
+  import('./pages/BookEditPage').then((m) => ({ default: m.BookEditPage }))
+);
+const ContactUs = lazy(() => import('./pages/ContactPage').then((m) => ({ default: m.ContactUs })));
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
   <HelmetProvider>
     <Provider store={store}>
       <BrowserRouter>
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><LoadingSpinner size={32} /></div>}>
+        <SkipLink />
+        <RouteAccessibilityManager />
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center min-h-screen">
+              <LoadingSpinner size={32} />
+            </div>
+          }
+        >
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/login" element={<AuthPage />} />

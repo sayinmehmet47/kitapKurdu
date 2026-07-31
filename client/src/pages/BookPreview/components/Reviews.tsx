@@ -34,7 +34,7 @@ export const Reviews: React.FC<ReviewsProps> = ({ bookId }) => {
   return (
     <Card>
       <CardHeader>
-        <h3 className="text-lg font-semibold">Reviews</h3>
+        <h2 className="text-lg font-semibold">Reviews</h2>
       </CardHeader>
       <CardContent className="space-y-4">
         {isLoggedIn && (

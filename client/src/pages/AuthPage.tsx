@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -175,7 +175,7 @@ const AuthPage: FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Welcome</CardTitle>
+            <h1 className="text-2xl text-center font-semibold">Welcome</h1>
             <CardDescription className="text-center">
               Sign in to your account or create a new one
             </CardDescription>

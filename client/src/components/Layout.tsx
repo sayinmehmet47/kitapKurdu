@@ -1,19 +1,19 @@
-import { ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
-
-import NavbarComponent from './Navbar';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { loadUserThunk } from '@/redux/authSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import Footer from './Footer';
+import NavbarComponent from './Navbar';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const location = useLocation();
   const dispatch = useAppDispatch();
-  const { isAuthLoaded, isLoading } = useAppSelector(
-    (state) => state.authSlice
-  );
+  const { isAuthLoaded, isLoading } = useAppSelector((state) => state.authSlice);
   const authInitialized = useRef(false);
 
   useEffect(() => {
@@ -33,10 +33,18 @@ export default function Layout({ children }: LayoutProps) {
   }, [dispatch, isAuthLoaded, isLoading]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Toaster />
       <NavbarComponent />
-      <main className="flex-1">{children}</main>
+      <main
+        id="main-content"
+        data-route-path={location.pathname}
+        tabIndex={-1}
+        className="flex-1 scroll-mt-16"
+      >
+        {children}
+      </main>
+      <Footer />
     </div>
   );
 }

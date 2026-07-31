@@ -6,6 +6,7 @@ const BLOCKED_PATTERNS: RegExp[] = [
   /kitapkurdu\.onrender\.com/,
   /images\.pexels\.com/,
   /unpkg\.com/,
+  /example\.com/,
   /\/sw\.js(\?|$|#)/,
 ];
 
