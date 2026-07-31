@@ -1,21 +1,19 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Input,
-  Textarea,
-} from '@/components/ui';
-import {
-  useGetBookReviewsQuery,
-  useRateBookMutation,
-} from '@/redux/services/book.api';
+import { StarPicker } from '@/components/StarPicker';
+import { Button, Card, CardContent, CardHeader, Textarea } from '@/components/ui';
+import { useGetBookReviewsQuery, useRateBookMutation } from '@/redux/services/book.api';
+import type { RootState } from '@/redux/store';
 
 interface ReviewsProps {
   bookId: string;
+}
+
+interface Review {
+  _id: string;
+  userId?: { username?: string };
+  rating: number;
+  review?: string;
 }
 
 export const Reviews: React.FC<ReviewsProps> = ({ bookId }) => {
@@ -24,6 +22,7 @@ export const Reviews: React.FC<ReviewsProps> = ({ bookId }) => {
   const [rateBook, { isLoading }] = useRateBookMutation();
   const [text, setText] = useState('');
   const [rating, setRating] = useState(5);
+  const reviews: Review[] = data?.data ?? [];
 
   const submit = async () => {
     if (!isLoggedIn) return;
@@ -41,15 +40,8 @@ export const Reviews: React.FC<ReviewsProps> = ({ bookId }) => {
         {isLoggedIn && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <label className="text-sm">Your rating:</label>
-              <Input
-                type="number"
-                min={1}
-                max={5}
-                value={rating}
-                onChange={(e) => setRating(Number(e.target.value))}
-                className="w-20"
-              />
+              <span className="text-sm">Your rating:</span>
+              <StarPicker value={rating} onChange={setRating} size="sm" ariaLabel="Your rating" />
             </div>
             <Textarea
               placeholder="Leave a short review (optional)"
@@ -64,11 +56,13 @@ export const Reviews: React.FC<ReviewsProps> = ({ bookId }) => {
         )}
 
         <div className="space-y-3">
-          {data?.data?.length ? (
-            data.data.map((r: any) => (
+          {reviews.length ? (
+            reviews.map((r) => (
               <div key={r._id} className="border-b pb-2">
-                <div className="text-sm text-muted-foreground">
-                  {r.userId?.username || 'Anonymous'} • {r.rating}/5
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>{r.userId?.username || 'Anonymous'}</span>
+                  <StarPicker value={r.rating} readOnly size="sm" />
+                  <span>• {r.rating}/5</span>
                 </div>
                 {r.review && <div className="text-sm mt-1">{r.review}</div>}
               </div>
