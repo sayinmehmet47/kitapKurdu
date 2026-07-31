@@ -1,3 +1,4 @@
+import type { Document } from 'mongoose';
 import mongoose from 'mongoose';
 
 export const schema = new mongoose.Schema(
@@ -30,6 +31,18 @@ export const schema = new mongoose.Schema(
       type: String,
       index: true,
     },
+    author: {
+      type: String,
+      default: null,
+    },
+    isbn: {
+      type: String,
+      default: null,
+    },
+    publisher: {
+      type: String,
+      default: null,
+    },
 
     imageLinks: {
       smallThumbnail: {
@@ -49,14 +62,33 @@ export const schema = new mongoose.Schema(
   { collection: 'ilkparti' }
 );
 
-schema.index({ 
-  name: 'text', 
-  description: 'text', 
-  category: 'text' 
-}, { 
-  default_language: 'turkish',
-  language_override: 'language'
-});
+schema.index(
+  { author: 1 },
+  {
+    name: 'books_author_tr_strength_2',
+    collation: { locale: 'tr', strength: 2 },
+  }
+);
+
+schema.index(
+  { isbn: 1 },
+  {
+    name: 'books_isbn_tr_strength_2',
+    collation: { locale: 'tr', strength: 2 },
+  }
+);
+
+schema.index(
+  {
+    name: 'text',
+    description: 'text',
+    category: 'text',
+  },
+  {
+    default_language: 'turkish',
+    language_override: 'language',
+  }
+);
 
 export interface IBook extends Document {
   name: string;
@@ -67,6 +99,9 @@ export interface IBook extends Document {
   uploader: mongoose.Schema.Types.ObjectId;
   category: string[];
   description: string;
+  author?: string | null;
+  isbn?: string | null;
+  publisher?: string | null;
   imageLinks: {
     smallThumbnail: string;
     thumbnail: string;

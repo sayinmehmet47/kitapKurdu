@@ -14,6 +14,9 @@ export const mockBook = {
   language: 'English',
   url: 'https://example.com/test-book.pdf',
   description: 'A test book for smoke testing.',
+  author: 'Test Author',
+  isbn: '978-1-23456-789-0',
+  publisher: 'Test Publisher',
   imageLinks: {
     smallThumbnail: DATA_URI_COVER,
     thumbnail: DATA_URI_COVER,
@@ -29,8 +32,8 @@ export const mockSearchResponse = {
   results: [mockBook],
   total: 1,
   page: 1,
-  next: { page: 2 },
-  previous: { page: 0 },
+  next: { page: 2, limit: 10 },
+  previous: { page: 0, limit: 10 },
 };
 
 export const mockRatingSummary = {

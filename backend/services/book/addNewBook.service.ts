@@ -1,56 +1,65 @@
 // addNewBook.service.ts
-import { Request } from 'express';
-import { Books } from '../../models/Books';
-import axios from 'axios';
+import type { Request } from 'express';
 import * as webpush from 'web-push';
-import { Item } from '../../routes/api/books.types';
-import {
-  getUserSubscriptionsExcludingUser,
-  removeSubscription,
-} from '../../web-push';
 import { logger } from '../../logger';
+import { Books } from '../../models/Books';
+import { getUserSubscriptionsExcludingUser, removeSubscription } from '../../web-push';
+import type { BookMetadata } from './googleBooksMetadata.service';
+import { fetchGoogleBooksMetadata } from './googleBooksMetadata.service';
 
-const addNewBook = async (req: Request) => {
-  let responseData;
-
-  try {
-    const response = await axios.get(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
-        req.body.name
-      )}`
-    );
-    responseData = await response?.data?.items;
-  } catch (error) {
-    logger.error('Failed to fetch book categories from Google Books API', {
-      bookName: req.body.name,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-    responseData = [];
+const getTrimmedString = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') {
+    return undefined;
   }
 
+  const trimmed = value.trim();
+  return trimmed || undefined;
+};
+
+const addNewBook = async (req: Request) => {
+  const incomingName = typeof req.body.name === 'string' ? req.body.name : undefined;
+  const nameForLookup = getTrimmedString(incomingName);
+  const manualAuthor = getTrimmedString(req.body.author);
+  const manualIsbn = getTrimmedString(req.body.isbn);
+  const manualPublisher = getTrimmedString(req.body.publisher);
+  let metadata: BookMetadata | null = null;
+
+  try {
+    metadata =
+      (await fetchGoogleBooksMetadata({
+        name: nameForLookup,
+        isbn: manualIsbn,
+      })) ?? null;
+  } catch (error) {
+    logger.error('Failed to enrich book metadata from Google Books API', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+
+  const bookName = nameForLookup ? (incomingName ?? '') : (metadata?.title ?? '');
   const books = new Books({
-    name: req.body.name,
+    name: bookName,
     url: req.body.url,
     size: req.body.size,
     date: new Date(),
     uploader: req.body.uploader,
+    author: manualAuthor ?? metadata?.author ?? null,
+    isbn: manualIsbn ?? metadata?.isbn ?? null,
+    publisher: manualPublisher ?? metadata?.publisher ?? null,
   });
 
-  if (responseData && responseData.length > 0) {
-    const categories: Set<string> = new Set(
-      responseData
-        .slice(0, 10)
-        .filter((item: Item) => item.volumeInfo.categories)
-        .flatMap((item: Item) => item.volumeInfo.categories)
-        .map((category: string) => category.toLowerCase())
+  if (metadata?.categories?.length) {
+    books.category = Array.from(
+      new Set(metadata.categories.map((category) => category.toLowerCase()))
     );
+  }
 
-    const convertedCategories = Array.from(categories);
+  if (metadata?.description) {
+    books.description = metadata.description;
+  }
 
-    const { description, imageLinks } = responseData[0].volumeInfo;
-    books.category = convertedCategories;
-    books.description = description;
-    books.imageLinks = imageLinks;
+  if (metadata?.imageLinks) {
+    books.set('imageLinks', metadata.imageLinks);
   }
 
   await books.save();
@@ -59,7 +68,7 @@ const addNewBook = async (req: Request) => {
 
   const payload = JSON.stringify({
     title: 'New Book Added',
-    body: `A new book "${req.body.name}" has been added!`,
+    body: `A new book "${books.name}" has been added!`,
   });
 
   const subscriptions = await getUserSubscriptionsExcludingUser(user.id);
@@ -67,10 +76,7 @@ const addNewBook = async (req: Request) => {
   subscriptions.forEach((subscription) => {
     if (subscription?.subscription?.endpoint) {
       webpush
-        .sendNotification(
-          subscription.subscription as webpush.PushSubscription,
-          payload
-        )
+        .sendNotification(subscription.subscription as webpush.PushSubscription, payload)
         .catch((error) => {
           if (error.statusCode === 410) {
             removeSubscription(subscription.subscription);
@@ -78,7 +84,7 @@ const addNewBook = async (req: Request) => {
             logger.error('Error sending push notification', {
               error: error.message,
               statusCode: error.statusCode,
-              endpoint: subscription.subscription?.endpoint
+              endpoint: subscription.subscription?.endpoint,
             });
           }
         });

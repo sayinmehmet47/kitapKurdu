@@ -1,4 +1,4 @@
-import { Book, BookModel, BooksData } from '../../models/book.model';
+import type { Book, BookModel, BooksData } from '../../models/book.model';
 import { commonApi } from '../common.api';
 
 export const bookApi = commonApi.injectEndpoints({
@@ -31,14 +31,9 @@ export const bookApi = commonApi.injectEndpoints({
       },
       providesTags: (result) => [{ type: 'Book', id: 'List' }],
     }),
-    rateBook: build.mutation<
-      any,
-      { bookId: string; rating: number; review?: string }
-    >({
+    rateBook: build.mutation<any, { bookId: string; rating: number; review?: string }>({
       query: (body) => ({ url: `/ratings`, method: 'POST', body }),
-      invalidatesTags: (result, error, { bookId }) => [
-        { type: 'Book', id: bookId },
-      ],
+      invalidatesTags: (result, error, { bookId }) => [{ type: 'Book', id: bookId }],
     }),
     getBookRatingSummary: build.query<
       { success: boolean; data: { avgRating: number; count: number } },
@@ -67,17 +62,32 @@ export const bookApi = commonApi.injectEndpoints({
     searchBooks: build.query<
       BooksData,
       {
-        name: string;
-        page: number;
+        q?: string;
+        /** Kept for callers using the legacy search argument name. */
+        name?: string;
+        author?: string | null;
+        isbn?: string | null;
+        publisher?: string | null;
+        category?: string | null;
+        page?: number;
+        limit?: number;
       }
     >({
-      query: ({ name, page }) => ({
-        url: `/books/searchBooks`,
-        params: {
-          name,
-          page,
-        },
-      }),
+      query: ({ q, name, author, isbn, publisher, category, page = 1, limit = 10 }) => {
+        const params: Record<string, string | number> = { page, limit };
+        const keyword = q?.trim() || name?.trim();
+
+        if (keyword) params.q = keyword;
+        if (author?.trim()) params.author = author.trim();
+        if (isbn?.trim()) params.isbn = isbn.trim();
+        if (publisher?.trim()) params.publisher = publisher.trim();
+        if (category?.trim()) params.category = category.trim();
+
+        return {
+          url: `/books/search`,
+          params,
+        };
+      },
       providesTags: (result) => [{ type: 'Book', id: 'List' }],
     }),
 
@@ -88,6 +98,9 @@ export const bookApi = commonApi.injectEndpoints({
         size: string;
         url: string;
         uploader: string;
+        author?: string | null;
+        isbn?: string | null;
+        publisher?: string | null;
       }
     >({
       query: (book) => ({
