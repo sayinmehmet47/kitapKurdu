@@ -5,7 +5,11 @@ import * as webpush from 'web-push';
 import { NotAuthorizedError } from '../../errors/not-authorized-error';
 import { logger } from '../../logger';
 import { Books } from '../../models/Books';
-import { getUserSubscriptionsExcludingUser, removeSubscription } from '../../web-push';
+import {
+  getUserSubscriptionsExcludingUser,
+  isWebPushConfigured,
+  removeSubscription,
+} from '../../web-push';
 import type { BookMetadata } from './googleBooksMetadata.service';
 import { fetchGoogleBooksMetadata } from './googleBooksMetadata.service';
 
@@ -77,32 +81,36 @@ const addNewBook = async (req: Request) => {
 
   await books.save();
 
-  const payload = JSON.stringify({
-    title: 'New Book Added',
-    body: `A new book "${books.name}" has been added!`,
-  });
+  if (isWebPushConfigured) {
+    const payload = JSON.stringify({
+      title: 'New Book Added',
+      body: `A new book "${books.name}" has been added!`,
+    });
 
-  const subscriptions = await getUserSubscriptionsExcludingUser(uploaderId.toString());
+    const subscriptions = await getUserSubscriptionsExcludingUser(uploaderId.toString());
 
-  subscriptions.forEach((subscription) => {
-    if (subscription?.subscription?.endpoint) {
-      webpush
-        .sendNotification(subscription.subscription as webpush.PushSubscription, payload)
-        .catch((error) => {
-          if (error.statusCode === 410) {
-            removeSubscription(subscription.subscription);
-          } else {
-            logger.error('Error sending push notification', {
-              error: error.message,
-              statusCode: error.statusCode,
-              endpoint: subscription.subscription?.endpoint,
-            });
-          }
-        });
-    } else {
-      logger.error('Invalid subscription endpoint', { subscription });
-    }
-  });
+    subscriptions.forEach((subscription) => {
+      const pushSubscription = subscription?.subscription;
+      const endpoint = pushSubscription?.endpoint;
+
+      if (endpoint) {
+        webpush
+          .sendNotification(pushSubscription as webpush.PushSubscription, payload)
+          .catch((error) => {
+            if (error.statusCode === 410) {
+              removeSubscription({ endpoint });
+            } else {
+              logger.error('Error sending push notification', {
+                error: error.message,
+                statusCode: error.statusCode,
+              });
+            }
+          });
+      } else {
+        logger.error('Invalid subscription endpoint');
+      }
+    });
+  }
 
   return books;
 };
