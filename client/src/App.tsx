@@ -6,8 +6,7 @@ import Layout from './components/Layout';
 import { Search } from './components/Search';
 import { loadUserThunk } from './redux/authSlice';
 import { apiBaseUrl } from './redux/common.api';
-import { useAppDispatch, useAppSelector } from './redux/store';
-import { handleAuthExpiredOnce, refreshAccessToken } from './redux/tokenRefresh';
+import { useAppDispatch } from './redux/store';
 
 ReactGA.initialize('G-R54SYJD2B8');
 
@@ -108,30 +107,10 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isLoggedIn } = useAppSelector((state) => state.authSlice);
 
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: location.pathname });
   }, [location.pathname]);
-
-  // Periodic token refresh for logged-in users (every 10 minutes)
-  useEffect(() => {
-    if (!isLoggedIn) return;
-
-    const interval = setInterval(
-      () => {
-        void refreshAccessToken(apiBaseUrl).then((result) => {
-          if (result.status === 'auth-expired') {
-            handleAuthExpiredOnce(dispatch);
-          }
-          // Network errors are best-effort: keep the session for the next tick.
-        });
-      },
-      10 * 60 * 1000
-    ); // 10 minutes
-
-    return () => clearInterval(interval);
-  }, [isLoggedIn, dispatch]);
 
   // After Google OAuth redirect (?auth=success), load user from backend and clean URL
   useEffect(() => {
