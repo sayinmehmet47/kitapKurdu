@@ -12,6 +12,7 @@ import {
 } from '../../web-push';
 import type { BookMetadata } from './googleBooksMetadata.service';
 import { fetchGoogleBooksMetadata } from './googleBooksMetadata.service';
+import { scheduleUserUpload } from './uploadWorkLimiters';
 
 const getTrimmedString = (value: unknown): string | undefined => {
   if (typeof value !== 'string') {
@@ -26,7 +27,7 @@ interface AuthenticatedUser {
   _id?: Types.ObjectId | string;
 }
 
-const addNewBook = async (req: Request) => {
+const addNewBookCore = async (req: Request) => {
   const user = req.user as AuthenticatedUser | undefined;
   const uploaderId = user?._id;
 
@@ -113,6 +114,17 @@ const addNewBook = async (req: Request) => {
   }
 
   return books;
+};
+
+const addNewBook = async (req: Request) => {
+  const user = req.user as AuthenticatedUser | undefined;
+  const uploaderId = user?._id;
+
+  if (!uploaderId) {
+    throw new NotAuthorizedError();
+  }
+
+  return scheduleUserUpload(uploaderId.toString(), () => addNewBookCore(req));
 };
 
 export { addNewBook };

@@ -171,6 +171,30 @@ it('keeps uploads successful when metadata enrichment fails', async () => {
   });
 });
 
+it('allows a normal client to upload up to three books concurrently without rate limiting', async () => {
+  const { accessToken, sender } = await global.signin();
+
+  const uploads = [1, 2, 3].map((index) =>
+    request(app)
+      .post('/api/books/addNewBook')
+      .set('Cookie', `accessToken=${accessToken}`)
+      .send({
+        ...VALID_BOOK_DATA,
+        name: `concurrent-upload-${index}`,
+        uploader: sender,
+      })
+      .expect(201)
+  );
+
+  const responses = await Promise.all(uploads);
+
+  expect(responses.map((response) => response.body.name).sort()).toEqual([
+    'concurrent-upload-1',
+    'concurrent-upload-2',
+    'concurrent-upload-3',
+  ]);
+});
+
 it('returns existing books that have no metadata', async () => {
   const { sender } = await global.signin();
   const legacyBook = await Books.create({
