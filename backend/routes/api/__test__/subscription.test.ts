@@ -6,9 +6,8 @@ const VALID_SUBSCRIPTION = {
   endpoint: 'https://fcm.googleapis.com/fcm/send/test-endpoint',
   expirationTime: null,
   keys: {
-    p256dh:
-      'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM',
-    auth: 'fB1SxTFPXW2jG4kQ9sL6mA',
+    p256dh: 'test-p256dh-key',
+    auth: 'test-auth-key',
   },
 };
 
