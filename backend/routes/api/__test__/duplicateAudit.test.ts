@@ -71,6 +71,7 @@ describe('GET /api/duplicate-audit', () => {
     expect(Object.keys(res.body.groups[0].books[0]).sort()).toEqual([
       'author',
       'bookId',
+      'duplicateOf',
       'isbn',
       'language',
       'name',

@@ -5,6 +5,10 @@ import {
   DUPLICATE_AUDIT_TYPES,
   runDuplicateAuditService,
 } from '../services/duplicateAudit/duplicateAudit.service';
+import {
+  markDuplicateService,
+  unmarkDuplicateService,
+} from '../services/duplicateAudit/duplicateMark.service';
 
 const MAX_LIMIT = 50;
 const DEFAULT_LIMIT = 20;
@@ -51,6 +55,28 @@ export const getDuplicateAuditController = async (
       limit: limit ?? DEFAULT_LIMIT,
     });
 
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const markDuplicateController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await markDuplicateService(req.body);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const unmarkDuplicateController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await unmarkDuplicateService(req.body);
     res.status(200).json(result);
   } catch (err) {
     next(err);

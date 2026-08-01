@@ -58,6 +58,14 @@ export const schema = new mongoose.Schema(
       enum: ['turkish', 'english'],
       default: 'turkish',
     },
+    // Soft-hide: when set, this book is considered a duplicate of the
+    // referenced canonical book and is hidden from all public endpoints.
+    // Nullable and optional on purpose - no index, migration or backfill.
+    duplicateOf: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Books',
+      default: null,
+    },
   },
   { collection: 'ilkparti' }
 );
@@ -107,6 +115,7 @@ export interface IBook extends Document {
     thumbnail: string;
   };
   language: 'turkish' | 'english';
+  duplicateOf?: mongoose.Schema.Types.ObjectId | null;
 }
 
 export const Books = mongoose.model<IBook>('Books', schema);

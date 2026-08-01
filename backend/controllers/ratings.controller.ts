@@ -1,9 +1,28 @@
-import { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
+import { NotFoundError } from '../errors/not-found-error';
+import { Books } from '../models/Books';
 import { Rating } from '../models/Rating';
+
+/**
+ * A soft-hidden duplicate must not expose a rating summary/reviews nor accept
+ * new ratings. Both the public read routes and the authenticated write route
+ * require the target book to exist and to be public (duplicateOf: null).
+ */
+const ensurePublicBook = async (bookId: string): Promise<void> => {
+  if (!mongoose.isValidObjectId(bookId)) {
+    throw new NotFoundError('Book not found');
+  }
+  const book = await Books.exists({ _id: bookId, duplicateOf: null });
+  if (!book) {
+    throw new NotFoundError('Book not found');
+  }
+};
 
 export const createOrUpdateRatingController = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userId = (req.user as any)?._id;
@@ -13,6 +32,8 @@ export const createOrUpdateRatingController = async (
       review?: string;
     };
 
+    await ensurePublicBook(bookId);
+
     const doc = await Rating.findOneAndUpdate(
       { bookId, userId },
       { $set: { rating, review } },
@@ -20,19 +41,23 @@ export const createOrUpdateRatingController = async (
     );
 
     res.status(200).json({ success: true, data: doc });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+  } catch (err) {
+    next(err);
   }
 };
 
 export const getBookRatingsSummaryController = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const { bookId } = req.params as { bookId: string };
+
+    await ensurePublicBook(bookId);
+
     const [summary] = await Rating.aggregate([
-      { $match: { bookId: new (require('mongoose').Types.ObjectId)(bookId) } },
+      { $match: { bookId: new mongoose.Types.ObjectId(bookId) } },
       {
         $group: {
           _id: '$bookId',
@@ -42,23 +67,24 @@ export const getBookRatingsSummaryController = async (
       },
     ]);
 
-    res
-      .status(200)
-      .json({ success: true, data: summary || { avgRating: 0, count: 0 } });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(200).json({ success: true, data: summary || { avgRating: 0, count: 0 } });
+  } catch (err) {
+    next(err);
   }
 };
 
-export const getBookReviewsController = async (req: Request, res: Response) => {
+export const getBookReviewsController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bookId } = req.params as { bookId: string };
+
+    await ensurePublicBook(bookId);
+
     const reviews = await Rating.find({ bookId })
       .sort({ updatedAt: -1 })
       .limit(50)
       .populate('userId', 'username');
     res.status(200).json({ success: true, data: reviews });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+  } catch (err) {
+    next(err);
   }
 };

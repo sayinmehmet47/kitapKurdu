@@ -22,6 +22,8 @@ const getAllBooksService = async (req: Request) => {
     const startIndex = (page - 1) * limit;
 
     const query: Record<string, unknown> = {};
+    // Soft-hidden duplicates are invisible in the public all-books listing.
+    query.duplicateOf = null;
     if (language !== 'all') {
       query.language = language;
     }

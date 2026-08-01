@@ -11,6 +11,8 @@ export interface DuplicateAuditBookItem {
   author: string | null;
   isbn: string | null;
   language: string;
+  /** Canonical book id when this book is already soft-hidden as a duplicate. */
+  duplicateOf: string | null;
 }
 
 export interface DuplicateAuditGroup {
@@ -42,6 +44,26 @@ export interface DuplicateAuditQueryArgs {
   limit?: number;
 }
 
+export interface MarkDuplicateArgs {
+  canonicalId: string;
+  duplicateIds: string[];
+}
+
+export interface MarkDuplicateResult {
+  canonicalId: string;
+  duplicateIds: string[];
+  updatedCount: number;
+}
+
+export interface UnmarkDuplicateArgs {
+  duplicateIds: string[];
+}
+
+export interface UnmarkDuplicateResult {
+  duplicateIds: string[];
+  updatedCount: number;
+}
+
 export const duplicateAuditApi = commonApi.injectEndpoints({
   endpoints: (build) => ({
     // GET /api/duplicate-audit?type=url&page=1&limit=20
@@ -51,8 +73,37 @@ export const duplicateAuditApi = commonApi.injectEndpoints({
         url: '/duplicate-audit',
         params: { type, page, limit },
       }),
+      providesTags: () => [{ type: 'Audit' }],
+    }),
+
+    // POST /api/duplicate-audit/mark
+    // Soft-hides the given duplicates under the canonical book. Any cached
+    // audit and public book listings are refreshed so hidden books disappear
+    // from the site immediately.
+    markDuplicate: build.mutation<MarkDuplicateResult, MarkDuplicateArgs>({
+      query: (body) => ({
+        url: '/duplicate-audit/mark',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: [{ type: 'Audit' }, { type: 'Book' }],
+    }),
+
+    // POST /api/duplicate-audit/unmark
+    // Restores the given books to public visibility.
+    unmarkDuplicate: build.mutation<UnmarkDuplicateResult, UnmarkDuplicateArgs>({
+      query: (body) => ({
+        url: '/duplicate-audit/unmark',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: [{ type: 'Audit' }, { type: 'Book' }],
     }),
   }),
 });
 
-export const { useLazyGetDuplicateAuditQuery } = duplicateAuditApi;
+export const {
+  useLazyGetDuplicateAuditQuery,
+  useMarkDuplicateMutation,
+  useUnmarkDuplicateMutation,
+} = duplicateAuditApi;

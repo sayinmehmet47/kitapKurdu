@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { type ReactNode, useState } from 'react';
 import { Provider } from 'react-redux';
@@ -10,7 +10,7 @@ import authReducer, { loadUser } from '@/redux/authSlice';
 import { commonApi } from '@/redux/common.api';
 import type { DuplicateAuditResult } from '@/redux/services/duplicateAudit.api';
 
-// Partial-mock the audit API only: the hook is stubbed while the real
+// Partial-mock the audit API only: the hooks are stubbed while the real
 // commonApi reducer and middleware stay in the test store.
 const apiMocks = vi.hoisted(() => {
   const state: {
@@ -20,18 +20,43 @@ const apiMocks = vi.hoisted(() => {
     error: unknown;
   } = { data: null, isFetching: false, isError: false, error: undefined };
 
+  // The page only reads isLoading from the mutation hooks, so the stateful
+  // stubs track just that flag.
+  const markState: { isLoading: boolean } = { isLoading: false };
+
+  const unmarkState: { isLoading: boolean } = { isLoading: false };
+
+  // Optional rejection payload for the unmark mutation.
+  const unmarkError: { error: unknown } = { error: undefined };
+
   return {
     trigger: vi.fn(),
+    markFn: vi.fn(),
+    unmarkFn: vi.fn(),
     state,
+    markState,
+    unmarkState,
+    unmarkError,
     reset() {
       state.data = null;
       state.isFetching = false;
       state.isError = false;
       state.error = undefined;
+      markState.isLoading = false;
+      unmarkState.isLoading = false;
+      unmarkError.error = undefined;
       apiMocks.trigger.mockClear();
+      apiMocks.markFn.mockClear();
+      apiMocks.unmarkFn.mockClear();
     },
   };
 });
+
+const toastMocks = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
+
+vi.mock('sonner', () => ({
+  toast: { success: toastMocks.success, error: toastMocks.error },
+}));
 
 vi.mock('@/redux/services/duplicateAudit.api', () => ({
   // Stateful stub: trigger records its args and snapshots apiMocks.state so a
@@ -44,6 +69,29 @@ vi.mock('@/redux/services/duplicateAudit.api', () => ({
       setResult({ ...apiMocks.state });
     };
     return [trigger, result];
+  },
+  // Mutation stubs: record their payload and resolve/reject based on the
+  // configured outcome, mirroring the shape of an RTK Query mutation hook.
+  useMarkDuplicateMutation: () => {
+    const [result] = useState({ ...apiMocks.markState });
+    const run = (args: unknown) => {
+      apiMocks.markFn(args);
+      return {
+        unwrap: () => Promise.resolve({ canonicalId: 'b1', duplicateIds: ['b2'], updatedCount: 1 }),
+      };
+    };
+    return [run, result];
+  },
+  useUnmarkDuplicateMutation: () => {
+    const [result] = useState({ ...apiMocks.unmarkState });
+    const run = (args: unknown) => {
+      apiMocks.unmarkFn(args);
+      if (apiMocks.unmarkError.error !== undefined) {
+        return { unwrap: () => Promise.reject(apiMocks.unmarkError.error) };
+      }
+      return { unwrap: () => Promise.resolve({ duplicateIds: ['b2'], updatedCount: 1 }) };
+    };
+    return [run, result];
   },
 }));
 
@@ -94,6 +142,7 @@ const report: DuplicateAuditResult = {
           author: null,
           isbn: null,
           language: 'turkish',
+          duplicateOf: null,
         },
         {
           bookId: 'b2',
@@ -102,6 +151,7 @@ const report: DuplicateAuditResult = {
           author: '=SUM(A1)',
           isbn: '9780000000000',
           language: 'turkish',
+          duplicateOf: null,
         },
       ],
     },
@@ -113,6 +163,20 @@ const report: DuplicateAuditResult = {
   totalBooks: 3,
   isTruncated: false,
   durationMs: 5,
+};
+
+// Post-mark state: b2 is now soft-hidden as a duplicate of b1.
+const markedReport: DuplicateAuditResult = {
+  ...report,
+  groups: [
+    {
+      ...report.groups[0],
+      books: [
+        { ...report.groups[0].books[0], duplicateOf: null },
+        { ...report.groups[0].books[1], duplicateOf: 'b1' },
+      ],
+    },
+  ],
 };
 
 const pagedReport: DuplicateAuditResult = { ...report, totalGroups: 45 };
@@ -158,6 +222,8 @@ function renderAudit(isAdmin = true) {
 describe('AdminDuplicateAudit', () => {
   beforeEach(() => {
     apiMocks.reset();
+    toastMocks.success.mockClear();
+    toastMocks.error.mockClear();
   });
 
   afterEach(() => {
@@ -202,15 +268,160 @@ describe('AdminDuplicateAudit', () => {
     expect(screen.getByTestId('summary-total-groups')).toHaveTextContent('1');
     expect(screen.queryByTestId('truncated-warning')).not.toBeInTheDocument();
 
-    // The group key and the confidence badge repeat once per book row inside
-    // the group, so scope the queries to the table and use plural getters for
-    // those duplicated values.
-    const table = screen.getByRole('table');
-    expect(within(table).getAllByText('a1b2c3d4e5f60718')).toHaveLength(2);
-    expect(within(table).getByText('Alpha')).toBeInTheDocument();
-    expect(within(table).getByText('Küçük Prens, "Ciltli"')).toBeInTheDocument();
-    expect(within(table).getAllByText('exact', { exact: true })).toHaveLength(2);
-    expect(within(table).getByRole('columnheader', { name: 'Group Key' })).toBeInTheDocument();
+    // Each group is its own card with a canonical/duplicate selection row and
+    // a status cell; the group key and confidence live in the card header.
+    const group = screen.getByTestId('group-a1b2c3d4e5f60718');
+    expect(within(group).getByText('a1b2c3d4e5f60718')).toBeInTheDocument();
+    expect(within(group).getByText('exact', { exact: true })).toBeInTheDocument();
+    expect(within(group).getByText('Alpha')).toBeInTheDocument();
+    expect(within(group).getByText('Küçük Prens, "Ciltli"')).toBeInTheDocument();
+
+    const table = within(group).getByRole('table');
+    expect(within(table).getByRole('columnheader', { name: 'Canonical' })).toBeInTheDocument();
+    expect(within(table).getByRole('columnheader', { name: 'Duplicate' })).toBeInTheDocument();
+  });
+
+  it('defaults the canonical to the first unmarked book and supports switching', async () => {
+    const user = userEvent.setup();
+    apiMocks.state.data = report;
+    renderAudit();
+
+    await user.click(screen.getByRole('button', { name: 'Run Audit' }));
+
+    const alphaRadio = screen.getByRole('radio', { name: 'Set Alpha as canonical' });
+    const prensRadio = screen.getByRole('radio', {
+      name: 'Set Küçük Prens, "Ciltli" as canonical',
+    });
+    expect(alphaRadio).toBeChecked();
+    expect(prensRadio).not.toBeChecked();
+
+    // The canonical book cannot also be selected as a duplicate.
+    expect(screen.getByRole('checkbox', { name: 'Select Alpha as duplicate' })).toBeDisabled();
+    expect(
+      screen.getByRole('checkbox', { name: 'Select Küçük Prens, "Ciltli" as duplicate' })
+    ).toBeEnabled();
+
+    await user.click(prensRadio);
+
+    expect(prensRadio).toBeChecked();
+    expect(alphaRadio).not.toBeChecked();
+    // Alpha can now be selected as a duplicate instead.
+    expect(screen.getByRole('checkbox', { name: 'Select Alpha as duplicate' })).toBeEnabled();
+    expect(
+      screen.getByRole('checkbox', { name: 'Select Küçük Prens, "Ciltli" as duplicate' })
+    ).toBeDisabled();
+  });
+
+  it('sends the canonical and selected duplicates to the mark mutation after confirmation', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    apiMocks.state.data = report;
+    renderAudit();
+
+    await user.click(screen.getByRole('button', { name: 'Run Audit' }));
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select Küçük Prens, "Ciltli" as duplicate' })
+    );
+    await user.click(screen.getByRole('button', { name: 'Mark duplicates' }));
+
+    expect(apiMocks.markFn).toHaveBeenCalledTimes(1);
+    expect(apiMocks.markFn).toHaveBeenCalledWith({ canonicalId: 'b1', duplicateIds: ['b2'] });
+    expect(toastMocks.success).toHaveBeenCalledWith('Marked 1 book(s) as duplicates');
+
+    // The current audit re-runs after a successful mutation.
+    expect(apiMocks.trigger).toHaveBeenCalledTimes(2);
+    expect(apiMocks.trigger).toHaveBeenLastCalledWith({ type: 'url', page: 1, limit: 20 });
+  });
+
+  it('does not fire the mark mutation when the confirm dialog is cancelled', async () => {
+    const user = userEvent.setup();
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    apiMocks.state.data = report;
+    renderAudit();
+
+    await user.click(screen.getByRole('button', { name: 'Run Audit' }));
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select Küçük Prens, "Ciltli" as duplicate' })
+    );
+    await user.click(screen.getByRole('button', { name: 'Mark duplicates' }));
+
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(apiMocks.markFn).not.toHaveBeenCalled();
+    expect(apiMocks.trigger).toHaveBeenCalledTimes(1);
+    expect(toastMocks.success).not.toHaveBeenCalled();
+  });
+
+  it('shows a marked badge with the canonical id and undoes a single row', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    apiMocks.state.data = report;
+    renderAudit();
+
+    await user.click(screen.getByRole('button', { name: 'Run Audit' }));
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Select Küçük Prens, "Ciltli" as duplicate' })
+    );
+
+    // The server now returns the post-mark report; the rerun after the
+    // successful mutation picks it up and renders the marked badge.
+    apiMocks.state.data = markedReport;
+    await user.click(screen.getByRole('button', { name: 'Mark duplicates' }));
+
+    expect(apiMocks.markFn).toHaveBeenCalledWith({ canonicalId: 'b1', duplicateIds: ['b2'] });
+    const badge = screen.getByTestId('marked-b2');
+    expect(badge).toHaveTextContent('Duplicate of b1');
+
+    const undoButton = screen.getByRole('button', {
+      name: 'Undo mark for Küçük Prens, "Ciltli"',
+    });
+    expect(undoButton).toBeEnabled();
+
+    // Restore the unmarked report so the post-undo rerun clears the badge.
+    apiMocks.state.data = report;
+    await user.click(undoButton);
+
+    expect(apiMocks.unmarkFn).toHaveBeenCalledTimes(1);
+    expect(apiMocks.unmarkFn).toHaveBeenCalledWith({ duplicateIds: ['b2'] });
+    expect(toastMocks.success).toHaveBeenCalledWith('Restored 1 book(s)');
+    await waitFor(() => {
+      expect(screen.queryByTestId('marked-b2')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows an error toast and skips the rerun when undo fails', async () => {
+    const user = userEvent.setup();
+    apiMocks.state.data = markedReport;
+    apiMocks.unmarkError.error = {
+      data: { errors: [{ message: 'Undo failed' }] },
+    };
+    renderAudit();
+
+    await user.click(screen.getByRole('button', { name: 'Run Audit' }));
+
+    expect(screen.getByTestId('marked-b2')).toHaveTextContent('Duplicate of b1');
+
+    apiMocks.trigger.mockClear();
+    await user.click(screen.getByRole('button', { name: 'Undo mark for Küçük Prens, "Ciltli"' }));
+
+    expect(apiMocks.unmarkFn).toHaveBeenCalledWith({ duplicateIds: ['b2'] });
+    expect(toastMocks.error).toHaveBeenCalledWith('Undo failed');
+    expect(apiMocks.trigger).not.toHaveBeenCalled();
+  });
+
+  it('disables all mark controls while a mark mutation is in flight', async () => {
+    apiMocks.markState.isLoading = true;
+    apiMocks.state.data = report;
+    renderAudit();
+
+    expect(screen.getByRole('button', { name: 'Run Audit' })).toBeDisabled();
+    expect(screen.getByRole('radio', { name: 'Set Alpha as canonical' })).toBeDisabled();
+    expect(
+      screen.getByRole('radio', { name: 'Set Küçük Prens, "Ciltli" as canonical' })
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('checkbox', { name: 'Select Küçük Prens, "Ciltli" as duplicate' })
+    ).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Mark duplicates' })).toBeDisabled();
   });
 
   it('passes the next page when navigating pagination', async () => {
@@ -275,6 +486,7 @@ describe('AdminDuplicateAudit', () => {
       author: null,
       isbn: null,
       language: 'turkish',
+      duplicateOf: null,
     });
     expect(jsonText).not.toContain('uploader');
     expect(jsonText).not.toContain('email');
