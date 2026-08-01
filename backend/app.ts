@@ -46,7 +46,8 @@ app.use('/api', routes);
 app.get('/og/book/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params as { id: string };
-    const book = await Books.findById(id).lean();
+    // Soft-hidden duplicates get no preview card either.
+    const book = await Books.findOne({ _id: id, duplicateOf: null }).lean();
     if (!book) {
       return res.status(404).send('Not found');
     }
@@ -100,7 +101,7 @@ app.get('/sitemap.xml', async (req: Request, res: Response) => {
     const origin = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
     const staticUrls = ['/', '/all-books', '/recently-added'];
 
-    const books = await Books.find({}, { _id: 1, date: 1 }).lean();
+    const books = await Books.find({ duplicateOf: null }, { _id: 1, date: 1 }).lean();
     const urls: Array<{ loc: string; lastmod?: string }> = [
       ...staticUrls.map((path) => ({ loc: `${origin}${path}` })),
       ...books.map((b: any) => ({

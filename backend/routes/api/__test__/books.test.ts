@@ -471,6 +471,37 @@ it('should allow admin users to delete books', async () => {
     .expect(200);
 });
 
+it('should block deleting a book that is the canonical of hidden duplicates', async () => {
+  const { accessToken } = await global.signin(true);
+  const canonical = await Books.create({
+    name: 'Canonical Book',
+    url: DUMMY_PDF_URL,
+    size: 100,
+  });
+  const duplicate = await Books.create({
+    name: 'Hidden Duplicate',
+    url: DUMMY_PDF_URL,
+    size: 100,
+    duplicateOf: canonical._id,
+  });
+
+  await request(app)
+    .post(`/api/books/deleteBook/${canonical._id}`)
+    .set('Cookie', `accessToken=${accessToken}`)
+    .expect(400);
+
+  // Neither the canonical nor its hidden duplicate was removed.
+  expect(await Books.exists({ _id: canonical._id })).toBeTruthy();
+  expect(await Books.exists({ _id: duplicate._id })).toBeTruthy();
+
+  // Once the duplicate is unmarked the canonical can be deleted.
+  await Books.updateOne({ _id: duplicate._id }, { $set: { duplicateOf: null } });
+  await request(app)
+    .post(`/api/books/deleteBook/${canonical._id}`)
+    .set('Cookie', `accessToken=${accessToken}`)
+    .expect(200);
+});
+
 it('should get all books paginated', async () => {
   const { accessToken, sender } = await global.signin();
   const book1 = await request(app)

@@ -14,6 +14,8 @@ export interface DuplicateAuditBookItem {
   author: string | null;
   isbn: string | null;
   language: string;
+  /** Canonical book id when this book is already soft-hidden as a duplicate. */
+  duplicateOf: string | null;
 }
 
 export interface DuplicateAuditGroup {
@@ -64,6 +66,7 @@ interface ScannedBook {
   isbn?: string | null;
   author?: string | null;
   language?: string;
+  duplicateOf?: unknown;
 }
 
 const normalizeUrl = (value: string): string | null => {
@@ -134,6 +137,7 @@ const toBookItem = (book: ScannedBook): DuplicateAuditBookItem => ({
   author: typeof book.author === 'string' ? book.author : null,
   isbn: typeof book.isbn === 'string' ? book.isbn : null,
   language: typeof book.language === 'string' ? book.language : 'turkish',
+  duplicateOf: book.duplicateOf ? String(book.duplicateOf) : null,
 });
 
 const computeKeys = (book: ScannedBook): Record<DuplicateAuditType, string | null> => {
@@ -212,7 +216,7 @@ export const runDuplicateAuditService = async (
   const startedAt = Date.now();
 
   const scanned = (await Books.find()
-    .select('_id name size url isbn author language')
+    .select('_id name size url isbn author language duplicateOf')
     .limit(SCAN_LIMIT)
     .lean()) as unknown as ScannedBook[];
   const scannedBooks = scanned.length;

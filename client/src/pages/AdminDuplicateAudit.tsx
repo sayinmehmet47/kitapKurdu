@@ -1,7 +1,16 @@
-import { AlertTriangle, ChevronLeft, ChevronRight, Download, Play, Search } from 'lucide-react';
-import { useState } from 'react';
+import {
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Play,
+  Search,
+  Undo2,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import Layout from '@/components/Layout';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +36,8 @@ import {
   type DuplicateAuditResult,
   type DuplicateAuditType,
   useLazyGetDuplicateAuditQuery,
+  useMarkDuplicateMutation,
+  useUnmarkDuplicateMutation,
 } from '@/redux/services/duplicateAudit.api';
 import type { RootState } from '@/redux/store';
 
@@ -104,17 +115,47 @@ const downloadBlob = (blob: Blob, filename: string) => {
   URL.revokeObjectURL(url);
 };
 
+/** Pull the first backend error message out of an RTK Query rejection. */
+const getErrorMessage = (error: unknown): string => {
+  const message = (error as { data?: { errors?: { message?: string }[] } })?.data?.errors?.[0]
+    ?.message;
+  return message || 'Something went wrong. Please try again.';
+};
+
 const AdminDuplicateAudit = () => {
   const [type, setType] = useState<DuplicateAuditType>('url');
+  const [page, setPage] = useState(1);
+  const [canonicalByGroup, setCanonicalByGroup] = useState<Record<string, string>>({});
+  const [selectedDuplicates, setSelectedDuplicates] = useState<Record<string, string[]>>({});
 
   const { user, isLoggedIn } = useSelector((state: RootState) => state.authSlice);
   const isAdmin = isLoggedIn && user.user.isAdmin;
 
   const [trigger, { data, isFetching, isError, error }] = useLazyGetDuplicateAuditQuery();
+  const [markDuplicate, { isLoading: isMarking }] = useMarkDuplicateMutation();
+  const [unmarkDuplicate, { isLoading: isUnmarking }] = useUnmarkDuplicateMutation();
+
+  const isMutating = isMarking || isUnmarking;
 
   const totalPages = data ? Math.max(1, Math.ceil(data.totalGroups / data.limit)) : 1;
-  const errorMessage = (error as { data?: { errors?: { message?: string }[] } })?.data?.errors?.[0]
-    ?.message;
+  const errorMessage = getErrorMessage(error);
+
+  // Reset per-group selections whenever a new report arrives (initial run,
+  // type/page change or the refetch that follows a mark/unmark mutation).
+  // Kept above the admin early return so hook order is unconditional.
+  useEffect(() => {
+    if (!data) return;
+    const nextCanonicals: Record<string, string> = {};
+    const nextSelections: Record<string, string[]> = {};
+    for (const group of data.groups) {
+      // Sensible default canonical: the first unmarked book in the group.
+      const unmarked = group.books.filter((book) => !book.duplicateOf);
+      nextCanonicals[group.key] = (unmarked[0] ?? group.books[0])?.bookId ?? '';
+      nextSelections[group.key] = [];
+    }
+    setCanonicalByGroup(nextCanonicals);
+    setSelectedDuplicates(nextSelections);
+  }, [data]);
 
   // Redirect non-admin users
   if (!isAdmin) {
@@ -123,11 +164,66 @@ const AdminDuplicateAudit = () => {
 
   const runAudit = (nextType = type, nextPage = 1) => {
     setType(nextType);
+    setPage(nextPage);
     void trigger({ type: nextType, page: nextPage, limit: PAGE_SIZE });
   };
 
   const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
     void trigger({ type, page: nextPage, limit: PAGE_SIZE });
+  };
+
+  const rerunCurrentAudit = () => {
+    void trigger({ type, page, limit: PAGE_SIZE });
+  };
+
+  const handleCanonicalChange = (groupKey: string, bookId: string) => {
+    setCanonicalByGroup((prev) => ({ ...prev, [groupKey]: bookId }));
+    // A book promoted to canonical can no longer be a selected duplicate.
+    setSelectedDuplicates((prev) => ({
+      ...prev,
+      [groupKey]: (prev[groupKey] ?? []).filter((id) => id !== bookId),
+    }));
+  };
+
+  const handleDuplicateToggle = (groupKey: string, bookId: string) => {
+    setSelectedDuplicates((prev) => {
+      const current = prev[groupKey] ?? [];
+      const next = current.includes(bookId)
+        ? current.filter((id) => id !== bookId)
+        : [...current, bookId];
+      return { ...prev, [groupKey]: next };
+    });
+  };
+
+  const handleMark = async (groupKey: string) => {
+    const canonicalId = canonicalByGroup[groupKey];
+    const duplicateIds = selectedDuplicates[groupKey] ?? [];
+    if (!canonicalId || duplicateIds.length === 0 || isMutating) return;
+
+    const confirmed = window.confirm(
+      `Mark ${duplicateIds.length} book${duplicateIds.length === 1 ? '' : 's'} as duplicates of ${canonicalId}? They will be hidden from the public site.`
+    );
+    if (!confirmed) return;
+
+    try {
+      const result = await markDuplicate({ canonicalId, duplicateIds }).unwrap();
+      toast.success(`Marked ${result.updatedCount} book(s) as duplicates`);
+      rerunCurrentAudit();
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
+  };
+
+  const handleUndo = async (bookId: string) => {
+    if (isMutating) return;
+    try {
+      const result = await unmarkDuplicate({ duplicateIds: [bookId] }).unwrap();
+      toast.success(`Restored ${result.updatedCount} book(s)`);
+      rerunCurrentAudit();
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
   };
 
   const downloadJson = () => {
@@ -170,7 +266,7 @@ const AdminDuplicateAudit = () => {
               </Select>
             </div>
 
-            <Button onClick={() => runAudit(type)} disabled={isFetching}>
+            <Button onClick={() => runAudit(type)} disabled={isFetching || isMutating}>
               {isFetching ? <LoadingSpinner size={16} /> : <Play className="h-4 w-4" />}
               {isFetching ? 'Running…' : 'Run Audit'}
             </Button>
@@ -233,44 +329,121 @@ const AdminDuplicateAudit = () => {
                 </p>
               </Card>
             ) : (
-              <Card>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Group Key</TableHead>
-                      <TableHead>Reason</TableHead>
-                      <TableHead>Confidence</TableHead>
-                      <TableHead>Book ID</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Author</TableHead>
-                      <TableHead>ISBN</TableHead>
-                      <TableHead>Language</TableHead>
-                      <TableHead className="text-right">Size</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.groups.flatMap((group) =>
-                      group.books.map((book) => (
-                        <TableRow key={`${group.key}-${book.bookId}`}>
-                          <TableCell className="font-mono text-xs">{group.key}</TableCell>
-                          <TableCell>{TYPE_LABELS[group.type]}</TableCell>
-                          <TableCell>
-                            <Badge variant={group.confidence === 'exact' ? 'success' : 'warning'}>
-                              {group.confidence}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="font-mono text-xs">{book.bookId}</TableCell>
-                          <TableCell>{book.name}</TableCell>
-                          <TableCell>{book.author ?? '—'}</TableCell>
-                          <TableCell>{book.isbn ?? '—'}</TableCell>
-                          <TableCell>{book.language}</TableCell>
-                          <TableCell className="text-right">{book.size ?? '—'}</TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </Card>
+              <div className="space-y-6">
+                {data.groups.map((group) => {
+                  const canonicalId = canonicalByGroup[group.key] ?? '';
+                  const selected = selectedDuplicates[group.key] ?? [];
+                  return (
+                    <Card key={group.key} data-testid={`group-${group.key}`}>
+                      <div className="flex flex-wrap items-center gap-3 p-4 border-b">
+                        <span className="font-mono text-xs">{group.key}</span>
+                        <Badge variant={group.confidence === 'exact' ? 'success' : 'warning'}>
+                          {group.confidence}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {TYPE_LABELS[group.type]}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {group.count} {group.count === 1 ? 'book' : 'books'}
+                        </span>
+                      </div>
+
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Canonical</TableHead>
+                            <TableHead>Duplicate</TableHead>
+                            <TableHead>Book ID</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Author</TableHead>
+                            <TableHead>ISBN</TableHead>
+                            <TableHead>Language</TableHead>
+                            <TableHead className="text-right">Size</TableHead>
+                            <TableHead>Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {group.books.map((book) => {
+                            const isMarked = Boolean(book.duplicateOf);
+                            const isCanonical = canonicalId === book.bookId;
+                            return (
+                              <TableRow key={`${group.key}-${book.bookId}`}>
+                                <TableCell>
+                                  <input
+                                    type="radio"
+                                    name={`canonical-${group.key}`}
+                                    value={book.bookId}
+                                    checked={isCanonical}
+                                    onChange={() => handleCanonicalChange(group.key, book.bookId)}
+                                    disabled={isMutating || isMarked}
+                                    aria-label={`Set ${book.name} as canonical`}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <input
+                                    type="checkbox"
+                                    checked={selected.includes(book.bookId)}
+                                    onChange={() => handleDuplicateToggle(group.key, book.bookId)}
+                                    disabled={isMutating || isMarked || isCanonical}
+                                    aria-label={`Select ${book.name} as duplicate`}
+                                  />
+                                </TableCell>
+                                <TableCell className="font-mono text-xs">{book.bookId}</TableCell>
+                                <TableCell>{book.name}</TableCell>
+                                <TableCell>{book.author ?? '—'}</TableCell>
+                                <TableCell>{book.isbn ?? '—'}</TableCell>
+                                <TableCell>{book.language}</TableCell>
+                                <TableCell className="text-right">{book.size ?? '—'}</TableCell>
+                                <TableCell>
+                                  {isMarked && book.duplicateOf ? (
+                                    <div className="flex items-center gap-2">
+                                      <Badge
+                                        variant="warning"
+                                        data-testid={`marked-${book.bookId}`}
+                                      >
+                                        Duplicate of {book.duplicateOf}
+                                      </Badge>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleUndo(book.bookId)}
+                                        disabled={isMutating}
+                                        aria-label={`Undo mark for ${book.name}`}
+                                      >
+                                        <Undo2 className="h-3.5 w-3.5" />
+                                        Undo
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <span className="text-sm text-muted-foreground">—</span>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+
+                      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-t">
+                        <p
+                          className="text-sm text-muted-foreground"
+                          data-testid={`selection-count-${group.key}`}
+                        >
+                          {selected.length}{' '}
+                          {selected.length === 1 ? 'duplicate selected' : 'duplicates selected'}
+                        </p>
+                        <Button
+                          onClick={() => handleMark(group.key)}
+                          disabled={isMutating || selected.length === 0 || !canonicalId}
+                        >
+                          {isMarking ? <LoadingSpinner size={16} /> : <Play className="h-4 w-4" />}
+                          Mark duplicates
+                        </Button>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
             )}
 
             <div className="flex flex-wrap items-center justify-between gap-4 mt-6">

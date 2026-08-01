@@ -65,6 +65,6 @@ export const createBaseQueryWithReauth =
 export const commonApi = createApi({
   reducerPath: 'api',
   baseQuery: createBaseQueryWithReauth(baseQuery),
-  tagTypes: ['Book', 'Messages'],
+  tagTypes: ['Book', 'Messages', 'Audit'],
   endpoints: (_) => ({}),
 });

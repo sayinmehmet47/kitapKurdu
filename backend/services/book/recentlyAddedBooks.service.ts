@@ -24,11 +24,14 @@ const getRecentlyAddedBooks = async (params: PaginationParams = {}) => {
   const skip = (page - 1) * limit;
 
   try {
+    // Soft-hidden duplicates are invisible in the public recent listing.
+    const publicQuery = { duplicateOf: null };
+
     // Get total count for pagination metadata
-    const totalBooks = await Books.countDocuments({});
+    const totalBooks = await Books.countDocuments(publicQuery);
 
     // Get paginated books
-    const books = (await Books.find({})
+    const books = (await Books.find(publicQuery)
       .sort({ date: -1, createdAt: -1 }) // Sort by date first, then createdAt
       .skip(skip)
       .limit(limit)

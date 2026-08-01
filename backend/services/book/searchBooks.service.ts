@@ -139,6 +139,9 @@ const searchBooksService = async (req: Request) => {
   const query: Record<string, unknown> =
     filters.length === 0 ? {} : filters.length === 1 ? filters[0] : { $and: filters };
 
+  // Soft-hidden duplicates never surface in public search.
+  query.duplicateOf = null;
+
   const page = parseBoundedPositiveInt(req.query.page, 1, MAX_PAGE);
   const limit = parseBoundedPositiveInt(req.query.limit, 10, MAX_LIMIT);
   const startIndex = (page - 1) * limit;
@@ -187,6 +190,14 @@ const searchBooksService = async (req: Request) => {
   cache.set(cacheKey, pagination); // store the result in the cache
 
   return pagination;
+};
+
+/**
+ * Narrow invalidator for the public search cache. Called by admin mark/unmark
+ * operations so cached search results never keep soft-hidden duplicates around.
+ */
+export const invalidateSearchCache = (): void => {
+  cache.flushAll();
 };
 
 export { searchBooksService };
