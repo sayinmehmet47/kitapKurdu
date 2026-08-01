@@ -4,9 +4,10 @@ import ReactGA from 'react-ga4';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import { Search } from './components/Search';
-import { loadUserThunk, refreshTokenThunk } from './redux/authSlice';
+import { loadUserThunk } from './redux/authSlice';
 import { apiBaseUrl } from './redux/common.api';
 import { useAppDispatch, useAppSelector } from './redux/store';
+import { handleAuthExpiredOnce, refreshAccessToken } from './redux/tokenRefresh';
 
 ReactGA.initialize('G-R54SYJD2B8');
 
@@ -119,9 +120,11 @@ function App() {
 
     const interval = setInterval(
       () => {
-        dispatch(refreshTokenThunk()).catch(() => {
-          // Token refresh failed, user will be logged out by the thunk
-          console.log('Token refresh failed');
+        void refreshAccessToken(apiBaseUrl).then((result) => {
+          if (result.status === 'auth-expired') {
+            handleAuthExpiredOnce(dispatch);
+          }
+          // Network errors are best-effort: keep the session for the next tick.
         });
       },
       10 * 60 * 1000
