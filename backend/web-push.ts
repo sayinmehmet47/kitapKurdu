@@ -1,19 +1,22 @@
 import * as webpush from 'web-push';
+import { logger } from './logger';
 import { User } from './models/User';
 
-const publicVapidKey =
-  'BCrScCgFJml1t1UsPNfsgd6562aSzuyRB_qQw79KrAfaALzpxkYPaLxavkP2s_P1OP3kWXuvhiK2T1ZJNmhhCiE';
+const publicVapidKey = process.env.VAPID_PUBLIC_KEY;
+const privateVapidKey = process.env.VAPID_PRIVATE_KEY;
+const vapidSubject = process.env.VAPID_SUBJECT;
 
-const privateVapidKey = 'yHYRAaCqdtMCmSJrmUz248yriRJC6hqbcmzhM0NBEwM';
-webpush.setVapidDetails(
-  'https://yourwebsite.com',
-  publicVapidKey,
-  privateVapidKey
-);
+export const isWebPushConfigured = Boolean(publicVapidKey && privateVapidKey && vapidSubject);
 
-export const getUserSubscriptionsExcludingUser = async (
-  userIdToExclude: string
-) => {
+if (publicVapidKey && privateVapidKey && vapidSubject) {
+  webpush.setVapidDetails(vapidSubject, publicVapidKey, privateVapidKey);
+} else {
+  logger.warn(
+    'Web push notifications are disabled: set VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY and VAPID_SUBJECT to enable them.'
+  );
+}
+
+export const getUserSubscriptionsExcludingUser = async (userIdToExclude: string) => {
   try {
     const subscriptions = await User.find({
       _id: { $ne: userIdToExclude },
@@ -26,7 +29,11 @@ export const getUserSubscriptionsExcludingUser = async (
   }
 };
 
-export const removeSubscription = async (subscription: any) => {
+interface SubscriptionReference {
+  endpoint: string;
+}
+
+export const removeSubscription = async (subscription: SubscriptionReference) => {
   // Remove the subscription from your database
   await User.findOneAndUpdate(
     { 'subscription.endpoint': subscription.endpoint },
