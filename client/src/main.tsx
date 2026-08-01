@@ -27,6 +27,7 @@ const BookEditPage = lazy(() =>
 );
 const ContactUs = lazy(() => import('./pages/ContactPage').then((m) => ({ default: m.ContactUs })));
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
+const AdminDuplicateAudit = lazy(() => import('./pages/AdminDuplicateAudit'));
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -85,6 +86,14 @@ root.render(
               element={
                 <PrivateRoute>
                   <AdminAnalytics />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/admin/duplicate-audit"
+              element={
+                <PrivateRoute>
+                  <AdminDuplicateAudit />
                 </PrivateRoute>
               }
             />
