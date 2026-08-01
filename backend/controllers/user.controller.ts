@@ -1,8 +1,13 @@
-import { Request, Response, CookieOptions } from 'express';
-import { logoutUser, registerUser } from '../services/user';
+import type { CookieOptions, Request, Response } from 'express';
 import { CustomError } from '../errors/custom-error';
-import { generateAccessToken, generateRefreshToken } from '../utils/jwt.utils';
 import { logger } from '../logger';
+import { logoutUser, registerUser } from '../services/user';
+import {
+  ACCESS_TOKEN_MAX_AGE_MS,
+  generateAccessToken,
+  generateRefreshToken,
+  REFRESH_TOKEN_MAX_AGE_MS,
+} from '../utils/jwt.utils';
 
 // Base cookie options for auth cookies (cross-site friendly in production)
 const cookieBaseOptions: CookieOptions = {
@@ -23,12 +28,12 @@ export const loginController = async (req: Request, res: Response) => {
 
     res.cookie('refreshToken', refreshToken, {
       ...cookieBaseOptions,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: REFRESH_TOKEN_MAX_AGE_MS, // 7 days
     });
 
     res.cookie('accessToken', accessToken, {
       ...cookieBaseOptions,
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: ACCESS_TOKEN_MAX_AGE_MS, // 8 hours
     });
 
     res.status(200).json({
@@ -158,7 +163,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
         hasRefreshTokenCookie: !!req.cookies?.refreshToken,
         hasRTParam: !!req.query?.rt,
         userAgent: req.headers['user-agent'],
-        origin: req.headers.origin
+        origin: req.headers.origin,
       });
     }
 
@@ -171,7 +176,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
       }
       return res.status(401).json({
         success: false,
-        message: 'No user found - refresh token invalid or expired'
+        message: 'No user found - refresh token invalid or expired',
       });
     }
 
@@ -187,7 +192,7 @@ export const refreshTokenController = async (req: Request, res: Response) => {
 
     res.cookie('accessToken', newAccessToken, {
       ...cookieBaseOptions,
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: ACCESS_TOKEN_MAX_AGE_MS, // 8 hours
     });
 
     if (process.env.NODE_ENV !== 'production') {
@@ -211,7 +216,12 @@ export const refreshTokenController = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error('Error in refresh token controller', {
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: process.env.NODE_ENV !== 'production' ? (error instanceof Error ? error.stack : undefined) : undefined
+      stack:
+        process.env.NODE_ENV !== 'production'
+          ? error instanceof Error
+            ? error.stack
+            : undefined
+          : undefined,
     });
     res.status(500).json({
       success: false,

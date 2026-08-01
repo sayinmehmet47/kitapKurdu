@@ -14,7 +14,12 @@ import {
 } from '../../controllers/user.controller';
 import { auth } from '../../middleware/auth';
 import { validateRequest } from '../../middleware/validate-request';
-import { generateAccessToken, generateRefreshToken } from '../../utils/jwt.utils';
+import {
+  ACCESS_TOKEN_MAX_AGE_MS,
+  generateAccessToken,
+  generateRefreshToken,
+  REFRESH_TOKEN_MAX_AGE_MS,
+} from '../../utils/jwt.utils';
 
 const router = express.Router();
 
@@ -83,12 +88,12 @@ router.get(
 
     res.cookie('refreshToken', refreshToken, {
       ...cookieOptions,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: REFRESH_TOKEN_MAX_AGE_MS, // 7 days
     });
 
     res.cookie('accessToken', accessToken, {
       ...cookieOptions,
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: ACCESS_TOKEN_MAX_AGE_MS, // 8 hours
     });
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
