@@ -1,4 +1,4 @@
-import { AlertCircle, Book, CheckCircle, FileText, Upload, X } from 'lucide-react';
+import { AlertCircle, Book, CheckCircle, FileText, Upload, X, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
@@ -17,15 +17,15 @@ import {
   Progress,
 } from '@/components/ui';
 import Layout from '../components/Layout';
+import {
+  type QueueRejection,
+  type SaveOperation,
+  type UploadItem,
+  useUploadQueue,
+} from '../hooks/useUploadQueue';
 import { useAddNewBookMutation } from '../redux/services/book.api';
-
-interface UploadFile {
-  file: File;
-  id: string;
-  status: 'pending' | 'uploading' | 'success' | 'error';
-  progress: number;
-  error?: string;
-}
+import type { CloudinaryAsset } from '../services/cloudinaryUpload';
+import { uploadToCloudinary } from '../services/cloudinaryUpload';
 
 interface ManualMetadata {
   author: string;
@@ -39,158 +39,178 @@ const emptyManualMetadata: ManualMetadata = {
   publisher: '',
 };
 
+const statusLabels: Record<UploadItem['status'], string> = {
+  queued: 'Queued for upload',
+  uploading: 'Uploading...',
+  saving: 'Saving to library...',
+  succeeded: 'Uploaded successfully!',
+  failed: 'Upload failed',
+  cancelled: 'Upload cancelled',
+};
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+};
+
+const getStatusIcon = (status: UploadItem['status']) => {
+  switch (status) {
+    case 'succeeded':
+      return <CheckCircle className="h-5 w-5 text-green-500" />;
+    case 'failed':
+      return <AlertCircle className="h-5 w-5 text-red-500" />;
+    case 'uploading':
+    case 'saving':
+      return (
+        <div className="h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      );
+    case 'cancelled':
+      return <XCircle className="h-5 w-5 text-gray-400" />;
+    default:
+      return <FileText className="h-5 w-5 text-gray-400" />;
+  }
+};
+
+const summarizeRejections = (rejected: QueueRejection[]): string => {
+  const counts = new Map<string, number>();
+  for (const { reason } of rejected) {
+    counts.set(reason, (counts.get(reason) ?? 0) + 1);
+  }
+  const parts: string[] = [];
+  for (const [reason, count] of counts) {
+    parts.push(count > 1 ? `${reason} (${count})` : reason);
+  }
+  return parts.join(', ');
+};
+
+const editableItemsOf = (entries: UploadItem[]) =>
+  entries.filter((entry) => entry.status !== 'succeeded' && entry.status !== 'cancelled');
+
 export default function UploadNewBook() {
-  const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
   const [manualMetadata, setManualMetadata] = useState<ManualMetadata>(emptyManualMetadata);
-  const metadataFileIdRef = useRef<string | undefined>(undefined);
+  const manualMetadataRef = useRef<ManualMetadata>(emptyManualMetadata);
+  const metadataItemIdRef = useRef<string | undefined>(undefined);
+  const itemsRef = useRef<UploadItem[]>([]);
+  const prevTerminalRef = useRef(false);
   const [addNewBook] = useAddNewBookMutation();
 
-  const uploadToCloudinary = async (file: File): Promise<any> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'unsigned_upload'); // You may need to configure this
+  const save = useCallback(
+    (item: UploadItem, asset: CloudinaryAsset): SaveOperation => {
+      // Metadata is owned by a single item id, read from refs so a later file
+      // added to the queue cannot detach these values from their owner.
+      const withMetadata = metadataItemIdRef.current === item.id;
+      const metadata = withMetadata ? manualMetadataRef.current : emptyManualMetadata;
+      const author = metadata.author.trim();
+      const isbn = metadata.isbn.trim();
+      const publisher = metadata.publisher.trim();
 
-    const response = await fetch(import.meta.env.VITE_CLOUDINARY_URL as string, {
-      method: 'POST',
-      body: formData,
+      const book = {
+        name: item.file.name,
+        size: String(asset.bytes),
+        url: asset.secure_url,
+        ...(author ? { author } : null),
+        ...(isbn ? { isbn } : null),
+        ...(publisher ? { publisher } : null),
+      };
+
+      const request = addNewBook(book);
+      return { promise: request.unwrap().then(() => undefined) };
+    },
+    [addNewBook]
+  );
+
+  const {
+    items,
+    addFiles,
+    start,
+    pause,
+    resume,
+    cancel,
+    cancelAll,
+    remove,
+    retry,
+    isRunning,
+    isPaused,
+    summary,
+  } = useUploadQueue({ upload: uploadToCloudinary, save });
+
+  itemsRef.current = items;
+
+  const editable = editableItemsOf(items);
+  const metadataTargetId = editable.length === 1 ? editable[0].id : undefined;
+
+  const updateManualMetadata = useCallback((patch: Partial<ManualMetadata>) => {
+    setManualMetadata((current) => {
+      const next = { ...current, ...patch };
+      manualMetadataRef.current = next;
+      return next;
     });
-
-    if (!response.ok) {
-      throw new Error('Upload failed');
-    }
-
-    return response.json();
-  };
-
-  const addBook = async (response: any, originalFile: File, metadata?: ManualMetadata) => {
-    const book = {
-      name: originalFile.name,
-      size: response.bytes,
-      url: response.secure_url,
-      ...(metadata?.author.trim() && { author: metadata.author.trim() }),
-      ...(metadata?.isbn.trim() && { isbn: metadata.isbn.trim() }),
-      ...(metadata?.publisher.trim() && {
-        publisher: metadata.publisher.trim(),
-      }),
-    };
-
-    await addNewBook(book).unwrap();
-    return book;
-  };
-
-  const handleFileUpload = async (fileItem: UploadFile) => {
-    const metadataForBook =
-      uploadFiles.length === 1 &&
-      uploadFiles[0].id === fileItem.id &&
-      metadataFileIdRef.current === fileItem.id
-        ? { ...manualMetadata }
-        : undefined;
-    let progressInterval: ReturnType<typeof setInterval> | undefined;
-
-    try {
-      // Update status to uploading
-      setUploadFiles((prev) =>
-        prev.map((f) => (f.id === fileItem.id ? { ...f, status: 'uploading', progress: 0 } : f))
-      );
-
-      // Simulate progress (you can implement real progress tracking)
-      progressInterval = setInterval(() => {
-        setUploadFiles((prev) =>
-          prev.map((f) =>
-            f.id === fileItem.id && f.progress < 90 ? { ...f, progress: f.progress + 10 } : f
-          )
-        );
-      }, 200);
-
-      // Upload to Cloudinary
-      const cloudinaryResponse = await uploadToCloudinary(fileItem.file);
-
-      // Add to database
-      const book = await addBook(cloudinaryResponse, fileItem.file, metadataForBook);
-
-      // Update status to success
-      setUploadFiles((prev) =>
-        prev.map((f) => (f.id === fileItem.id ? { ...f, status: 'success', progress: 100 } : f))
-      );
-
-      toast.success(`${book.name} has been uploaded successfully!`);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-
-      setUploadFiles((prev) =>
-        prev.map((f) => (f.id === fileItem.id ? { ...f, status: 'error', error: errorMessage } : f))
-      );
-
-      toast.error(`Upload failed: ${errorMessage}`);
-    } finally {
-      if (progressInterval !== undefined) {
-        clearInterval(progressInterval);
-      }
-    }
-  };
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles: UploadFile[] = acceptedFiles.map((file) => ({
-      file,
-      id: Math.random().toString(36).substr(2, 9),
-      status: 'pending',
-      progress: 0,
-    }));
-
-    setUploadFiles((prev) => [...prev, ...newFiles]);
   }, []);
 
-  const removeFile = (id: string) => {
-    setUploadFiles((prev) => prev.filter((f) => f.id !== id));
-  };
-
   useEffect(() => {
-    const nextMetadataFileId = uploadFiles.length === 1 ? uploadFiles[0].id : undefined;
-
-    if (metadataFileIdRef.current !== nextMetadataFileId) {
-      metadataFileIdRef.current = nextMetadataFileId;
+    if (metadataTargetId === undefined || metadataItemIdRef.current === metadataTargetId) {
+      return;
+    }
+    // Only hand the metadata form to a new item once its previous owner is no
+    // longer editable (removed or terminal). Adding another file merely hides
+    // the panel and must not reset the in-flight owner's values.
+    const ownerId = metadataItemIdRef.current;
+    const owner =
+      ownerId === undefined ? undefined : itemsRef.current.find((entry) => entry.id === ownerId);
+    const ownerGone =
+      ownerId === undefined ||
+      owner === undefined ||
+      owner.status === 'succeeded' ||
+      owner.status === 'cancelled';
+    if (ownerGone) {
+      metadataItemIdRef.current = metadataTargetId;
+      manualMetadataRef.current = emptyManualMetadata;
       setManualMetadata(emptyManualMetadata);
     }
-  }, [uploadFiles]);
+  }, [metadataTargetId]);
 
-  const uploadAll = () => {
-    uploadFiles.filter((f) => f.status === 'pending').forEach(handleFileUpload);
-  };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/pdf': ['.pdf'],
-      'application/epub+zip': ['.epub'],
-    },
-    multiple: true,
-  });
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / k ** i).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const getStatusIcon = (status: UploadFile['status']) => {
-    switch (status) {
-      case 'success':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'error':
-        return <AlertCircle className="h-5 w-5 text-red-500" />;
-      case 'uploading':
-        return (
-          <div className="h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        );
-      default:
-        return <FileText className="h-5 w-5 text-gray-400" />;
+  useEffect(() => {
+    if (summary.isTerminal && !prevTerminalRef.current) {
+      if (summary.succeeded > 0 || summary.failed > 0) {
+        const parts = [
+          `${summary.succeeded} uploaded`,
+          `${summary.failed} failed`,
+          `${summary.cancelled} cancelled`,
+        ].join(', ');
+        if (summary.failed > 0 || summary.cancelled > 0) {
+          toast.error(`Upload batch finished: ${parts}`);
+        } else {
+          toast.success(`Upload batch finished: ${parts}`);
+        }
+      }
     }
-  };
+    prevTerminalRef.current = summary.isTerminal;
+  }, [summary.isTerminal, summary.succeeded, summary.failed, summary.cancelled]);
 
-  const pendingFiles = uploadFiles.filter((f) => f.status === 'pending');
-  const completedFiles = uploadFiles.filter((f) => f.status === 'success');
+  const onDrop = useCallback(
+    (droppedFiles: File[]) => {
+      const result = addFiles(droppedFiles);
+      if (result.rejected.length === 0) return;
+
+      const rejectedText = `${result.rejected.length} file${result.rejected.length === 1 ? '' : 's'} rejected`;
+      const summaryText =
+        result.accepted > 0
+          ? `${result.accepted} file${result.accepted === 1 ? '' : 's'} added, ${rejectedText}`
+          : rejectedText;
+      toast.error(`${summaryText}: ${summarizeRejections(result.rejected)}`);
+    },
+    [addFiles]
+  );
+
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    onDrop,
+    multiple: true,
+    noClick: true,
+    noKeyboard: true,
+  });
 
   return (
     <Layout>
@@ -223,13 +243,15 @@ export default function UploadNewBook() {
                 <Book className="h-5 w-5" />
                 Select Files
               </CardTitle>
-              <CardDescription>Drag and drop your books here, or click to browse</CardDescription>
+              <CardDescription>
+                Drag and drop your books here, or use the Browse Files button below
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div
                 {...getRootProps()}
                 className={`
-                  border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
+                  border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200
                   ${
                     isDragActive
                       ? 'border-primary bg-primary/5 dark:bg-primary/10'
@@ -247,14 +269,14 @@ export default function UploadNewBook() {
                   ) : (
                     <>
                       <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Choose files or drag and drop
+                        Drag and drop your books here
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         PDF and EPUB files up to 100MB each
                       </p>
                     </>
                   )}
-                  <Button variant="outline" type="button">
+                  <Button variant="outline" type="button" onClick={open}>
                     Browse Files
                   </Button>
                 </div>
@@ -280,23 +302,44 @@ export default function UploadNewBook() {
           </Card>
 
           {/* File List */}
-          {uploadFiles.length > 0 && (
+          {items.length > 0 && (
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>Upload Queue</CardTitle>
                   <CardDescription>
-                    {completedFiles.length} of {uploadFiles.length} files uploaded
+                    {summary.succeeded} of {summary.total} files uploaded
+                    {summary.failed > 0 ? ` · ${summary.failed} failed` : ''}
+                    {summary.cancelled > 0 ? ` · ${summary.cancelled} cancelled` : ''}
                   </CardDescription>
                 </div>
-                {pendingFiles.length > 0 && (
-                  <Button onClick={uploadAll} className="ml-4">
-                    Upload All ({pendingFiles.length})
+                <div className="flex items-center gap-2">
+                  {isRunning && !isPaused && (
+                    <Button variant="outline" onClick={pause}>
+                      Pause
+                    </Button>
+                  )}
+                  {isPaused && (
+                    <Button variant="outline" onClick={resume}>
+                      Resume
+                    </Button>
+                  )}
+                  {(summary.queued > 0 || summary.uploading > 0) && (
+                    <Button variant="outline" onClick={cancelAll}>
+                      Cancel All
+                    </Button>
+                  )}
+                  <Button
+                    onClick={start}
+                    disabled={summary.queued === 0 || isRunning || isPaused}
+                    className="ml-4"
+                  >
+                    Upload All{summary.queued > 0 ? ` (${summary.queued})` : ''}
                   </Button>
-                )}
+                </div>
               </CardHeader>
               <CardContent>
-                {uploadFiles.length === 1 && uploadFiles[0].status !== 'success' && (
+                {metadataTargetId !== undefined && (
                   <div className="mb-6 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                       Optional book metadata
@@ -310,12 +353,7 @@ export default function UploadNewBook() {
                         <Input
                           id="upload-author"
                           value={manualMetadata.author}
-                          onChange={(event) =>
-                            setManualMetadata((current) => ({
-                              ...current,
-                              author: event.target.value,
-                            }))
-                          }
+                          onChange={(event) => updateManualMetadata({ author: event.target.value })}
                           maxLength={200}
                           autoComplete="off"
                         />
@@ -325,12 +363,7 @@ export default function UploadNewBook() {
                         <Input
                           id="upload-isbn"
                           value={manualMetadata.isbn}
-                          onChange={(event) =>
-                            setManualMetadata((current) => ({
-                              ...current,
-                              isbn: event.target.value,
-                            }))
-                          }
+                          onChange={(event) => updateManualMetadata({ isbn: event.target.value })}
                           maxLength={32}
                           autoComplete="off"
                           inputMode="numeric"
@@ -342,10 +375,7 @@ export default function UploadNewBook() {
                           id="upload-publisher"
                           value={manualMetadata.publisher}
                           onChange={(event) =>
-                            setManualMetadata((current) => ({
-                              ...current,
-                              publisher: event.target.value,
-                            }))
+                            updateManualMetadata({ publisher: event.target.value })
                           }
                           maxLength={200}
                           autoComplete="off"
@@ -355,68 +385,74 @@ export default function UploadNewBook() {
                   </div>
                 )}
                 <div className="space-y-4">
-                  {uploadFiles.map((fileItem) => (
+                  {items.map((item) => (
                     <div
-                      key={fileItem.id}
+                      key={item.id}
                       className="flex items-center space-x-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
                     >
-                      <div className="flex-shrink-0">{getStatusIcon(fileItem.status)}</div>
+                      <div className="flex-shrink-0">{getStatusIcon(item.status)}</div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                            {fileItem.file.name}
+                            {item.file.name}
                           </p>
                           <div className="flex items-center space-x-2">
                             <Badge variant="outline" className="text-xs">
-                              {formatFileSize(fileItem.file.size)}
+                              {formatFileSize(item.file.size)}
                             </Badge>
                             <Badge variant="secondary" className="text-xs">
-                              {fileItem.file.name.split('.').pop()?.toUpperCase()}
+                              {item.file.name.split('.').pop()?.toUpperCase()}
                             </Badge>
                           </div>
                         </div>
 
-                        {fileItem.status === 'uploading' && (
-                          <div className="space-y-2">
-                            <Progress value={fileItem.progress} className="h-2" />
-                            <p className="text-xs text-gray-500">
-                              Uploading... {fileItem.progress}%
-                            </p>
+                        <p
+                          className={`text-xs ${
+                            item.status === 'succeeded'
+                              ? 'text-green-600 dark:text-green-400'
+                              : item.status === 'failed'
+                                ? 'text-red-500'
+                                : 'text-gray-500 dark:text-gray-400'
+                          }`}
+                        >
+                          {statusLabels[item.status]}
+                        </p>
+
+                        {item.status === 'uploading' && (
+                          <div className="mt-2 space-y-2">
+                            <Progress value={item.progress} className="h-2" />
+                            <p className="text-xs text-gray-500">{item.progress}%</p>
                           </div>
                         )}
 
-                        {fileItem.status === 'error' && (
-                          <p className="text-xs text-red-500">Error: {fileItem.error}</p>
-                        )}
-
-                        {fileItem.status === 'success' && (
-                          <p className="text-xs text-green-600 dark:text-green-400">
-                            Upload completed successfully!
-                          </p>
+                        {item.status === 'failed' && item.error && (
+                          <p className="mt-1 text-xs text-red-500">Error: {item.error}</p>
                         )}
                       </div>
 
-                      <div className="flex-shrink-0">
-                        {fileItem.status !== 'uploading' && (
+                      <div className="flex-shrink-0 flex items-center space-x-2">
+                        {(item.status === 'queued' || item.status === 'uploading') && (
+                          <Button variant="outline" size="sm" onClick={() => cancel(item.id)}>
+                            Cancel
+                          </Button>
+                        )}
+                        {(item.status === 'failed' || item.status === 'cancelled') && (
+                          <Button variant="outline" size="sm" onClick={() => retry(item.id)}>
+                            Retry
+                          </Button>
+                        )}
+                        {(item.status === 'succeeded' ||
+                          item.status === 'failed' ||
+                          item.status === 'cancelled') && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => removeFile(fileItem.id)}
+                            onClick={() => remove(item.id)}
                             className="h-8 w-8 p-0"
-                            aria-label={`Remove ${fileItem.file.name}`}
+                            aria-label={`Remove ${item.file.name}`}
                           >
                             <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {(fileItem.status === 'pending' || fileItem.status === 'error') && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleFileUpload(fileItem)}
-                            className="ml-2"
-                          >
-                            {fileItem.status === 'error' ? 'Retry' : 'Upload'}
                           </Button>
                         )}
                       </div>
