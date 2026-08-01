@@ -88,6 +88,7 @@ export default function NavbarComponent() {
                 </NavLink>
               ))}
               {showAdminLink && <NavLink to="/admin/analytics">Analytics</NavLink>}
+              {showAdminLink && <NavLink to="/admin/duplicate-audit">Duplicate Audit</NavLink>}
             </div>
 
             {/* User Navigation & Mobile Menu Button */}
@@ -135,6 +136,11 @@ export default function NavbarComponent() {
               {showAdminLink && (
                 <NavLink to="/admin/analytics" mobile>
                   Analytics
+                </NavLink>
+              )}
+              {showAdminLink && (
+                <NavLink to="/admin/duplicate-audit" mobile>
+                  Duplicate Audit
                 </NavLink>
               )}
               <div className="flex items-center justify-between pt-2">
