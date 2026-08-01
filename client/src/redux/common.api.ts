@@ -1,12 +1,16 @@
-import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/dist/query/react';
+import {
+  type BaseQueryFn,
+  createApi,
+  type FetchArgs,
+  type FetchBaseQueryError,
+  fetchBaseQuery,
+} from '@reduxjs/toolkit/dist/query/react';
+import { handleAuthExpiredOnce, refreshAccessToken } from './tokenRefresh';
 
 // In production, hit backend domain directly so backend cookies are sent (Chrome),
 // while we also attach Bearer from sessionStorage for Safari fallback
-const prodApi =
-  (import.meta.env.VITE_PROD_API as string | undefined) ||
-  '/api';
-export const apiBaseUrl =
-  import.meta.env.PROD ? prodApi : '/api';
+const prodApi = (import.meta.env.VITE_PROD_API as string | undefined) || '/api';
+export const apiBaseUrl = import.meta.env.PROD ? prodApi : '/api';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: apiBaseUrl,
@@ -21,43 +25,46 @@ const baseQuery = fetchBaseQuery({
   credentials: 'include',
 });
 
-const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
-  args,
-  api,
-  extraOptions
-) => {
-  let result = await baseQuery(args, api, extraOptions);
-  
-  if (result.error && result.error.status === 401) {
-    // Try to refresh token
-    const rt = sessionStorage.getItem('auth_rt');
-    const refreshUrl = rt 
-      ? `${apiBaseUrl}/user/refresh-token?rt=${encodeURIComponent(rt)}`
-      : `${apiBaseUrl}/user/refresh-token`;
-    
-    const refreshResult = await baseQuery(
-      { url: refreshUrl.replace(apiBaseUrl, ''), method: 'POST' },
-      api,
-      extraOptions
-    );
-    
-    if (refreshResult.data) {
-      // Refresh successful, retry original request
-      result = await baseQuery(args, api, extraOptions);
-    } else {
-      // Refresh failed, clear tokens and redirect to login
-      sessionStorage.removeItem('auth_at');
-      sessionStorage.removeItem('auth_rt');
-      window.location.href = '/login';
+/**
+ * Wraps a raw base query with single-flight token refresh. On the first 401 the
+ * shared refresh runs; on success the original request is retried exactly once.
+ * A second 401 or a confirmed refresh failure clears tokens and dispatches logout
+ * once; a network refresh failure keeps the session intact.
+ */
+export const createBaseQueryWithReauth =
+  (
+    rawBaseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>
+  ): BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> =>
+  async (args, api, extraOptions) => {
+    const first = await rawBaseQuery(args, api, extraOptions);
+
+    if (first.error?.status !== 401) {
+      return first;
     }
-  }
-  
-  return result;
-};
+
+    const refreshResult = await refreshAccessToken(apiBaseUrl);
+
+    if (refreshResult.status === 'success') {
+      // New access token is already persisted; retry the original request once.
+      const retry = await rawBaseQuery(args, api, extraOptions);
+      if (retry.error?.status === 401) {
+        // Still unauthorized with a fresh token: confirmed auth expiry.
+        handleAuthExpiredOnce(api.dispatch);
+      }
+      return retry;
+    }
+
+    if (refreshResult.status === 'auth-expired') {
+      handleAuthExpiredOnce(api.dispatch);
+    }
+
+    // network-error: keep tokens/session and return the original error.
+    return first;
+  };
 
 export const commonApi = createApi({
   reducerPath: 'api',
-  baseQuery: baseQueryWithReauth,
+  baseQuery: createBaseQueryWithReauth(baseQuery),
   tagTypes: ['Book', 'Messages'],
   endpoints: (_) => ({}),
 });

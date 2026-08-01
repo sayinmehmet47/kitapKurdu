@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axios, { AxiosError } from 'axios';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import axios, { type AxiosError } from 'axios';
 import { apiBaseUrl } from './common.api';
+import { markAuthSessionActive } from './tokenRefresh';
 
 // Define proper interfaces
 interface User {
@@ -50,7 +51,7 @@ export const loginThunk = createAsyncThunk(
           withCredentials: true,
         }
       );
-      
+
       // Store tokens in sessionStorage for cross-domain fallback
       if (res.data.tokens?.accessToken && typeof window !== 'undefined') {
         sessionStorage.setItem('auth_at', res.data.tokens.accessToken);
@@ -58,7 +59,11 @@ export const loginThunk = createAsyncThunk(
           sessionStorage.setItem('auth_rt', res.data.tokens.refreshToken);
         }
       }
-      
+
+      // Re-arm the one-shot auth-expiry guard so a later confirmed expiry
+      // (e.g. after a same-tab re-login) can dispatch logout again.
+      markAuthSessionActive();
+
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
@@ -67,42 +72,36 @@ export const loginThunk = createAsyncThunk(
   }
 );
 
-export const logoutThunk = createAsyncThunk(
-  'authSlice/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      const at =
-        typeof window !== 'undefined'
-          ? sessionStorage.getItem('auth_at')
-          : null;
-      const res = await axios.post(
-        `${apiBaseUrl}/user/logout`,
-        {},
-        {
-          withCredentials: true,
-          headers: at ? { Authorization: `Bearer ${at}` } : undefined,
-        }
-      );
-      return res.data;
-    } catch (error) {
-      const err = error as AxiosError;
-      return rejectWithValue(err.message);
-    }
+export const logoutThunk = createAsyncThunk('authSlice/logout', async (_, { rejectWithValue }) => {
+  try {
+    const at = typeof window !== 'undefined' ? sessionStorage.getItem('auth_at') : null;
+    const res = await axios.post(
+      `${apiBaseUrl}/user/logout`,
+      {},
+      {
+        withCredentials: true,
+        headers: at ? { Authorization: `Bearer ${at}` } : undefined,
+      }
+    );
+    return res.data;
+  } catch (error) {
+    const err = error as AxiosError;
+    return rejectWithValue(err.message);
   }
-);
+});
 
 export const loadUserThunk = createAsyncThunk(
   'authSlice/loadUser',
   async (_, { rejectWithValue }) => {
     try {
-      const at =
-        typeof window !== 'undefined'
-          ? sessionStorage.getItem('auth_at')
-          : null;
+      const at = typeof window !== 'undefined' ? sessionStorage.getItem('auth_at') : null;
       const res = await axios.get(`${apiBaseUrl}/user/auth`, {
         withCredentials: true,
         headers: at ? { Authorization: `Bearer ${at}` } : undefined,
       });
+      // A successful load-user confirms the session is live (covers OAuth /
+      // cookie sessions); re-arm the one-shot auth-expiry guard.
+      markAuthSessionActive();
       return res.data;
     } catch (error) {
       const err = error as AxiosError;
@@ -134,39 +133,7 @@ export const registerThunk = createAsyncThunk(
       return res.data;
     } catch (error) {
       const err = error as AxiosError<{ errors: Array<{ message: string }> }>;
-      return rejectWithValue(
-        err.response?.data.errors?.[0]?.message || 'Registration failed'
-      );
-    }
-  }
-);
-
-export const refreshTokenThunk = createAsyncThunk(
-  'authSlice/refreshToken',
-  async (_, { rejectWithValue }) => {
-    try {
-      const rt = 
-        typeof window !== 'undefined' 
-          ? sessionStorage.getItem('auth_rt') 
-          : null;
-      
-      const url = rt 
-        ? `${apiBaseUrl}/user/refresh-token?rt=${encodeURIComponent(rt)}`
-        : `${apiBaseUrl}/user/refresh-token`;
-      
-      const res = await axios.post(url, {}, {
-        withCredentials: true,
-      });
-      
-      // Store new access token in sessionStorage for cross-domain fallback
-      if (res.data.tokens?.accessToken && typeof window !== 'undefined') {
-        sessionStorage.setItem('auth_at', res.data.tokens.accessToken);
-      }
-      
-      return res.data;
-    } catch (error) {
-      const err = error as AxiosError;
-      return rejectWithValue(err.message);
+      return rejectWithValue(err.response?.data.errors?.[0]?.message || 'Registration failed');
     }
   }
 );
@@ -283,7 +250,7 @@ export const authSlice = createSlice({
         state.loginSuccess = false;
         state.isAuthLoaded = true; // Auth check completed
       })
-      .addCase(registerThunk.fulfilled, (state, action) => {
+      .addCase(registerThunk.fulfilled, (state) => {
         state.isLoading = false;
         state.loginSuccess = true;
         state.error = false;
@@ -300,28 +267,6 @@ export const authSlice = createSlice({
         state.errorMessage = action.payload as string;
         state.isLoading = false;
         state.isAuthLoaded = true; // Auth check completed
-      })
-      .addCase(refreshTokenThunk.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.isLoggedIn = true;
-        state.isAuthLoaded = true;
-      })
-      .addCase(refreshTokenThunk.rejected, (state) => {
-        state.isLoggedIn = false;
-        state.isAuthLoaded = true;
-        state.user = {
-          user: {
-            id: '',
-            username: '',
-            email: '',
-            isAdmin: false,
-          },
-        };
-        // Clear stored tokens on refresh failure
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('auth_at');
-          sessionStorage.removeItem('auth_rt');
-        }
       });
   },
 });
