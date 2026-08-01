@@ -7,6 +7,7 @@ import type {
   Item,
   VolumeInfo,
 } from '../../routes/api/books.types';
+import { scheduleGoogleBooksMetadata } from './uploadWorkLimiters';
 
 const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
 const GOOGLE_BOOKS_TIMEOUT_MS = 5000;
@@ -146,10 +147,12 @@ const fetchGoogleBooksMetadata = async (
       params.key = process.env.GOOGLE_BOOKS_API_KEY;
     }
 
-    const response = await axios.get<GoogleBooksResponse>(GOOGLE_BOOKS_API_URL, {
-      params,
-      timeout: GOOGLE_BOOKS_TIMEOUT_MS,
-    });
+    const response = await scheduleGoogleBooksMetadata(() =>
+      axios.get<GoogleBooksResponse>(GOOGLE_BOOKS_API_URL, {
+        params,
+        timeout: GOOGLE_BOOKS_TIMEOUT_MS,
+      })
+    );
 
     return getUsableMetadata(response.data?.items);
   } catch (error) {
