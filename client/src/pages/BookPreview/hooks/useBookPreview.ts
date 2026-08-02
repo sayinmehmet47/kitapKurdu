@@ -19,9 +19,10 @@ export const useBookPreview = () => {
 
   const { data: book, isLoading, isError } = useGetBookByIdQuery(bookId);
 
-  const fileType = useMemo(() => {
-    return book?.url ? book.url.split('.').pop()?.toLowerCase() || '' : '';
-  }, [book?.url]);
+  const fileType = useMemo(
+    () => book?.url?.split('.').pop()?.toLowerCase() ?? '',
+    [book?.url]
+  );
 
   const handleDownload = () => {
     if (book?.url && book?.name) {

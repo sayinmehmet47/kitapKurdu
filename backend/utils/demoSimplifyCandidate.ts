@@ -1,27 +1,17 @@
  export const buildUserBadge = (
-    isAdmin: boolean,
-    isPremium: boolean,
-    hasOverdue: boolean
-  ) => {
-    let role = '';
+  isAdmin: boolean,
+  isPremium: boolean,
+  hasOverdue: boolean
+): string => {
+  let role: string;
+  if (isAdmin) {
+    role = 'ADMIN';
+  } else if (isPremium) {
+    role = 'PREMIUM';
+  } else {
+    role = 'MEMBER';
+  }
 
-    if (isAdmin === true) {
-      role = 'ADMIN';
-    } else {
-      if (isPremium === true) {
-        role = 'PREMIUM';
-      } else {
-        role = 'MEMBER';
-      }
-    }
-
-    let suffix = '';
-    if (hasOverdue === true) {
-      suffix = ' - ACTION NEEDED';
-    } else {
-      suffix = '';
-    }
-
-    const finalValue = role + suffix;
-    return finalValue;
-  };
+  const suffix = hasOverdue ? ' - ACTION NEEDED' : '';
+  return role + suffix;
+};
